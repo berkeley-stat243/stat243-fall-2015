@@ -1,0 +1,750 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\begin_preamble
+\usepackage{times,graphics}
+%\renewcommand{\baselinestretch}{1.5}
+\usepackage[unicode=true]{hyperref}
+\hypersetup{unicode=true, pdfusetitle,
+bookmarks=true,bookmarksnumbered=false,bookmarksopen=false,
+ breaklinks=false,pdfborder={0 0 1},backref=false,colorlinks=true,}
+\end_preamble
+\use_default_options false
+\begin_modules
+knitr
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 12
+\spacing onehalf
+\use_hyperref false
+\papersize letterpaper
+\use_geometry true
+\use_amsmath 1
+\use_esint 0
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 1in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+The bash shell, UNIX utilities, and version control
+\end_layout
+
+\begin_layout Standard
+Note that it can be difficult to distinguish what is shell-specific and
+ what is just part of UNIX.
+ Some of the material here is not bash-specific but general to UNIX.
+ 
+\end_layout
+
+\begin_layout Standard
+Any tutorials mentioned below are available at
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+
+\backslash
+
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset CommandInset href
+LatexCommand href
+target "http://statistics.berkeley.edu/computing/training/tutorials"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Reference: Newham and Rosenblatt, Learning the bash Shell, 2nd ed.
+\end_layout
+
+\begin_layout Chunk
+
+<<setup, engine='bash'>>=
+\end_layout
+
+\begin_layout Chunk
+
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Section
+Shell basics
+\end_layout
+
+\begin_layout Standard
+The shell is the interface between you and the UNIX operating system.
+ When you are working in a terminal window (i.e., a window with the command
+ line interface), you're interacting with a shell.
+\end_layout
+
+\begin_layout Standard
+There are multiple shells (
+\emph on
+sh
+\emph default
+, 
+\emph on
+bash
+\emph default
+, 
+\emph on
+csh
+\emph default
+, 
+\emph on
+tcsh
+\emph default
+, 
+\emph on
+ksh
+\emph default
+).
+ We'll assume usage of 
+\emph on
+bash
+\emph default
+, as this is the default for Mac OS X, the BCE VM, and on the SCF machines
+ and is very common for Linux.
+\end_layout
+
+\begin_layout Section
+Using the bash shell
+\end_layout
+
+\begin_layout Standard
+Please see the tutorial on using the bash shell.
+ For our purposes in this Unit, you should work through all of the material
+ EXCEPT the following sections:
+\end_layout
+
+\begin_layout Itemize
+Command history and editing (in Section 3.1.3)
+\end_layout
+
+\begin_layout Itemize
+Regular expressions (Section 3.3)
+\end_layout
+
+\begin_layout Standard
+However, the material in those sections may be useful to you, so if you
+ have a chance, you may want to work through them.
+ When we talk about string processing and regular expressions in R in Unit
+ 4, we'll come back to the material on regular expressions.
+\end_layout
+
+\begin_layout Section
+bash shell examples
+\end_layout
+
+\begin_layout Standard
+Here we'll work through a few examples to start to give you a feel for using
+ the bash shell to manage your workflows and process data.
+\end_layout
+
+\begin_layout Standard
+First let's get the files from last year's 243 class so we have a sufficient
+ body of files we can do interesting things with.
+ 
+\end_layout
+
+\begin_layout Chunk
+
+<<chunk1, engine='bash', eval=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+
+git clone https://github.com/berkeley-stat243/stat243-fall-2014
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Our first mission
+\series default
+ is some basic manipulation of a data file.
+ Suppose we want to get a sense for the number of weather stations in different
+ states using the 
+\emph on
+coop.txt
+\emph default
+ file.
+\end_layout
+
+\begin_layout Chunk
+
+<<data, engine='bash', eval=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+
+cd stat243-fall-2014/data
+\end_layout
+
+\begin_layout Chunk
+
+cut -b50-70 coop.txt | less 
+\end_layout
+
+\begin_layout Chunk
+
+cut -b60-61 coop.txt | sort | uniq
+\end_layout
+
+\begin_layout Chunk
+
+cut -b60-61 coop.txt | sort | uniq
+\lang english
+ -c
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+
+Now I could of course read the data in R at this stage (or I could read
+ the original dataset, though sometimes it's good to read just the fields
+ of interest to reduce memory use).
+ 
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Our second mission
+\series default
+: how can I count the number of fields in a CSV file programmatically?
+\end_layout
+
+\begin_layout Chunk
+
+<<chunk7, engine='bash', eval=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+
+tail -n 1 cpds.csv | grep -o ',' | wc -l
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Our third mission
+\series default
+: was 
+\emph on
+example.pdf
+\emph default
+ created in the five most recently modified R code files in the units directory?
+ Note that here grep is expecting a file name as input so we can just use
+ the pipe without the xargs.
+\end_layout
+
+\begin_layout Chunk
+
+<<chunk3, engine='bash', eval=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+
+cd ../units
+\end_layout
+
+\begin_layout Chunk
+
+ls -tr *.R | tail -n 5 | grep pdf
+\end_layout
+
+\begin_layout Chunk
+
+ls -tr *.R | tail -n 5 | xargs grep 'example.pdf'
+\end_layout
+
+\begin_layout Chunk
+
+ls -tr *.R | tail -n 5 | xargs grep -l 'example.pdf' 
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+
+Notice that 
+\family typewriter
+man tail
+\family default
+ indicates it can take input from a FILE or from 
+\emph on
+stdin
+\emph default
+.
+ But if we want to pass the filenames to grep we need to ensure that grep
+ realizes the input is the file names and not stdin itself.
+ Otherwise we are just grepping for `example.pdf' in the literal strings
+ that are the file name.
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Our fourth mission
+\series default
+: automate the process of determining what R packages are used in all of
+ the R code here and install those packages on a new machine.
+\end_layout
+
+\begin_layout Chunk
+
+<<chunk4, engine='bash', eval=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+
+grep library unit[1-9]*.R
+\end_layout
+
+\begin_layout Chunk
+
+grep --no-filename library *.R
+\end_layout
+
+\begin_layout Chunk
+
+grep --no-filename "^library" *.R
+\end_layout
+
+\begin_layout Chunk
+
+grep --no-filename "^library" *.R | sort | uniq
+\end_layout
+
+\begin_layout Chunk
+
+grep --no-filename "^library" *.R | sort | uniq | cut -d'#' -f1
+\end_layout
+
+\begin_layout Chunk
+
+grep --no-filename "^library" *.R | sort | uniq | cut -d'#' -f1 | tee tmp.txt
+\end_layout
+
+\begin_layout Chunk
+
+grep -v "help =" tmp.txt > libs.txt
+\end_layout
+
+\begin_layout Chunk
+
+sed -e 's/library(//' libs.txt | sed -e 's/quietly = TRUE//g' | sed -e 's/;/
+\backslash
+n/g'
+\end_layout
+
+\begin_layout Chunk
+
+sed -e 's/;/
+\backslash
+n/g' libs.txt | sed -e 's/quietly = TRUE//g' | sed -e 's/library(//' > tmp.txt
+\end_layout
+
+\begin_layout Chunk
+
+sed -e 's/[
+\backslash
+, )]//g' tmp.txt > libs.txt
+\end_layout
+
+\begin_layout Chunk
+
+echo "There are $(wc -l libs.txt | cut -d' ' -f1) unique packages we will
+ install."
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Chunk
+
+<<chunk4a, engine='bash', eval=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+
+Rscript -e "pkgs <- scan('libs.txt', what = 'character'); 
+\backslash
+
+\end_layout
+
+\begin_layout Chunk
+
+install.packages(pkgs, repos = 'http:/cran.cnr.berkeley.edu')"
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Our fifth mission
+\series default
+: suppose I've accidentally started a bunch of jobs (perhaps with a for
+ loop in bash!) and need to kill them.
+\end_layout
+
+\begin_layout Chunk
+
+<<chunk5, engine='bash', eval=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+
+echo "Sys.sleep(1e5)" > job.R 
+\end_layout
+
+\begin_layout Chunk
+
+nJobs=30 
+\end_layout
+
+\begin_layout Chunk
+
+for (( i=1; i<=${nJobs}; i++ )); do     
+\end_layout
+
+\begin_layout Chunk
+
+   R CMD BATCH --no-save job.R job-${i}.out & 
+\end_layout
+
+\begin_layout Chunk
+
+done 
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Chunk
+
+<<chunk6, engine='bash', eval=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+
+ps -o pid,pcpu,pmem,user,cmd -C R 
+\end_layout
+
+\begin_layout Chunk
+
+ps -o pid,pcpu,pmem,user,cmd,start_time --sort=start_time -C R | tail -n
+ 30
+\end_layout
+
+\begin_layout Chunk
+
+ps -o pid,pcpu,pmem,user,cmd,start_time --sort=start_time -C R | tail -n
+ 30 
+\end_layout
+
+\begin_layout Chunk
+
+ps -o pid --sort=start_time -C R | tail -n ${nJobs} | xargs kill
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Section
+bash shell challenges
+\end_layout
+
+\begin_layout Subsection
+First challenge
+\end_layout
+
+\begin_layout Standard
+Consider the listing of info in 
+\emph on
+/proc/cpuinfo
+\emph default
+ on a Linux machine such as BCE.
+ How would you write a shell command that returns "There are 6 processors
+ on this machine" where 6 is determined based on the contents of 
+\emph on
+/proc/cpuinfo
+\emph default
+ and not based on using 
+\emph on
+nproc
+\emph default
+.
+ 
+\end_layout
+
+\begin_layout Subsection
+Second challenge
+\end_layout
+
+\begin_layout Enumerate
+For Belgium, determine the minimum unemployment value (field #6) in 
+\emph on
+cpds.csv
+\emph default
+ in a programmatic way.
+\end_layout
+
+\begin_layout Enumerate
+Have what is printed out to the screen look like 
+\begin_inset Quotes eld
+\end_inset
+
+Belgium 6.2
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate
+Now store the unique values of the countries in a variable, first stripping
+ out the quotation marks and New Zealand, which causes problems because
+ of the space in its name.
+\end_layout
+
+\begin_layout Enumerate
+Figure out how to automate step 1 to do the calculation for all the countries
+ and print to the screen.
+ 
+\end_layout
+
+\begin_layout Enumerate
+How would you instead store the results in a new file?
+\end_layout
+
+\begin_layout Subsection
+Third challenge
+\end_layout
+
+\begin_layout Standard
+Consider the data in the RTADataSub.csv file.
+ This is a subset of data giving freeway travel times for segments of a
+ freeway in an Australian city.
+ The data are from a kaggle.com competition.
+ We want to try to understand the kinds of data in each field of the file.
+ The following would be particularly useful if the data were in many files
+ or the data were many gigabytes in size.
+ 
+\end_layout
+
+\begin_layout Standard
+First, take the fourth column.
+ Figure out the unique values in that column.
+ 
+\end_layout
+
+\begin_layout Standard
+Next, automate the process of determining if any of the values are non-numeric
+ so that you don't have to scan through all of the unique values looking
+ for non-numbers.
+ You'll need to look for the following regular expression pattern 
+\begin_inset Quotes eld
+\end_inset
+
+[^0-9]
+\begin_inset Quotes erd
+\end_inset
+
+, which is interpreted as NOT any of the numbers 0 through 9.
+\end_layout
+
+\begin_layout Standard
+Now, do it for all the fields, except the first one.
+ Have your code print out the result in a human-readable way understandable
+ by someone who didn't write the code.
+\end_layout
+
+\begin_layout Subsection
+Fourth challenge
+\end_layout
+
+\begin_layout Standard
+Here's an advanced one - you'll probably need to use sed, but the brief
+ examples of text substitution in the using bash tutorial should be sufficient
+ to solve the problem.
+\end_layout
+
+\begin_layout Standard
+Consider a CSV file that has rows that look like this: 
+\end_layout
+
+\begin_layout Standard
+1,"America, United States of",45,96.1,"continental, coastal" 
+\end_layout
+
+\begin_layout Standard
+2,"France",33,807.1,"continental, coastal"
+\end_layout
+
+\begin_layout Standard
+While R would be able to handle this using `read.table()`, using 
+\emph on
+cut
+\emph default
+ in UNIX won't work because of the commas embedded within the fields.
+ 
+\end_layout
+
+\begin_layout Standard
+Figure out a way to make this into a new delimited file in which the delimiter
+ is not a comma.
+ At least one solution that will work for this particular two-line dataset
+ does not require you to use regular expressions, just simple replacement
+ of fixed patterns.
+\end_layout
+
+\begin_layout Section
+Version Control
+\end_layout
+
+\begin_layout Standard
+A very popular and powerful tool for version control is Git.
+ More information is available in the tutorial on the basics of using Git.
+ You'll have a chance to work through the tutorial and practice with git
+ in the first section/lab.
+ During the course, you'll make use of Git for submitting problem sets and
+ for doing the final project.
+ I recommend you practice using it more generally while preparing your problem
+ set solutions.
+\end_layout
+
+\begin_layout Standard
+Some links to more resources:
+\end_layout
+
+\begin_layout Itemize
+Git for Scientists: A Tutorial: 
+\begin_inset CommandInset href
+LatexCommand href
+target "http://nyuccl.org/pages/GitTutorial/"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Gitwash: workflow for scientific Python projects:
+\begin_inset Newline newline
+\end_inset
+
+ 
+\begin_inset CommandInset href
+LatexCommand href
+target "http://matthew-brett.github.io/pydagogue/gitwash_build.html"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Git branching demo: 
+\begin_inset CommandInset href
+LatexCommand href
+target "http://pcottle.github.io/learnGitBranching/"
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
