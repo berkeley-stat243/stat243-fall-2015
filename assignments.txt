@@ -1,0 +1,21 @@
+Unless otherwise noted, all assignments should be completed by the
+time of class, 2 pm. For assignments requiring submission, submission
+is due at the start of class as a paper submission and via Github.
+
+Unless otherwise noted, tutorials are found at
+statistics.berkeley.edu/computing/training/tutorials.
+
+Friday, Aug. 28: set up BCE on your own machine and (as needed if you
+are not familiar with basic UNIX) work through UNIX basics tutorial
+
+Monday, Aug. 31: work through advanced bash tutorial and hand in a
+paper solution to the questions posed in questions1.pdf.
+
+week of Aug. 31: if you are not familiar with R at the level of
+modules 1-4,6 of the R bootcamp
+(https://github.com/berkeley-scf/r-bootcamp-2015), work through those
+modules and the breakout problems associated with the modules and
+(optionally) attend the special catch-up session on R to be held
+during the week
+
+Friday, Sep. 11 (tentative): first problem set (PS1) due

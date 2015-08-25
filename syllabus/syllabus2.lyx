@@ -1,0 +1,1136 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\begin_preamble
+%% LyX 1.4.3 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
+
+\usepackage{times}
+
+\usepackage{geometry}
+
+\geometry{verbose,letterpaper,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
+\IfFileExists{url.sty}{\usepackage{url}
+}
+                      {\newcommand{\url}{\texttt}}
+
+\makeatletter
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LyX specific LaTeX commands.
+%% Because html converters don't know tabularnewline
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+
+
+
+\makeatother
+\end_preamble
+\use_default_options false
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding latin1
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 11
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_amsmath 0
+\use_esint 0
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+STAT 243: Introduction to Statistical Computing
+\begin_inset Newline newline
+\end_inset
+
+Fall 2015 (Paciorek)
+\end_layout
+
+\begin_layout Subsection*
+Course Description
+\end_layout
+
+\begin_layout Standard
+Statistics 243 is an introduction to statistical computing taught using
+ R.
+ The course will cover both programming concepts and statistical computing
+ concepts.
+ Programming concepts will include data and text manipulation, data structures,
+ functions and variable scope, regular expressions, debugging, parallel
+ processing, and working with large datasets.
+ Statistical computing topics will include numerical linear algebra, computer
+ arithmetic/precision, simulation studies and Monte Carlo methods, numerical
+ optimization, and numerical integration/differentiation.
+ A goal is that coverage of these topics complement the models/methods discussed
+ in the rest of the statistics graduate curriculum.
+ We will also cover the basics of UNIX/Linux, in particular some basic shell
+ scripting and operating on remote servers, as well as a bit of Python.
+ 
+\end_layout
+
+\begin_layout Standard
+While the course is taught using R and will teach you a lot about using
+ R, the focus of the course is statistical computing more generally.
+ Also, this is not a course that will cover specific statistical/data analysis
+ methods.
+\end_layout
+
+\begin_layout Standard
+Informal prerequisites: If you are not a statistics or biostatistics graduate
+ student, please chat with me if you're not sure if this course makes sense
+ for you.
+ A background in calculus, linear algebra, probability and statistics is
+ expected, as well as a basic ability to operate on a computer (but not
+ necessary a UNIX variant).
+ Furthermore, I'm expecting you will know the basics of R, at the level
+ of the material in the R bootcamp offered Aug.
+ 22-23, 2015 [specifically the material in Modules 1-4, 6, but don't worry
+ about environments and scoping].
+ If you don't have that background you'll need to spend time in the initial
+ couple weeks getting up to speed.
+ All the material from the bootcamp will be available, we'll have a hands-on
+ practice session, and the GSI can also provide assistance.
+\end_layout
+
+\begin_layout Subsection*
+Objectives of the course
+\end_layout
+
+\begin_layout Standard
+The goals of the course are that, by the end of the course, students be
+ able to:
+\end_layout
+
+\begin_layout Itemize
+operate effectively in a UNIX environment and on remote servers;
+\end_layout
+
+\begin_layout Itemize
+program effectively in R with an advanced knowledge of R functionality and
+ an understanding of general programming concepts; and
+\end_layout
+
+\begin_layout Itemize
+be familiar with concepts and tools for reproducible research and good scientifi
+c computing practices; and
+\end_layout
+
+\begin_layout Itemize
+understand in depth and be able to make use of principles of numerical linear
+ algebra, optimization, and simulation for statistics-related research.
+\end_layout
+
+\begin_layout Subsection*
+Personnel
+\end_layout
+
+\begin_layout Itemize
+Instructor:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Chris Paciorek
+\begin_inset Newline newline
+\end_inset
+
+e-mail: paciorek@stat.berkeley.edu; Room 495, Evans Hall; Phone: (510) 642-9056;
+ 
+\begin_inset Newline newline
+\end_inset
+
+Office hours (in Evans 495): TBD, or just drop by if my door is open, or
+ schedule an appointment.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+GSI
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Harold Pimentel
+\begin_inset Newline newline
+\end_inset
+
+email: hpimentel@berkeley.edu
+\begin_inset Newline newline
+\end_inset
+
+Office hours (location TBD): TBD
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\series bold
+When to see us about an assignment
+\series default
+: We're here to help, including providing guidance on assignments.
+ You don't want to be futilely spinning your wheels for a long time getting
+ nowhere.
+ That said, before coming to see us about a difficulty, you should try something
+ a few different ways and try to define/summarize what is going wrong or
+ where you are getting stuck.
+ 
+\end_layout
+
+\begin_layout Subsection*
+Course websites: Github, Piazza, and bCourses
+\end_layout
+
+\begin_layout Standard
+All course materials will be posted on Github at 
+\begin_inset CommandInset href
+LatexCommand href
+target "https://github.com/berkeley-stat243/stat243-fall-2015"
+
+\end_inset
+
+.
+ Class will follow a set of course notes with demonstrations.
+ I will do my best to post the slides and demo code for class by 6 pm the
+ day before class.
+ I will not print out copies, so please bring your own copies if you want
+ them in front of you.
+ Note that each unit will have a single set of notes and demo code that
+ I will add to as we move through the unit, so you may want to just print
+ out the new pages.
+ I'll provide PDF documents as well as the underlying Lyx file I used to
+ generate the document.
+ If you want a plain Latex version, open the Lyx file in Lyx and do 
+\family typewriter
+File->Export->LaTeX(pdflatex)
+\family default
+.
+ For some material, we will make use of tutorials provided through 
+\begin_inset CommandInset href
+LatexCommand href
+target "http://statistics.berkeley.edu/training/tutorials"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+We will use Piazza for communication (announcements and questions).
+ You should ask questions about class material and problem sets through
+ the course Piazza website, which you can find as a tab on the bCourses
+ site: 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+
+\backslash
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset href
+LatexCommand href
+target "https://bcourses.berkeley.edu/courses/1371469"
+
+\end_inset
+
+.
+ Please use this site for your questions so that either Harold or I can
+ respond and so that everyone can benefit from the discussion.
+ I encourage you to respond to each other's questions as well.
+ I suggest you to modify your settings on Piazza so you are informed by
+ email of postings.
+ Questions of a personal nature can marked Private on Piazza.
+ If you have a specific question you need to direct just to me, it's fine
+ to email me directly.
+\end_layout
+
+\begin_layout Standard
+I have set up a course Wiki on Github, building off the Wiki from last year.
+ The goal is to build up a useful set of webpages that provide tips on statistic
+al computing and programming.
+ So if you figure out a clever way to do something, find a useful R function
+ or package, have a way to clean up the Wiki, or see a useful reference
+ to link to, please contribute this to the Wiki.
+ One way to get credit for class participation is to contribute to the Wiki.
+\end_layout
+
+\begin_layout Standard
+We'll only make limited use of bCourses, mainly as a link to Piazza and
+ to provide some basic information.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+We will make use of the discussion board on the website for answering questions.
+ Unless the issue is of a personal nature, please post questions to the
+ board rather than by email to me or the GSI.
+ Therefore, please check the site regularly.
+ I will also make announcements and provide material through the website,
+ with announcements also going out as email, so please check your email
+ regularly.
+\end_layout
+
+\begin_layout Plain Layout
+Please don't email the bSpace page; just use the email addresses above for
+ the instructor or GSI.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+Course material 
+\end_layout
+
+\begin_layout Standard
+Primary textbooks:
+\end_layout
+
+\begin_layout Itemize
+For R:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Adler, Joseph; R in a Nutshell (available electronically through OskiCat:
+ 
+\begin_inset CommandInset href
+LatexCommand href
+target "http://uclibs.org/PID/151634"
+
+\end_inset
+
+)
+\end_layout
+
+\begin_layout Itemize
+Wickham, Hadley: Advanced R: 
+\begin_inset CommandInset href
+LatexCommand href
+name "http://adv-r.had.co.nz/"
+target "http://adv-r.had.co.nz/"
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+For statistical computing topics: Gentle, James.
+ Computational Statistics (available electronically through OskiCat: 
+\begin_inset CommandInset href
+LatexCommand href
+target "http://dx.doi.org/10.1007/978-0-387-98144-4"
+
+\end_inset
+
+)
+\end_layout
+
+\begin_layout Itemize
+Assorted documents provided by me.
+\end_layout
+
+\begin_layout Standard
+Other resources with more details on particular aspects of R:
+\end_layout
+
+\begin_layout Itemize
+Chambers, John; Software for Data Analysis: Programming with R (available
+ electronically through OskiCat: 
+\begin_inset CommandInset href
+LatexCommand href
+target "http://dx.doi.org/10.1007/978-0-387-75936-4"
+
+\end_inset
+
+)
+\end_layout
+
+\begin_layout Itemize
+Xie, Yihui; Dynamic documents with R and knitr.
+ On reserve as a paper book in the Math/Stat library (2-hour reserve period)
+\end_layout
+
+\begin_layout Itemize
+The R-intro and R-lang documentation.
+ 
+\begin_inset CommandInset href
+LatexCommand href
+target "www.cran.r-project.org/manuals.html"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Murrell, Paul; R Graphics, 2nd ed.
+ 
+\begin_inset CommandInset href
+LatexCommand href
+target "http://www.stat.auckland.ac.nz/~paul/RG2e/"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Murrell, Paul; Introduction to Data Technologies.
+ 
+\begin_inset CommandInset href
+LatexCommand href
+target "http://www.stat.auckland.ac.nz/~paul/ItDT/"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Other resources with more detail on particular aspects of statistical computing
+ concepts:
+\end_layout
+
+\begin_layout Itemize
+Lange, Kenneth; Numerical Analysis for Statisticians, 2nd ed.
+ (first edition is available electronically through OskiCat:
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+
+\backslash
+
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset CommandInset href
+LatexCommand href
+target "http://sunsite.berkeley.edu:8080/librarysurvey/library.survey.logic?refUrl=http%3A%2F%2Fsite%2Eebrary%2Ecom%2Flib%2Fberkeley%2FDoc%3Fid%3D2004310"
+
+\end_inset
+
+)
+\end_layout
+
+\begin_layout Itemize
+Monahan, John; Numerical Methods of Statistics (available electronically
+ through OskiCat:
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+
+\backslash
+
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset CommandInset href
+LatexCommand href
+target "http://dx.doi.org/10.1017/CBO9780511977176"
+
+\end_inset
+
+)
+\end_layout
+
+\begin_layout Standard
+And for bash:
+\end_layout
+
+\begin_layout Itemize
+Newham, Cameron and Rosenblatt, Bill.
+ Learning the bash Shell (available electronically through OskiCat: 
+\begin_inset CommandInset href
+LatexCommand href
+target "http://uclibs.org/PID/77225"
+
+\end_inset
+
+)
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Lange - Optimization
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+Section
+\end_layout
+
+\begin_layout Standard
+Harold will lead a one hour discussion section each week (there are two
+ sections).
+ The discussion sections will vary in format and topic but material will
+ include demonstrations on various topics (version control, Python, debugging,
+ etc.), discussion of relevant papers, and discussion of problem set solutions.
+ If anyone cannot make either section time, please see me to discuss alternative
+ arrangements.
+\end_layout
+
+\begin_layout Subsection*
+Computing Resources
+\end_layout
+
+\begin_layout Standard
+Most work for the course can be done on your laptop.
+ We will also provide a Linux virtual machine (VM) with all required software
+ that should eliminate any issues with installation and getting the necessary
+ software.
+ If you wish to do your assignments on your own machine rather than on the
+ VM, keep in mind that it is your responsibility to get the required resources
+ (such as being able to work in a UNIX terminal window) working on the your
+ own computer.
+ To use the VM, go to 
+\begin_inset CommandInset href
+LatexCommand href
+target "http://bce.berkeley.edu"
+
+\end_inset
+
+.
+ We can try to help with Windows-related issues but this help will necessarily
+ be limited by our limited experience with Windows.
+ 
+\end_layout
+
+\begin_layout Standard
+Those of you in Statistics can also make use of the Statistical Computing
+ Facility (SCF) network of Linux and Mac computers.
+ Anyone not in Statistics who would like an SCF account is also welcome
+ to get one for the semester - see Chris for an account form.
+ The computer rooms in 342 and 432 Evans provide Mac desktops; you can also
+ remotely log in to the SCF system from other campus computers or from home.
+ 
+\end_layout
+
+\begin_layout Standard
+The software needed for the course is as follows:
+\end_layout
+
+\begin_layout Itemize
+Access to the UNIX command line (e.g., the Linux virtual machine, an SCF machine,
+ or a Mac laptop)
+\end_layout
+
+\begin_layout Itemize
+Git
+\end_layout
+
+\begin_layout Itemize
+R (RStudio is recommended but by no means required)
+\end_layout
+
+\begin_layout Itemize
+Python (later in the course)
+\end_layout
+
+\begin_layout Standard
+Some tips for software installation are in the 'howtos' directory of the
+ Git repository.
+ 
+\end_layout
+
+\begin_layout Subsection*
+Class time
+\end_layout
+
+\begin_layout Standard
+My goal is to have classes be an interactive environment.
+ This is both more interesting for all of us and more effective in learning
+ the material.
+ I encourage you to ask questions and will pose questions to the class to
+ think about and discuss.
+ 
+\series bold
+As further 
+\begin_inset Quotes eld
+\end_inset
+
+encouragement
+\begin_inset Quotes erd
+\end_inset
+
+, at the start of selected classes I'll designate a 
+\begin_inset Quotes eld
+\end_inset
+
+panel
+\begin_inset Quotes erd
+\end_inset
+
+ of 3-4 (random) students who I have the option to call on during class
+ to answer questions.
+
+\series default
+ That said, I would like everyone to participate in discussion and ask questions
+ regardless of who is on the panel in a given class.
+ To increase time for discussion and assimilation of the material in class,
+ before some classes I may ask that you read material or worth through tutorials
+ in advance of class.
+ 
+\end_layout
+
+\begin_layout Standard
+Please do not use phones during class and limit laptop use to the material
+ being covered.
+\end_layout
+
+\begin_layout Standard
+Student backgrounds with computing will vary.
+ For those of you with limited background on a topic, I encourage you to
+ ask questions during class so I know what you find confusing.
+ For those of you with extensive background on a topic (there will invariably
+ be some topics where one of you will know more about it than I do), I encourage
+ you to pitch in with your perspective.
+ In general, there are many ways to do things on a computer, particularly
+ in a UNIX environment, so it will help everyone (including me) if we hear
+ multiple perspectives/ideas.
+\end_layout
+
+\begin_layout Standard
+Finally, I will try to remember to post screencasts of the material on the
+ berkeley-scf YouTube channel for those of you who miss a class or want
+ to review it.
+ These will necessarily be more effective for the computer demos and will
+ miss material that I write on the board.
+\end_layout
+
+\begin_layout Subsection*
+Course requirements and grading
+\end_layout
+
+\begin_layout Subsubsection*
+Course grades
+\end_layout
+
+\begin_layout Standard
+The grade for this course is primarily based on assignments due every 1
+ to 1.5 weeks and a final group project.
+ There is no final exam.
+ 65% of the grade is based on the assignments, 20% on the project, and 5%
+ on occasional brief questions that I will ask you to answer in advance
+ of the next class.
+ 10% of the grade is based on class participation, with class participation
+ also serving to distinguish borderline cases and in cases of exceptional
+ participation to bump grades up.
+ I will also occasionally pose questions/challenges to the class for discussion
+ at the next class period.
+ 
+\end_layout
+
+\begin_layout Standard
+Grades will generally be As and Bs.
+ An A involves doing all the work, getting full credit on most of the problem
+ sets, doing a thorough job on the final project, and participating in class.
+ 
+\end_layout
+
+\begin_layout Subsubsection*
+Class participation
+\end_layout
+
+\begin_layout Standard
+The class participation portion of the grade can be satisfied in one or
+ more of the following ways:
+\end_layout
+
+\begin_layout Enumerate
+asking and answering questions in class (including when you are on the panel
+ for a given class period),
+\end_layout
+
+\begin_layout Enumerate
+contributing to class discussion through the Piazza site, and/or
+\end_layout
+
+\begin_layout Enumerate
+contributing to the course Wiki on Github.
+\end_layout
+
+\begin_layout Standard
+I may also provide extra credit questions on the problem sets.
+ Extra credit can make up for limited class participation (and for points
+ taken off on other problems).
+\end_layout
+
+\begin_layout Subsubsection*
+Problem sets
+\end_layout
+
+\begin_layout Standard
+We will be less willing to help you if you come to our office hours or Piazza
+ at the last minute.
+ Working with computers can be unpredictable, so give yourself plenty of
+ time for the assignments.
+\end_layout
+
+\begin_layout Standard
+There are several rules for submitting your assignments.
+\end_layout
+
+\begin_layout Enumerate
+You should prepare your assignments using either Latex plus knitr or R Markdown
+ (the latter should not be used if you are a Statistics student).
+ 
+\end_layout
+
+\begin_layout Enumerate
+Problem set submission consists of the following:
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+A paper copy submitted to Chris at the start of class on the due date, and
+\end_layout
+
+\begin_layout Enumerate
+An electronic copy of the PDF, code file, and Markdown/knitr document, following
+ the instructions to be provided by Harold.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Answers should consist of textual response or mathematical expressions as
+ appropriate, with key chunks of code embedded within the document.
+ Extensive additional code can be provided as an appendix.
+ 
+\series bold
+Raw code without explanation is not an appropriate solution.
+\end_layout
+
+\begin_layout Enumerate
+Any mathematical derivations may be done by hand.
+\end_layout
+
+\begin_layout Standard
+Note: knitr is a tool that allows one to embed chunks of code within Latex
+ documents.
+ It can also be used with the LyX GUI front-end to Latex.
+ R Markdown is an extension to the Markdown markup language that allows
+ one to embed R code within an HTML document.
+ We will provide some tips about this on the first problem set and in the
+ first section.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+I'm also open to you defining your own assignment for a given topic, if
+ you are working on a specific problem.
+ E.g., instead of working on a particular text manipulation problem I assign,
+ you might work with your own text data.
+ Check with me before forging ahead.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection*
+Problem set grading
+\end_layout
+
+\begin_layout Standard
+The grading scheme for problem sets is as follows.
+ Each problem set will receive a numeric score for (1) presentation and
+ explanation of results, (2) technical accuracy of code or mathematical
+ derivation, (3) code quality/style and creativity.
+\end_layout
+
+\begin_layout Itemize
+0 = no credit
+\end_layout
+
+\begin_layout Itemize
+1 = partial credit (you did some of the problems but not all)
+\end_layout
+
+\begin_layout Itemize
+2 = satisfactory (you tried everything but there were pieces of what you
+ did that didn't solve or present/explain one or more problems in a complete
+ way)
+\end_layout
+
+\begin_layout Itemize
+3 = full credit
+\end_layout
+
+\begin_layout Standard
+For component #3, many of you will get a score of 2 for some problem sets
+ as you develop good coding practices.
+ You can still get an A in the class despite this.
+ 
+\end_layout
+
+\begin_layout Standard
+Your total score for the PS is the sum of the scores for the three components.
+ If you turn in a PS late, I'll bump you down by two points.
+ If you turn it in really late (i.e., after we start grading them), I will
+ bump you down by four points.
+ No credit after solutions are distributed.
+\end_layout
+
+\begin_layout Subsubsection*
+Final project
+\end_layout
+
+\begin_layout Standard
+The final project will be a joint coding project in groups of 3-4.
+ I'll assign an overall task, and you'll be responsible for dividing up
+ the work, coding, debugging, testing, and documentation.
+ You'll need to use the Git version control system for working in your group.
+ 
+\end_layout
+
+\begin_layout Subsubsection*
+Rules for working together and the campus honor code
+\end_layout
+
+\begin_layout Standard
+I encourage you to work together and help each other out, in the context
+ of the following guidelines.
+ In terms of questions/challenges posed in class that we'll discuss at the
+ next class, anything goes.
+ In terms of the problem sets, you should first try to figure out a given
+ problem on your own.
+ After that, if you're stuck or want to explore alternative approaches,
+ feel free to consult with your fellow students and with Harold and me.
+ You can share tips on general strategy or syntax for how to do individual
+ tasks within a problem, but 
+\series bold
+you should not ask for nor share complete code or solutions
+\series default
+ for a problem.
+ Basically, you can help each other out, but no one should be doing the
+ work for someone else.
+ In particular, 
+\series bold
+your solution to a problem set (writeup and code) must be your own
+\series default
+, and you'll hear from me if either look too similar to someone else's.
+ 
+\end_layout
+
+\begin_layout Standard
+Please see the last section of this document for more information on the
+ Campus Honor Code, which I expect you to follow.
+\end_layout
+
+\begin_layout Subsection*
+Feedback
+\end_layout
+
+\begin_layout Standard
+I welcome comments and suggestions (and gripes) and may solicit feedback
+ via one or more surveys during the course of the semester.
+ Comments at any other time are welcome, and if you prefer anonymity, you
+ can leave a note in my mailbox or under my door.
+ 
+\end_layout
+
+\begin_layout Subsection*
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Guidelines for Assignments
+\end_layout
+
+\begin_layout Plain Layout
+The grade for this course is determined by four computer projects related
+ to the material covered in class.
+ Some of the assignments may seem deceptively easy, but try to avoid putting
+ the assignments off until the last possible minute.
+ One of the most important things to learn about programming is that it
+ is an unpredictable venture, and a simple task often takes more time than
+ you would think at first glance.
+ The purpose of the assignments is to give you an opportunity to write real
+ programs which solve real problems.
+ Your goal should not be to simply put together a program which gets the
+ right answer for a particular set of data, but to develop a programming
+ style which will allow you to be comfortable in solving problems which
+ you will encounter in your future work.
+ You may find it useful to use a word processing program like LaTeX when
+ writing your reports, but this is not required.
+ If you have an interest in learning how to produce attractive electronically
+ typeset documents, this may be a good time to learn, but the focus of these
+ assignments is not to produce a pretty report.
+ Each assignment should consist of the following sections:
+\end_layout
+
+\begin_layout Plain Layout
+1.
+ An introduction, explaining in your own words what the goal of the program
+ is, and a brief overview of your strategy in solving the problem.
+ In other words, this first section should outline the reasoning you used
+ as you figured out how to get the assignment completed.
+ 2.
+ You should include in your assignments the complete source code of the
+ program which you wrote to solve to the problem.
+ 3.
+ Please provide a copy of the actual output of your program, as well as
+ a copy of any input data, or a description of the data if it is very large
+ or provided as part of the assignment.
+ If there are parts of the output which are not self-explanatory, please
+ be sure to annotate them so I can figure out what you are doing.
+ 4.
+ Each assignment should contain a conclusion, which answers any specific
+ questions raised in the assignment, as well as reporting on any interesting
+ findings which you made while you were working on the assignment.
+ If you feel you've encountered a principle or concept which has helped
+ you understand things better, please don't hesitate to mention it, both
+ for your own clarification, and so that I can get a better idea of how
+ you are approaching the tasks at hand.
+ 5.
+ The prefered method for submitting your assignments is to email me (at
+ spector@stat.berkeley.edu), with a clear indication in the subject line that
+ you are submitting an assignment for Stat 243.
+ Your submission should have a PDF, OpenOffice document, or Word file containing
+ your report.
+ If necessary, you can include a single archive (zip, rar, tar, etc.) containing
+ any other files which you feel are relevant.
+\end_layout
+
+\begin_layout Plain Layout
+Your report need not be in any standardized format, but all of the above
+ information should be included, and you may find it convenient to organize
+ your work into the four sections described above.
+\end_layout
+
+\end_inset
+
+ Topics (in order with rough timing)
+\end_layout
+
+\begin_layout Enumerate
+Introduction to UNIX, operating on a compute server, the bash shell and
+ shell scripting, version control (4 days)
+\end_layout
+
+\begin_layout Enumerate
+Using R: functions and variable scope, data and text manipulation, strings
+ and regular expressions, data input/output (5 days)
+\end_layout
+
+\begin_layout Enumerate
+Debugging, good programming practices, reproducible research (2 days)
+\end_layout
+
+\begin_layout Enumerate
+Advanced R programming: environments, object oriented programming, efficient
+ programming, computing on the language (5 days)
+\end_layout
+
+\begin_layout Enumerate
+Programming concepts: a comparison with Python (2 days)
+\end_layout
+
+\begin_layout Enumerate
+Parallel processing (2 days)
+\end_layout
+
+\begin_layout Enumerate
+Working with databases, hashing, and big data (2 days)
+\end_layout
+
+\begin_layout Enumerate
+Computer arithmetic/representation of numbers on a computer (3 days)
+\end_layout
+
+\begin_layout Enumerate
+Numerical linear algebra (6 days)
+\end_layout
+
+\begin_layout Enumerate
+Simulation studies and Monte Carlo (2 days)
+\end_layout
+
+\begin_layout Enumerate
+Optimization (7 days)
+\end_layout
+
+\begin_layout Enumerate
+Numerical integration and differentiation (1 day)
+\end_layout
+
+\begin_layout Enumerate
+Graphics (2 days)
+\end_layout
+
+\begin_layout Standard
+If you want to get a sense of what material we will cover in more detail,
+ in advance, you can take a look at the materials in the lectures directory
+ of Github repository from last year.
+ Material will be quite similar though I'll be making modifications along
+ the way and it's possible unit numbers will have changed.
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+git clone https://github.com/paciorek/stat243-fall-2014
+\end_layout
+
+\begin_layout Section*
+Campus Honor Code
+\end_layout
+
+\begin_layout Standard
+
+\emph on
+The following is the Campus Honor Code.
+ With regard to collaboration and independence, please see my rules regarding
+ problem sets earlier in this document -- Chris.
+\end_layout
+
+\begin_layout Standard
+The student community at UC Berkeley has adopted the following Honor Code:
+ “As a member of the UC Berkeley community, I act with honesty, integrity,
+ and respect for others.” The hope and expectation is that you will adhere
+ to this code.
+\end_layout
+
+\begin_layout Standard
+Collaboration and Independence: Reviewing lecture and reading materials
+ and studying for exams can be enjoyable and enriching things to do with
+ fellow students.
+ This is recommended.
+ However, unless otherwise instructed, homework assignments are to be completed
+ independently and materials submitted as homework should be the result
+ of one’s own independent work.
+\end_layout
+
+\begin_layout Standard
+Cheating: A good lifetime strategy is always to act in such a way that no
+ one would ever imagine that you would even consider cheating.
+ Anyone caught cheating on a quiz or exam in this course will receive a
+ failing grade in the course and will also be reported to the University
+ Center for Student Conduct.
+ In order to guarantee that you are not suspected of cheating, please keep
+ your eyes on your own materials and do not converse with others during
+ the quizzes and exams.
+ 
+\end_layout
+
+\begin_layout Standard
+Plagiarism: To copy text or ideas from another source without appropriate
+ reference is plagiarism and will result in a failing grade for your assignment
+ and usually further disciplinary action.
+ For additional information on plagiarism and how to avoid it, see, for
+ example: http://gsi.berkeley.edu/teachingguide/misconduct/prevent-plag.html
+\end_layout
+
+\begin_layout Standard
+Academic Integrity and Ethics: Cheating on exams and plagiarism are two
+ common examples of dishonest, unethical behavior.
+ Honesty and integrity are of great importance in all facets of life.
+ They help to build a sense of self-confidence, and are key to building
+ trust within relationships, whether personal or professional.
+ There is no tolerance for dishonesty in the academic world, for it undermines
+ what we are dedicated to doing – furthering knowledge for the benefit of
+ humanity.
+\end_layout
+
+\begin_layout Standard
+Your experience as a student at UC Berkeley is hopefully fueled by passion
+ for learning and replete with fulfilling activities.
+ And we also appreciate that being a student may be stressful.
+ There may be times when there is temptation to engage in some kind of cheating
+ in order to improve a grade or otherwise advance your career.
+ This could be as blatant as having someone else sit for you in an exam,
+ or submitting a written assignment that has been copied from another source.
+ And it could be as subtle as glancing at a fellow student’s exam when you
+ are unsure of an answer to a question and are looking for some confirmation.
+ One might do any of these things and potentially not get caught.
+ However, if you cheat, no matter how much you may have learned in this
+ class, you have failed to learn perhaps the most important lesson of all.
+\end_layout
+
+\end_body
+\end_document
