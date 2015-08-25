@@ -283,6 +283,16 @@ target "https://git-scm.com/downloads"
 \end_inset
 
  that you can explore.
+ That said, I recommend 
+\begin_inset CommandInset href
+LatexCommand href
+name "Github Desktop"
+target "https://desktop.github.com"
+
+\end_inset
+
+, available for Mac and Windows.
+ 
 \end_layout
 
 \begin_layout Enumerate
