@@ -118,11 +118,17 @@ Reference: Newham and Rosenblatt, Learning the bash Shell, 2nd ed.
 
 \begin_layout Chunk
 
-<<setup, engine='bash'>>=
+<<setup, include=FALSE>>=
 \end_layout
 
 \begin_layout Chunk
 
+opts_chunk$set(engine='bash', eval=FALSE)
+\end_layout
+
+\begin_layout Chunk
+
+read_chunk('unit2-bash.sh')
 \end_layout
 
 \begin_layout Chunk
@@ -212,12 +218,7 @@ First let's get the files from last year's 243 class so we have a sufficient
 
 \begin_layout Chunk
 
-<<chunk1, engine='bash', eval=FALSE>>=
-\end_layout
-
-\begin_layout Chunk
-
-git clone https://github.com/berkeley-stat243/stat243-fall-2014
+<<git-clone>>=
 \end_layout
 
 \begin_layout Chunk
@@ -241,29 +242,7 @@ coop.txt
 
 \begin_layout Chunk
 
-<<data, engine='bash', eval=FALSE>>=
-\end_layout
-
-\begin_layout Chunk
-
-cd stat243-fall-2014/data
-\end_layout
-
-\begin_layout Chunk
-
-cut -b50-70 coop.txt | less 
-\end_layout
-
-\begin_layout Chunk
-
-cut -b60-61 coop.txt | sort | uniq
-\end_layout
-
-\begin_layout Chunk
-
-cut -b60-61 coop.txt | sort | uniq
-\lang english
- -c
+<<data>>=
 \end_layout
 
 \begin_layout Chunk
@@ -272,7 +251,6 @@ cut -b60-61 coop.txt | sort | uniq
 \end_layout
 
 \begin_layout Standard
-
 Now I could of course read the data in R at this stage (or I could read
  the original dataset, though sometimes it's good to read just the fields
  of interest to reduce memory use).
@@ -289,7 +267,7 @@ Our second mission
 
 \begin_layout Chunk
 
-<<chunk7, engine='bash', eval=FALSE>>=
+<<mission2>>=
 \end_layout
 
 \begin_layout Chunk
@@ -318,7 +296,7 @@ example.pdf
 
 \begin_layout Chunk
 
-<<chunk3, engine='bash', eval=FALSE>>=
+<<mission3>>=
 \end_layout
 
 \begin_layout Chunk
@@ -347,7 +325,6 @@ ls -tr *.R | tail -n 5 | xargs grep -l 'example.pdf'
 \end_layout
 
 \begin_layout Standard
-
 Notice that 
 \family typewriter
 man tail
@@ -374,7 +351,7 @@ Our fourth mission
 
 \begin_layout Chunk
 
-<<chunk4, engine='bash', eval=FALSE>>=
+<<mission4>>=
 \end_layout
 
 \begin_layout Chunk
@@ -446,7 +423,7 @@ echo "There are $(wc -l libs.txt | cut -d' ' -f1) unique packages we will
 
 \begin_layout Chunk
 
-<<chunk4a, engine='bash', eval=FALSE>>=
+<<mission4a>>=
 \end_layout
 
 \begin_layout Chunk
@@ -477,7 +454,7 @@ Our fifth mission
 
 \begin_layout Chunk
 
-<<chunk5, engine='bash', eval=FALSE>>=
+<<mission5>>=
 \end_layout
 
 \begin_layout Chunk
@@ -512,7 +489,7 @@ done
 
 \begin_layout Chunk
 
-<<chunk6, engine='bash', eval=FALSE>>=
+<<mission5a>>=
 \end_layout
 
 \begin_layout Chunk
@@ -666,14 +643,39 @@ Consider a CSV file that has rows that look like this:
 \end_layout
 
 \begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{verbatim}
+\end_layout
+
+\begin_layout Plain Layout
+
 1,"America, United States of",45,96.1,"continental, coastal" 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
+
 2,"France",33,807.1,"continental, coastal"
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
+
+
+\backslash
+end{verbatim}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
 While R would be able to handle this using `read.table()`, using 
 \emph on
 cut
