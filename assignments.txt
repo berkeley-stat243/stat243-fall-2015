@@ -11,7 +11,9 @@ are not familiar with basic UNIX) work through the UNIX basics tutorial.
 
 Monday, Aug. 31: work through the tutorial on using bash and hand in 
 (at the beginning of class) a paper solution to questions 1-10 posed 
-at the end of the tutorial.
+at the end of the tutorial. You do not need to work through
+the sections on 'Command history and editing' or 'Regular expressions' 
+(i.e., Regular expressions through the subsection on Perl). 
 
 week of Aug. 31: if you are not familiar with R at the level of
 modules 1-4,6 of the R bootcamp
