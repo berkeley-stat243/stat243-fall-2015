@@ -117,22 +117,18 @@ Reference: Newham and Rosenblatt, Learning the bash Shell, 2nd ed.
 \end_layout
 
 \begin_layout Chunk
-
 <<setup, include=FALSE>>=
 \end_layout
 
 \begin_layout Chunk
-
 opts_chunk$set(engine='bash', eval=FALSE)
 \end_layout
 
 \begin_layout Chunk
-
 read_chunk('unit2-bash.sh')
 \end_layout
 
 \begin_layout Chunk
-
 @
 \end_layout
 
@@ -187,11 +183,11 @@ Please see the tutorial on using the bash shell.
 \end_layout
 
 \begin_layout Itemize
-Command history and editing (in Section 3.1.3)
+Command history and editing (Section 1.3.2)
 \end_layout
 
 \begin_layout Itemize
-Regular expressions (Section 3.3)
+Regular expressions (Section 3)
 \end_layout
 
 \begin_layout Standard
@@ -217,12 +213,10 @@ First let's get the files from last year's 243 class so we have a sufficient
 \end_layout
 
 \begin_layout Chunk
-
 <<git-clone>>=
 \end_layout
 
 \begin_layout Chunk
-
 @
 \end_layout
 
@@ -241,12 +235,10 @@ coop.txt
 \end_layout
 
 \begin_layout Chunk
-
 <<data>>=
 \end_layout
 
 \begin_layout Chunk
-
 @
 \end_layout
 
@@ -266,17 +258,14 @@ Our second mission
 \end_layout
 
 \begin_layout Chunk
-
 <<mission2>>=
 \end_layout
 
 \begin_layout Chunk
-
 tail -n 1 cpds.csv | grep -o ',' | wc -l
 \end_layout
 
 \begin_layout Chunk
-
 @
 \end_layout
 
@@ -295,32 +284,26 @@ example.pdf
 \end_layout
 
 \begin_layout Chunk
-
 <<mission3>>=
 \end_layout
 
 \begin_layout Chunk
-
 cd ../units
 \end_layout
 
 \begin_layout Chunk
-
 ls -tr *.R | tail -n 5 | grep pdf
 \end_layout
 
 \begin_layout Chunk
-
 ls -tr *.R | tail -n 5 | xargs grep 'example.pdf'
 \end_layout
 
 \begin_layout Chunk
-
 ls -tr *.R | tail -n 5 | xargs grep -l 'example.pdf' 
 \end_layout
 
 \begin_layout Chunk
-
 @
 \end_layout
 
@@ -350,96 +333,79 @@ Our fourth mission
 \end_layout
 
 \begin_layout Chunk
-
 <<mission4>>=
 \end_layout
 
 \begin_layout Chunk
-
 grep library unit[1-9]*.R
 \end_layout
 
 \begin_layout Chunk
-
 grep --no-filename library *.R
 \end_layout
 
 \begin_layout Chunk
-
 grep --no-filename "^library" *.R
 \end_layout
 
 \begin_layout Chunk
-
 grep --no-filename "^library" *.R | sort | uniq
 \end_layout
 
 \begin_layout Chunk
-
 grep --no-filename "^library" *.R | sort | uniq | cut -d'#' -f1
 \end_layout
 
 \begin_layout Chunk
-
 grep --no-filename "^library" *.R | sort | uniq | cut -d'#' -f1 | tee tmp.txt
 \end_layout
 
 \begin_layout Chunk
-
 grep -v "help =" tmp.txt > libs.txt
 \end_layout
 
 \begin_layout Chunk
-
 sed -e 's/library(//' libs.txt | sed -e 's/quietly = TRUE//g' | sed -e 's/;/
 \backslash
 n/g'
 \end_layout
 
 \begin_layout Chunk
-
 sed -e 's/;/
 \backslash
 n/g' libs.txt | sed -e 's/quietly = TRUE//g' | sed -e 's/library(//' > tmp.txt
 \end_layout
 
 \begin_layout Chunk
-
 sed -e 's/[
 \backslash
 , )]//g' tmp.txt > libs.txt
 \end_layout
 
 \begin_layout Chunk
-
 echo "There are $(wc -l libs.txt | cut -d' ' -f1) unique packages we will
  install."
 \end_layout
 
 \begin_layout Chunk
-
 @
 \end_layout
 
 \begin_layout Chunk
-
 <<mission4a>>=
 \end_layout
 
 \begin_layout Chunk
-
 Rscript -e "pkgs <- scan('libs.txt', what = 'character'); 
 \backslash
 
 \end_layout
 
 \begin_layout Chunk
-
 install.packages(pkgs, repos = 'http:/cran.cnr.berkeley.edu')"
 \end_layout
 
 \begin_layout Chunk
-
 @
 \end_layout
 
@@ -453,69 +419,56 @@ Our fifth mission
 \end_layout
 
 \begin_layout Chunk
-
 <<mission5>>=
 \end_layout
 
 \begin_layout Chunk
-
 echo "Sys.sleep(1e5)" > job.R 
 \end_layout
 
 \begin_layout Chunk
-
 nJobs=30 
 \end_layout
 
 \begin_layout Chunk
-
 for (( i=1; i<=${nJobs}; i++ )); do     
 \end_layout
 
 \begin_layout Chunk
-
    R CMD BATCH --no-save job.R job-${i}.out & 
 \end_layout
 
 \begin_layout Chunk
-
 done 
 \end_layout
 
 \begin_layout Chunk
-
 @
 \end_layout
 
 \begin_layout Chunk
-
 <<mission5a>>=
 \end_layout
 
 \begin_layout Chunk
-
 ps -o pid,pcpu,pmem,user,cmd -C R 
 \end_layout
 
 \begin_layout Chunk
-
 ps -o pid,pcpu,pmem,user,cmd,start_time --sort=start_time -C R | tail -n
  30
 \end_layout
 
 \begin_layout Chunk
-
 ps -o pid,pcpu,pmem,user,cmd,start_time --sort=start_time -C R | tail -n
  30 
 \end_layout
 
 \begin_layout Chunk
-
 ps -o pid --sort=start_time -C R | tail -n ${nJobs} | xargs kill
 \end_layout
 
 \begin_layout Chunk
-
 @
 \end_layout
 
