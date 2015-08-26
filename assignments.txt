@@ -9,7 +9,8 @@ statistics.berkeley.edu/computing/training/tutorials.
 Friday, Aug. 28: set up BCE on your own machine and (as needed if you
 are not familiar with basic UNIX) work through the UNIX basics tutorial.
 If you'd like to use the shell, git, and R on your own machine,
-try to set that up too.
+try to set that up too. If you have problems, please attend the optional
+Friday session on BCE and UNIX.
 
 Monday, Aug. 31: work through the tutorial on using bash and hand in 
 (at the beginning of class) a paper solution to questions 1-10 posed 
@@ -22,6 +23,10 @@ modules 1-4,6 of the R bootcamp
 (https://github.com/berkeley-scf/r-bootcamp-2015), work through those
 modules and the breakout problems associated with the modules and
 (optionally) attend the special catch-up session on R to be held
-during the week.
+during the week. Some other resources include the Adler R in a Nutshell
+book listed in teh syllabus. Phil Spector also has a lot of material on R 
+[http://www.stat.berkeley.edu/users/spector/Rcourse.pdf] and there is a 
+lot of contributed material on CRAN 
+[http://www.cran.r-project.org/other-docs.html].
 
 Friday, Sep. 11 (tentative): first problem set (PS1) due.
