@@ -1,0 +1,25 @@
+If your version of R is older than 3.0.0, please install the latest version, though you may be fine with version 2.15 or 2.14.
+
+To install R, see:
+
+  * Mac: install the R-3.2.1.pkg from http://cran.rstudio.com/bin/macosx/ (or the R-3.2.1-snowleopard.pkg package if you have OS X 10.8 or older)
+  * Windows: http://cran.rstudio.com/bin/windows/base/
+  * Linux: http://cran.rstudio.com/bin/linux/
+
+Then install RStudio. To do so, see http://www.rstudio.com/ide/download/desktop.
+
+Verify that you can install add-on R packages by installing the 'fields' package. In RStudio, go to 'Tools->Install Packages'. In the resulting dialog box, enter 'fields' (without quotes) in the 'Packages' field. Depending on the location specified in the 'Install to Library' field, you may need to enter your administrator password. To be able to install packages to the directory of an individual user, you may need to do the following:
+
+  * In R, enter the command `Sys.getenv()['R_LIBS_USER']`.
+  * Create the directory specified in the result that R returns, e.g., on a Mac, this might be `~/Library/R/3.2/library`.
+
+R has many, many add-on packages that provide additional functionality. We've installed the additional packages that will be used in Camp on the virtual machine (VM). However, if you want to use R on your laptop outside of the VM and have access to these packages, please install them by using the following command from within R:
+
+```
+install.packages(c('chron','colorspace','DBI','devtools','dichromat','digest','doParallel','fields','foreach',
+'ggplot2','gridExtra','gtable','inline','iterators','knitr','labeling','lme4','mapproj','maps','munsell',
+'plyr','proto','rbenchmark','RColorBrewer','Rcpp','reshape2','rJava','RSQLite','scales','spam',
+'stringr','xlsx','xlsxjars','xtable'), repos = "http://cran.cnr.berkeley.edu")
+```
+
+For more detailed installation instructions for Windows, see the windowsInstall.html file.

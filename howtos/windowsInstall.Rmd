@@ -1,0 +1,28 @@
+To install R:
+
+-    Go to http://cran.r-project.org
+-    Click “Download R for Windows”
+-    Click “base” OR “install R for the first time”
+-    Select “Download R 3.2.1 for Windows”
+-    Open the downloaded file (R-3.2.1-win.exe)
+-    Select “Run” if prompted
+-    Follow the set-up instructions (if unsure of something, leave the default settings)
+
+To install RStudio:
+
+-    Go to http://www.rstudio.com/products/rstudio/#Desktop
+-    Click “Download RStudio Desktop”
+-    Select “RStudio 0.99.467 - Windows Vista/7/8”
+-    Open the downloaded file (RStudio-0.99.467)
+-    Select “Run” if prompted
+-    Follow the set-up instructions (if unsure of something, leave the default settings)
+-    Open RStudio (R will run automatically in the background)
+-    You may have to allow RStudio to run if prompted (depends on security settings and anti-virus software)
+
+To install R packages:
+
+-    Open RStudio
+-    Select “Packages” (or “Tools”)
+-    Click “Install packages” (or use 'install.packages()' from the command line)
+
+You may have to allow RStudio to to make changes to computer if prompted (depends on security settings and anti-virus software) 
