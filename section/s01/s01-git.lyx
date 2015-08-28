@@ -1,0 +1,2405 @@
+#LyX 2.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 474
+\begin_document
+\begin_header
+\textclass article
+\begin_preamble
+\usepackage{times,graphics}
+%\renewcommand{\baselinestretch}{1.5}
+\usepackage[unicode=true]{hyperref}
+\hypersetup{unicode=true, pdfusetitle,
+bookmarks=true,bookmarksnumbered=false,bookmarksopen=false,
+ breaklinks=false,pdfborder={0 0 1},backref=false,colorlinks=true,}
+\end_preamble
+\use_default_options false
+\begin_modules
+knitr
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_math auto
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 12
+\spacing onehalf
+\use_hyperref false
+\papersize letterpaper
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 0
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 1in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Version control
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Before making PDF, need to create the berkeley-243/test repository w/o README
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+At a basic level, a simple principle is to have version numbers for all
+ your work: code, datasets, manuscripts.
+ Whenever you make a change to a dataset, increment the version number.
+ For code and manuscripts, increment when you make substantial changes or
+ have obvious breakpoints in your workflow.
+ 
+\end_layout
+
+\begin_layout Standard
+The basic idea of version control software (VCS) is that instead of manually
+ trying to keep track of what changes you've made to code, data, and documents,
+ you use software to help you manage the process.
+ This has several benefits:
+\end_layout
+
+\begin_layout Itemize
+easily allowing you to go back to earlier versions 
+\end_layout
+
+\begin_layout Itemize
+allowing you to have multiple version you can switch between 
+\end_layout
+
+\begin_layout Itemize
+allowing you to share work easily without worrying about conflicts 
+\end_layout
+
+\begin_layout Itemize
+providing built-in backup
+\end_layout
+
+\begin_layout Standard
+The material that follows is borrowed from Jarrod Millman and Fernando Perez.
+\end_layout
+
+\begin_layout Section
+Warnings about this demo
+\end_layout
+
+\begin_layout Enumerate
+The demo should work if you just run the demo code 'manually' on your machine.
+ However, when compiled via knitr from the Lyx/Latex document, some of the
+ later output in the branching section seems to be out of sync.
+ So the output in this PDF is not quite right in a few places.
+\end_layout
+
+\begin_layout Enumerate
+Also, note that the output from the embedded bash code chunks below is a
+ bit annoying in that all the output appears in a group after all of the
+ code lines rather than the output appearing after the individual line of
+ code.
+ This is some sort of issue with how knitr processes bash code chunks.
+\end_layout
+
+\begin_layout Section
+VCS Overview
+\end_layout
+
+\begin_layout Standard
+There are a number of version control systems (VCS) including CVS and subversion
+, which use client-server models.
+ Git is a distributed version control system.
+ VCS store your material in a 
+\emph on
+repository
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+The next couple figures show graphical representations of how a repository
+ is structured.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename img/commit_anatomy.png
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+A snapshot of work at a point in time as stored in a 'commit'.
+ Credit: ProGit book, by Scott Chacon, CC License.
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename img/threecommits.png
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+A sequence of commits.
+ Credit: ProGit book, by Scott Chacon, CC License.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Recall that we have been using Git in a very simple fashion.
+ We've cloned my class repository onto our local machines and have updated
+ materials from that repository.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+chunk0, engine='bash', eval=FALSE
+\end_layout
+
+\end_inset
+
+cd /tmp
+\end_layout
+
+\begin_layout Plain Layout
+
+git clone https://github.com/berkeley-stat243/stat243-fall-2014
+\end_layout
+
+\begin_layout Plain Layout
+
+git pull
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The goal of this section is to learn how to do more with Git to actually
+ manage a project of your own.
+\end_layout
+
+\begin_layout Section
+Hashing
+\end_layout
+
+\begin_layout Standard
+Hashing provides a way to have a fixed-length identifier for a given set
+ of information, such as a file or set of files.
+ The identifier is not guaranteed to be unique, but if the number of items
+ is small, it will almost always be unique.
+\end_layout
+
+\begin_layout Standard
+A toy "implementation"
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+chunk1
+\end_layout
+
+\end_inset
+
+library('digest')
+\end_layout
+
+\begin_layout Plain Layout
+
+# first commit 
+\end_layout
+
+\begin_layout Plain Layout
+
+data1 <- 'This is the start of my paper2.' 
+\end_layout
+
+\begin_layout Plain Layout
+
+meta1 <- 'date: 8/20/13' 
+\end_layout
+
+\begin_layout Plain Layout
+
+hash1 <- digest(c(data1,meta1), algo="sha1") 
+\end_layout
+
+\begin_layout Plain Layout
+
+cat('Hash:', hash1, '
+\backslash
+n')
+\end_layout
+
+\begin_layout Plain Layout
+
+# second commit, linked to the first 
+\end_layout
+
+\begin_layout Plain Layout
+
+data2 <- 'Some more text in my paper...' 
+\end_layout
+
+\begin_layout Plain Layout
+
+meta2 <- 'date: 8/20/13' 
+\end_layout
+
+\begin_layout Plain Layout
+
+# Note we add the parent hash here! q
+\end_layout
+
+\begin_layout Plain Layout
+
+hash2 <- digest(c(data2,meta2,hash1), algo="sha1") 
+\end_layout
+
+\begin_layout Plain Layout
+
+cat('Hash:', hash2, '
+\backslash
+n')
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We'll see that Git uses hashes as identifiers for different versions of
+ your work.
+\end_layout
+
+\begin_layout Section
+Local, single-user, linear workflow
+\end_layout
+
+\begin_layout Standard
+Simply type 
+\family typewriter
+git
+\family default
+ (or 
+\family typewriter
+git help
+\family default
+) to see a full list of all the 'core' commands.
+ We'll now go through most of these via small practical exercises:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+chunk2, engine='bash'
+\end_layout
+
+\end_inset
+
+git help 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Initializing a Git repository
+\end_layout
+
+\begin_layout Standard
+We use 
+\emph on
+git init
+\emph default
+ to create an empty repository
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+chunk3, engine='bash'
+\end_layout
+
+\end_inset
+
+cd /tmp 
+\end_layout
+
+\begin_layout Plain Layout
+
+rm -rf git-demo 
+\end_layout
+
+\begin_layout Plain Layout
+
+git init git-demo 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Let's look at what git did:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+chunk4, engine='bash'
+\end_layout
+
+\end_inset
+
+cd /tmp/git-demo 
+\end_layout
+
+\begin_layout Plain Layout
+
+ls -al
+\end_layout
+
+\begin_layout Plain Layout
+
+ls -al .git
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Adding content to a repository 
+\end_layout
+
+\begin_layout Standard
+Now let's edit our first file in the test directory with a text editor...
+ I'm doing it programatically here for automation purposes, but you'd normally
+ be editing by hand
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+chunk5, engine='bash'
+\end_layout
+
+\end_inset
+
+cd /tmp/git-demo 
+\end_layout
+
+\begin_layout Plain Layout
+
+echo "My first bit of text" > file1.txt 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Now we can tell git about this new file using the 
+\emph on
+add
+\emph default
+ command:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+chunk6, engine='bash'
+\end_layout
+
+\end_inset
+
+cd /tmp/git-demo 
+\end_layout
+
+\begin_layout Plain Layout
+
+git add file1.txt 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We can now ask git about what happened with 
+\emph on
+status
+\emph default
+:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+chunk7, engine='bash'
+\end_layout
+
+\end_inset
+
+cd /tmp/git-demo 
+\end_layout
+
+\begin_layout Plain Layout
+
+git status 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Committing changes
+\end_layout
+
+\begin_layout Standard
+We now permanently record our changes in git's database.
+\end_layout
+
+\begin_layout Standard
+For now, we are always going to call 
+\emph on
+git commit
+\emph default
+ either with the `-a` option or with specific filenames (
+\family typewriter
+git commit file1 file2...
+\family default
+).
+ This avoids discussion of an aspect of git called the 
+\emph on
+index
+\emph default
+ (often referred to also as the 'staging area').
+ Most everyday work in regular scientific practice doesn't require understanding
+ the extra moving parts that the index involves, so we'll bypass it.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+chunk8, engine='bash'
+\end_layout
+
+\end_inset
+
+cd /tmp/git-demo 
+\end_layout
+
+\begin_layout Plain Layout
+
+git commit -am"This is our first commit"
+\end_layout
+
+\begin_layout Plain Layout
+
+git status
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In the commit above, we used the `-m` flag to specify a message at the command
+ line.
+ If we don't do that, git will open the editor we specified in our configuration
+ above and require that we enter a message.
+ By default, git refuses to record changes that don't have a message to
+ go along with them (though you can obviously 'cheat' by using an empty
+ or meaningless string).
+\end_layout
+
+\begin_layout Standard
+We can use git log to see what has been committed to the repository so far:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+chunk9, engine='bash'
+\end_layout
+
+\end_inset
+
+cd /tmp/git-demo 
+\end_layout
+
+\begin_layout Plain Layout
+
+git log 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Let's do a little bit more work...
+ Again, in practice you'll be editing the files by hand, here we do it via
+ shell commands for the sake of automation (and therefore the reproducibility
+ of this tutorial!)
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+chunk10, engine='bash'
+\end_layout
+
+\end_inset
+
+cd /tmp/git-demo 
+\end_layout
+
+\begin_layout Plain Layout
+
+echo "And now some more text..." >> file1.txt 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+And now we can ask git what is different:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+chunk11, engine='bash'
+\end_layout
+
+\end_inset
+
+cd /tmp/git-demo 
+\end_layout
+
+\begin_layout Plain Layout
+
+git diff 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+So the cycle of work in a git context is: work, commit, work, commit, ...
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+chunk12, engine='bash'
+\end_layout
+
+\end_inset
+
+cd /tmp/git-demo 
+\end_layout
+
+\begin_layout Plain Layout
+
+git commit -am"I have made great progress on this critical matter." 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Now let's see what the log shows us now:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+chunk13, engine='bash'
+\end_layout
+
+\end_inset
+
+cd /tmp/git-demo 
+\end_layout
+
+\begin_layout Plain Layout
+
+git log 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Sometimes it's handy to see a very summarized version of the log:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+chunk14, engine='bash'
+\end_layout
+
+\end_inset
+
+cd /tmp/git-demo 
+\end_layout
+
+\begin_layout Plain Layout
+
+git log --oneline --topo-order --graph 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Git supports 
+\emph on
+aliases
+\emph default
+, new names given to command combinations.
+ Let's make this handy shortlog an alias, so we only have to type 
+\family typewriter
+git slog
+\family default
+ and see this compact log:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+chunk15, engine='bash'
+\end_layout
+
+\end_inset
+
+cd /tmp/git-demo 
+\end_layout
+
+\begin_layout Plain Layout
+
+# We create our alias (this saves it in git's permanent configuration file):
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+git config --global alias.slog "log --oneline --topo-order --graph" 
+\end_layout
+
+\begin_layout Plain Layout
+
+# And now we can use it 
+\end_layout
+
+\begin_layout Plain Layout
+
+git slog 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Renaming and removing files
+\end_layout
+
+\begin_layout Standard
+Once a file is added to a repository, we need to use git commands to rename
+ and remove files.
+ In familiar Unix fashion, the 
+\emph on
+mv
+\emph default
+ and 
+\emph on
+rm
+\emph default
+ git commands do precisely this:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+chunk16, engine='bash'
+\end_layout
+
+\end_inset
+
+cd /tmp/git-demo
+\end_layout
+
+\begin_layout Plain Layout
+
+git mv file1.txt file-newname.txt 
+\end_layout
+
+\begin_layout Plain Layout
+
+git status 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Note that these changes must be committed too, to become permanent! In git's
+ world, until something hasn't been committed, it isn't permanently recorded
+ anywhere.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+chunk17, engine='bash'
+\end_layout
+
+\end_inset
+
+cd /tmp/git-demo 
+\end_layout
+
+\begin_layout Plain Layout
+
+git commit -am"I like this new name better" 
+\end_layout
+
+\begin_layout Plain Layout
+
+git slog 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Let's see 
+\emph on
+git rm
+\emph default
+ in action.
+ First a little setup.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+chunk18, engine='bash'
+\end_layout
+
+\end_inset
+
+cd /tmp/git-demo 
+\end_layout
+
+\begin_layout Plain Layout
+
+echo 'stuff' > test.txt
+\end_layout
+
+\begin_layout Plain Layout
+
+git add test.txt
+\end_layout
+
+\begin_layout Plain Layout
+
+git commit -am'added test file'
+\end_layout
+
+\begin_layout Plain Layout
+
+ls -l test*
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Now let's do the removal.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+chunk18a, engine='bash'
+\end_layout
+
+\end_inset
+
+cd /tmp/git-demo
+\end_layout
+
+\begin_layout Plain Layout
+
+git rm test.txt
+\end_layout
+
+\begin_layout Plain Layout
+
+ls -l test*
+\end_layout
+
+\begin_layout Plain Layout
+
+git status
+\end_layout
+
+\begin_layout Plain Layout
+
+git commit -am'removed test file'
+\end_layout
+
+\begin_layout Plain Layout
+
+git status
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Be careful: 
+\emph on
+git rm
+\emph default
+ removes the file from the local filesystem as well as the repository.
+ If we want to remove a file from the repository but keep it on the local
+ disk, we can do: 
+\family typewriter
+git rm --cached file
+\end_layout
+
+\begin_layout Subsection
+Undoing changes
+\end_layout
+
+\begin_layout Standard
+If we want to make a change before we do a commit, we can do that as follows.
+\end_layout
+
+\begin_layout Standard
+First, let's remove a file.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+chunk19, engine='bash'
+\end_layout
+
+\end_inset
+
+cd /tmp/git-demo 
+\end_layout
+
+\begin_layout Plain Layout
+
+echo 'stuff' > test.txt
+\end_layout
+
+\begin_layout Plain Layout
+
+git add test.txt
+\end_layout
+
+\begin_layout Plain Layout
+
+git commit -am'added test file'
+\end_layout
+
+\begin_layout Plain Layout
+
+git rm test.txt
+\end_layout
+
+\begin_layout Plain Layout
+
+git status
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Now suppose I realize I don't want to remove 
+\emph on
+test.txt
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+chunk19a, engine='bash'
+\end_layout
+
+\end_inset
+
+cd /tmp/git-demo
+\end_layout
+
+\begin_layout Plain Layout
+
+git reset -- test.txt # restore file in index (unstage)
+\end_layout
+
+\begin_layout Plain Layout
+
+git checkout -- test.txt # get a copy of the file back
+\end_layout
+
+\begin_layout Plain Layout
+
+ls -l test*
+\end_layout
+
+\begin_layout Plain Layout
+
+git status
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Note that if you want to unstage an addition before you've committed it,
+ you can do 
+\family typewriter
+git reset -- <file>
+\family default
+.
+ If you want to remove a file from the repository but not the filesystem
+ after you've committed the addition of the file, you can do 
+\family typewriter
+git rm --cached
+\family default
+ and then a commit.
+\end_layout
+
+\begin_layout Standard
+If you have a bunch of files that have been removed or changed (but not
+ committed) and you want to reset for all of them, you can do: 
+\family typewriter
+git reset --hard HEAD
+\family default
+, which should remove working directory changes and changes changed through
+ git, e.g.
+ 
+\emph on
+git add
+\emph default
+ and 
+\emph on
+git rm
+\emph default
+ changes.
+\end_layout
+
+\begin_layout Standard
+Understanding the difference between the working directory, the index, and
+ HEAD can be confusing and something I'm still wrapping my head around.
+ Fig.
+ 3 helps.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename img/git-index.png
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Working tree, staging area, and repository.
+ Credit: ProGit book, by Scott Chacon, CC License.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The 
+\emph on
+working directory
+\emph default
+ or 
+\emph on
+working tree
+\emph default
+ is the state of your local directory on the filesystem.
+ The staging area (or 
+\emph on
+index
+\emph default
+) reflects your 
+\emph on
+git add
+\emph default
+, 
+\emph on
+git rm
+\emph default
+, etc.
+ changes that have been staged but not committed.
+ The repository reflects your commits.
+ HEAD is the last commit on the current branch.
+ In our 
+\emph on
+git reset
+\emph default
+ and 
+\emph on
+git checkout
+\emph default
+ operations above, we had to use
+\emph on
+ git reset
+\emph default
+ to restore the file in the index from HEAD (from the commit).
+ We then had to use 
+\emph on
+git checkout
+\emph default
+ to check the file back into the working directory (i.e, have the index and
+ the working directory match).
+\end_layout
+
+\begin_layout Section
+Branches
+\end_layout
+
+\begin_layout Standard
+What is a branch? It's a label for the 'current' commit in a sequence of
+ ongoing commits.
+\end_layout
+
+\begin_layout Standard
+There can be multiple branches alive at any point in time; the working directory
+ is the state of a special pointer called HEAD.
+\end_layout
+
+\begin_layout Standard
+Let's now illustrate all of this with a concrete example.
+ Let's get our bearings first:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+chunk20, engine='bash'
+\end_layout
+
+\end_inset
+
+cd /tmp/git-demo 
+\end_layout
+
+\begin_layout Plain Layout
+
+git status 
+\end_layout
+
+\begin_layout Plain Layout
+
+ls -l
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We are now going to try two different routes of development: on the 
+\emph on
+master
+\emph default
+ branch we will add one file and on the 
+\emph on
+experiment
+\emph default
+ branch, which we will create, we will add a different one.
+ We will then merge the experimental branch into 
+\emph on
+master
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+chunk21, engine='bash'
+\end_layout
+
+\end_inset
+
+cd /tmp/git-demo 
+\end_layout
+
+\begin_layout Plain Layout
+
+git branch experiment # creating new branch
+\end_layout
+
+\begin_layout Plain Layout
+
+git checkout experiment  # switch to it
+\end_layout
+
+\begin_layout Plain Layout
+
+echo "Some crazy idea" > experiment.txt 
+\end_layout
+
+\begin_layout Plain Layout
+
+git add experiment.txt 
+\end_layout
+
+\begin_layout Plain Layout
+
+git commit -am"Trying something new" 
+\end_layout
+
+\begin_layout Plain Layout
+
+ls -l
+\end_layout
+
+\begin_layout Plain Layout
+
+git slog 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We can see the branches, and which branch we are currently in with
+\family typewriter
+ git branch
+\family default
+.
+ We'll switch to the master and notice that 
+\emph on
+experiment.txt
+\emph default
+ is not in the master branch.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+chunk21a, engine='bash'
+\end_layout
+
+\end_inset
+
+cd /tmp/git-demo 
+\end_layout
+
+\begin_layout Plain Layout
+
+git branch
+\end_layout
+
+\begin_layout Plain Layout
+
+git checkout master 
+\end_layout
+
+\begin_layout Plain Layout
+
+ls -l # notice the lack of 'experiment.txt'
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Now, let's make a different change to the master branch.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+chunk22, engine='bash'
+\end_layout
+
+\end_inset
+
+cd /tmp/git-demo
+\end_layout
+
+\begin_layout Plain Layout
+
+echo "All the while, more work goes on in master..." >> progress.txt
+\end_layout
+
+\begin_layout Plain Layout
+
+git add progress.txt
+\end_layout
+
+\begin_layout Plain Layout
+
+git commit -am"The mainline keeps moving" 
+\end_layout
+
+\begin_layout Plain Layout
+
+git slog 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Now we'll merge the two together.
+ Git can do this without guidance from us because the differences in the
+ two branches do not conflict with each other.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+chunk23, engine='bash'
+\end_layout
+
+\end_inset
+
+cd /tmp/git-demo 
+\end_layout
+
+\begin_layout Plain Layout
+
+git checkout master
+\end_layout
+
+\begin_layout Plain Layout
+
+git merge experiment 
+\end_layout
+
+\begin_layout Plain Layout
+
+git slog 
+\end_layout
+
+\begin_layout Plain Layout
+
+ls -l
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Using remotes as a single user
+\end_layout
+
+\begin_layout Standard
+We are now going to introduce the concept of a remote repositor
+\emph on
+y
+\emph default
+: a pointer to another copy of the repository that lives on a different
+ location.
+ This can be simply a different path on the filesystem or a server on the
+ internet.
+ Of course we've already used a remote repository a little by cloning the
+ class repository from Github.
+ 
+\end_layout
+
+\begin_layout Standard
+For this discussion, we'll be using remotes hosted on the Github.com service,
+ but you can equally use other services like BitBucket (http://bitbucket.org)
+ or Gitorious (http://gitorious.org).
+ The SCF provides 
+\begin_inset CommandInset href
+LatexCommand href
+name "hosting of git repositories as well"
+target "statistics.berkeley.edu/computing/git"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+chunk24, engine='bash'
+\end_layout
+
+\end_inset
+
+cd /tmp/git-demo 
+\end_layout
+
+\begin_layout Plain Layout
+
+# Let's see if we have any remote repositories here
+\end_layout
+
+\begin_layout Plain Layout
+
+git remote -v 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Since the 
+\family typewriter
+git remote -v
+\family default
+ call didn't produce any results, it means we have no remote repositories
+ configured.
+ We will now proceed to do so.
+ We need a Github account.
+ Login to GitHub, and go to the new repository page (https://github.com/new).
+ For our demo purposes, we'll make a repository called 
+\emph on
+test
+\emph default
+.
+ Do 
+\series bold
+not
+\series default
+ check the box that says `Initialize this repository with a README`, since
+ we already have an existing repository on our local machine.
+ That option is useful when you're starting first at Github and don't have
+ a repo made already on a local computer.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Before making PDF, need to create the berkeley-243/test repository w/o README
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We can now follow the instructions from the next page:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+chunk25, engine='bash'
+\end_layout
+
+\end_inset
+
+cd /tmp/git-demo 
+\end_layout
+
+\begin_layout Plain Layout
+
+git remote add origin git@github.com:berkeley-stat243/test.git 
+\end_layout
+
+\begin_layout Plain Layout
+
+git push -u origin master 
+\end_layout
+
+\begin_layout Plain Layout
+
+git remote -v
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We can now 
+\begin_inset CommandInset href
+LatexCommand href
+name "see the repository publicly"
+target "https://github.com/paciorek/test"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Let's see how this can be useful for backup and syncing work between two
+ different computers.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+chunk26, engine='bash'
+\end_layout
+
+\end_inset
+
+cd /tmp # Here I clone my 'test' repo but with a different name, test2,
+ to simulate a 2nd computer
+\end_layout
+
+\begin_layout Plain Layout
+
+# in class we'll actually do this on a separate computer
+\end_layout
+
+\begin_layout Plain Layout
+
+git clone git@github.com:berkeley-stat243/test.git test2 
+\end_layout
+
+\begin_layout Plain Layout
+
+cd test2 
+\end_layout
+
+\begin_layout Plain Layout
+
+ls -l
+\end_layout
+
+\begin_layout Plain Layout
+
+git remote -v
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Let's now make some changes in one computer.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+chunk27, engine='bash'
+\end_layout
+
+\end_inset
+
+cd /tmp/test2 # working on computer #2 
+\end_layout
+
+\begin_layout Plain Layout
+
+echo "More new content on my experiment" >> experiment.txt 
+\end_layout
+
+\begin_layout Plain Layout
+
+git commit -am"More work, on machine #2" 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Now we put this new work up on the github server so it's available from
+ the internet
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+chunk28, engine='bash'
+\end_layout
+
+\end_inset
+
+cd /tmp/test2 
+\end_layout
+
+\begin_layout Plain Layout
+
+# working on computer #2 
+\end_layout
+
+\begin_layout Plain Layout
+
+git push 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Now let's fetch that work from machine #1:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+chunk29, engine='bash'
+\end_layout
+
+\end_inset
+
+cd /tmp/git-demo 
+\end_layout
+
+\begin_layout Plain Layout
+
+git pull 
+\end_layout
+
+\begin_layout Plain Layout
+
+cat experiment.txt
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Conflict management
+\end_layout
+
+\begin_layout Standard
+While git is very good at merging, if two different users or two different
+ branches modify the same file in the same location, it simply can't decide
+ which change should prevail.
+ At that point, human intervention is necessary to make the decision.
+ Git will help you by marking the location in the file that has a problem,
+ but it's up to you to resolve the conflict.
+ Let's see how that works by intentionally creating a conflict.
+\end_layout
+
+\begin_layout Standard
+We start by creating a branch and making a change to our experiment file:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+chunk30, engine='bash'
+\end_layout
+
+\end_inset
+
+cd /tmp/git-demo 
+\end_layout
+
+\begin_layout Plain Layout
+
+git branch trouble 
+\end_layout
+
+\begin_layout Plain Layout
+
+git checkout trouble 
+\end_layout
+
+\begin_layout Plain Layout
+
+echo "This is going to be a problem..." >> experiment.txt 
+\end_layout
+
+\begin_layout Plain Layout
+
+git commit -am"Changes in the trouble branch" 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+And now we go back to the master branch, where we change the 
+\series bold
+same
+\series default
+ file:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+chunk31, engine='bash'
+\end_layout
+
+\end_inset
+
+cd /tmp/git-demo 
+\end_layout
+
+\begin_layout Plain Layout
+
+git checkout master 
+\end_layout
+
+\begin_layout Plain Layout
+
+echo "More work on the master branch..." >> experiment.txt 
+\end_layout
+
+\begin_layout Plain Layout
+
+git commit -am"Mainline work" 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+So now let's see what happens if we try to merge the `trouble` branch into
+ `master`:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+chunk32, engine='bash'
+\end_layout
+
+\end_inset
+
+cd /tmp/git-demo 
+\end_layout
+
+\begin_layout Plain Layout
+
+git merge trouble
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Let's see what git has put into our file:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+chunk33, engine='bash'
+\end_layout
+
+\end_inset
+
+cd /tmp/git-demo 
+\end_layout
+
+\begin_layout Plain Layout
+
+cat experiment.txt 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+At this point, we go into the file with a text editor, decide which changes
+ to keep, and make a new commit that records our decision.
+ To automate my edits, I use the `sed` command.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+chunk34, engine='bash'
+\end_layout
+
+\end_inset
+
+cd /tmp/git-demo 
+\end_layout
+
+\begin_layout Plain Layout
+
+sed -i '/^</d' experiment.txt 
+\end_layout
+
+\begin_layout Plain Layout
+
+sed -i '/^>/d' experiment.txt 
+\end_layout
+
+\begin_layout Plain Layout
+
+sed -i '/^=/d' experiment.txt 
+\end_layout
+
+\begin_layout Plain Layout
+
+cat experiment.txt
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+I've now made the edits, in this case I decided that both pieces of text
+ were useful, so I just accepted both additions.
+\end_layout
+
+\begin_layout Standard
+Let's then make our new commit:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Chunk
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+chunk35, engine='bash'
+\end_layout
+
+\end_inset
+
+cd /tmp/git-demo 
+\end_layout
+
+\begin_layout Plain Layout
+
+git commit -am"Completed merge of trouble, fixing conflicts along the way"
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+git slog 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Note: While it's a good idea to understand the basics of fixing merge conflicts
+ by hand, in some cases you may find the use of an automated tool useful.
+ Git supports multiple 
+\begin_inset CommandInset href
+LatexCommand href
+name "merge tools"
+target "https://www.kernel.org/pub/software/scm/git/docs/git-mergetool.html"
+
+\end_inset
+
+: a merge tool is a piece of software that conforms to a basic interface
+ and knows how to merge two files into a new one.
+ Since these are typically graphical tools, there are various to choose
+ from for the different operating systems, and as long as they obey a basic
+ command structure, git can work with any of them.
+\end_layout
+
+\begin_layout Section
+Collaborating on github with a small team
+\end_layout
+
+\begin_layout Standard
+Single remote with shared access: we are going to set up a shared collaboration
+ with one partner (the person sitting next to you).
+ This will show the basic workflow of collaborating on a project with a
+ small team where everyone has write privileges to the same repository.
+\end_layout
+
+\begin_layout Standard
+We will have two people, let's call them Alice and Bob, sharing a repository.
+ Alice will be the owner of the repo and she will give Bob write privileges.
+\end_layout
+
+\begin_layout Standard
+We begin with a simple synchronization example, much like we just did above,
+ but now between two people instead of one person.
+ Otherwise it's the same:
+\end_layout
+
+\begin_layout Itemize
+Bob clones Alice's repository.
+ 
+\end_layout
+
+\begin_layout Itemize
+Bob makes changes to a file and commits them locally.
+ 
+\end_layout
+
+\begin_layout Itemize
+Bob pushes his changes to github.
+ 
+\end_layout
+
+\begin_layout Itemize
+Alice pulls Bob's changes into her own repository.
+\end_layout
+
+\begin_layout Standard
+Next, we will have both parties make non-conflicting changes each, and commit
+ them locally.
+ Then both try to push their changes:
+\end_layout
+
+\begin_layout Itemize
+Alice adds a new file, 
+\emph on
+alice.txt
+\emph default
+ to the repo and commits.
+ 
+\end_layout
+
+\begin_layout Itemize
+Bob adds 
+\emph on
+bob.txt
+\emph default
+ and commits.
+\end_layout
+
+\begin_layout Itemize
+Alice pushes to github.
+ 
+\end_layout
+
+\begin_layout Itemize
+Bob tries to push to github.
+ 
+\end_layout
+
+\begin_layout Standard
+What happens here?
+\end_layout
+
+\begin_layout Standard
+The problem is that Bob's changes create a commit that conflicts with Alice's,
+ so git refuses to apply them.
+ It forces Bob to first do the merge on his machine, so that if there is
+ a conflict in the merge, Bob deals with the conflict manually (git could
+ try to do the merge on the server, but in that case if there's a conflict,
+ the server repo would be left in a conflicted state without a human to
+ fix things up).
+ The solution is for Bob to first pull the changes (pull in git is really
+ fetch+merge), and then push again.
+\end_layout
+
+\begin_layout Section
+More Git resources
+\end_layout
+
+\begin_layout Itemize
+Git for Scientists: A Tutorial: 
+\begin_inset CommandInset href
+LatexCommand href
+target "http://nyuccl.org/pages/GitTutorial/"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Gitwash: workflow for scientific Python projects:
+\begin_inset Newline newline
+\end_inset
+
+ 
+\begin_inset CommandInset href
+LatexCommand href
+target "http://matthew-brett.github.io/pydagogue/gitwash_build.html"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Git branching demo: 
+\begin_inset CommandInset href
+LatexCommand href
+target "http://pcottle.github.io/learnGitBranching/"
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
