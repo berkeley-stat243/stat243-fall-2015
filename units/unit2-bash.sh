@@ -9,10 +9,14 @@ cut -b60-61 coop.txt | sort | uniq -c
 
 ## @knitr mission2             
 tail -n 1 cpds.csv | grep -o ',' | wc -l
+nfields=$(tail -n 1 cpds.csv | grep -o ',' | wc -l)
+
+nfields = 'foo'
 
 ## @knitr mission3             
 cd ../units
 ls -tr *.R | tail -n 5 | grep pdf
+ls -tr *.R | tail -n 5 | grep numbers
 ls -tr *.R | tail -n 5 | xargs grep 'example.pdf'
 ls -tr *.R | tail -n 5 | xargs grep -l 'example.pdf' 
 

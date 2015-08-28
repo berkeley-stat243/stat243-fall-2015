@@ -10,12 +10,14 @@ Friday, Aug. 28: set up BCE on your own machine and (as needed if you
 are not familiar with basic UNIX) work through the UNIX basics tutorial.
 If you'd like to use the shell, git, and R on your own machine,
 try to set that up too. If you have problems, please attend the optional
-Friday session on BCE and UNIX.
+Friday session on BCE and UNIX. Session will be 3 pm - 5 pm in Evans 342.
 
 Monday, Aug. 31: work through the tutorial on using bash and hand in 
 (at the beginning of class) a paper solution to questions 1-10 posed 
 at the end of the tutorial. You do not need to work through
-the sections '1.3.2) Command history and editing' or '3) Regular expressions' 
+the sections '1.3.2) Command history and editing' or '3) Regular expressions'.
+This is not a formal problem set, so your answers can be in any format
+and can simply be the code you would use to solve the problem.
 
 week of Aug. 31: if you are not familiar with R at the level of
 modules 1-4,6 of the R bootcamp
