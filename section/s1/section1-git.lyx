@@ -1,0 +1,4711 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\begin_preamble
+\usepackage{times,graphics}
+%\renewcommand{\baselinestretch}{1.5}
+\usepackage[unicode=true]{hyperref}
+\hypersetup{unicode=true, pdfusetitle,
+bookmarks=true,bookmarksnumbered=false,bookmarksopen=false,
+ breaklinks=false,pdfborder={0 0 1},backref=false,colorlinks=true,}
+\end_preamble
+\use_default_options false
+\begin_modules
+knitr
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 12
+\spacing onehalf
+\use_hyperref false
+\papersize letterpaper
+\use_geometry true
+\use_amsmath 1
+\use_esint 0
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 1in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+The bash shell, UNIX utilities, and version control
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Before making PDF, need to create the berkeley-243/test repository w/o README
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Note that it can be difficult to distinguish what is shell-specific and
+ what is just part of UNIX.
+ Some of the material here is not bash-specific but general to UNIX.
+ 
+\end_layout
+
+\begin_layout Standard
+Reference: Newham and Rosenblatt, Learning the bash Shell, 2nd ed.
+\end_layout
+
+\begin_layout Section
+Shell basics
+\end_layout
+
+\begin_layout Standard
+The shell is the interface between you and the UNIX operating system.
+ When you are working in a terminal window (i.e., a window with the command
+ line interface), you're interacting with a shell.
+\end_layout
+
+\begin_layout Standard
+There are multiple shells (
+\emph on
+sh
+\emph default
+, 
+\emph on
+bash
+\emph default
+, 
+\emph on
+csh
+\emph default
+, 
+\emph on
+tcsh
+\emph default
+, 
+\emph on
+ksh
+\emph default
+).
+ We'll assume usage of 
+\emph on
+bash
+\emph default
+, as this is the default for Mac OS X, the BCE VM, and on the SCF machines
+ and is very common for Linux.
+\end_layout
+
+\begin_layout Enumerate
+What is my default shell? 
+\begin_inset Newline newline
+\end_inset
+
+
+\family typewriter
+> echo $SHELL
+\end_layout
+
+\begin_layout Enumerate
+To change to bash on a one-time basis:
+\begin_inset Newline newline
+\end_inset
+
+
+\family typewriter
+> bash
+\end_layout
+
+\begin_layout Enumerate
+To make it your default: 
+\begin_inset Newline newline
+\end_inset
+
+
+\family typewriter
+> chsh /bin/bash
+\family default
+ 
+\begin_inset Newline newline
+\end_inset
+
+
+\emph on
+/bin/bash
+\emph default
+ should be whatever the path to the bash shell is, which you can figure
+ out using 
+\family typewriter
+which bash
+\end_layout
+
+\begin_layout Standard
+Shell commands can be saved in a file (with extension 
+\emph on
+.sh
+\emph default
+) and this file can be executed as if it were a program.
+ To run a shell script called 
+\emph on
+file.sh
+\emph default
+, you would type 
+\family typewriter
+./file.sh
+\family default
+.
+ Note that if you just typed
+\family typewriter
+ file.sh
+\family default
+, the operating system will generally have trouble finding the script and
+ recognizing that it is executable.
+ To be sure that the operating system knows what shell to use to interpret
+ the script, the first line of the script should be 
+\family typewriter
+#!/bin/bash
+\family default
+ (in the case that you're using the bash shell).
+ Also, 
+\emph on
+file.sh
+\emph default
+ would need to be executable (i.e., to have the 'x' flag set).
+\end_layout
+
+\begin_layout Section
+Tab completion
+\end_layout
+
+\begin_layout Standard
+When working in the shell, it is often unnecessary to type out an entire
+ command or file name, because of a feature known as tab completion.
+ When you are entering a command or filename in the shell, you can, at any
+ time, hit the tab key, and the shell will try to figure out how to complete
+ the name of the command or filename you are typing.
+ If there is only one command in the search path and you're using tab completion
+ with the first token of a line, then the shell will display its value and
+ the cursor will be one space past the completed name.
+ If there are multiple commands that match the partial name, the shell will
+ display as much as it can.
+ In this case, hitting tab twice will display a list of choices, and redisplay
+ the partial command line for further editing.
+ Similar behavior with regard to filenames occurs when tab completion is
+ used on anything other than the first token of a command.
+ 
+\end_layout
+
+\begin_layout Standard
+Note that R does tab completion for objects (including functions) and filenames.
+\end_layout
+
+\begin_layout Section
+Command history
+\end_layout
+
+\begin_layout Standard
+By using the up and down arrows, you can scroll through commands that you
+ have entered previously.
+ So if you want to rerun the same command, or fix a typo in a command you
+ entered, just scroll up to it and hit enter to run it or edit the line
+ and then hit enter.
+\end_layout
+
+\begin_layout Standard
+Note that you can use emacs-like control sequences (
+\family typewriter
+\series bold
+C-a
+\family default
+\series default
+, 
+\family typewriter
+\series bold
+C-e
+\family default
+\series default
+, 
+\family typewriter
+\series bold
+C-k
+\family default
+\series default
+) to navigate and delete characters, just as you can at the prompt in the
+ shell usually.
+\end_layout
+
+\begin_layout Standard
+You can also rerun previous commands as follows:
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+> !-n # runs the 
+\emph on
+n
+\emph default
+th previous command
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+> !gi # runs the last command that started with 'gi'
+\end_layout
+
+\begin_layout Standard
+If you're not sure what command you're going to recall, you can append 
+\family typewriter
+\series bold
+:p
+\family default
+\series default
+ at the end of the text you type to do the recall, and the result will be
+ printed, but not executed.
+ For example:
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+> !gi:p
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+You can then use the up arrow key to bring back that statement for editing
+ or execution.
+\end_layout
+
+\begin_layout Standard
+You can also search for commands by doing 
+\family typewriter
+\series bold
+C-r
+\family default
+\series default
+ and typing a string of characters to search for in the search history.
+ You can hit return to submit, 
+\family typewriter
+\series bold
+C-c
+\family default
+\series default
+ to get out, or 
+\family typewriter
+\series bold
+ESC
+\family default
+\series default
+ to put the result on the regular command line for editing.
+\end_layout
+
+\begin_layout Section
+Wildcards in filenames
+\end_layout
+
+\begin_layout Standard
+The shell will expand certain special characters to match patterns of file
+ names, before passing those filenames on to a program.
+ Note that the programs themselves don't know anything about wildcards;
+ it is the shell that does the expansion, so that programs don't see the
+ wildcards.
+ Table 1 shows some of the special characters that the shell uses for expansion:
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Wildcards
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Tabular
+<lyxtabular version="3" rows="7" columns="2">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Syntax
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+What it matches
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\emph on
+?
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+any single character
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\emph on
+*
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+zero or more characters
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\emph on
+[
+\begin_inset Formula $c_{1}c_{2}\ldots$
+\end_inset
+
+]
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+any character in the set
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\emph on
+[!
+\begin_inset Formula $c_{1}c_{2}\ldots$
+\end_inset
+
+]
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+anything not in the set
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\emph on
+[
+\begin_inset Formula $c_{1}-c_{2}$
+\end_inset
+
+]
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+anything in the range from 
+\begin_inset Formula $c_{1}$
+\end_inset
+
+ to 
+\begin_inset Formula $c_{2}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\emph on
+{string1,string2,...}
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+anything in the set of strings
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Here are some examples of using wildcards: 
+\end_layout
+
+\begin_layout Itemize
+List all files ending with a digit: 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+
+\family typewriter
+> ls *[0-9]
+\family default
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Make a copy of 
+\emph on
+filename
+\emph default
+ as 
+\emph on
+filename.old
+\emph default
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+
+\family typewriter
+> cp filename{,.old} 
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Remove all files beginning with 
+\emph on
+a
+\emph default
+ or 
+\emph on
+z
+\emph default
+:
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+
+\family typewriter
+> rm [az]*
+\family default
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+List all the R code files with a variety of suffixes:
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+
+\family typewriter
+> ls *.{r,q,R}
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+The 
+\emph on
+echo
+\emph default
+ command can be used to verify that a wildcard expansion will do what you
+ think it will:
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+> echo cp filename{,.old} # returns cp filename filename.old
+\end_layout
+
+\begin_layout Standard
+If you want to suppress the special meaning of a wildcard in a shell command,
+ precede it with a backslash (
+\series bold
+\emph on
+
+\backslash
+
+\series default
+\emph default
+).
+ Note that this is a general rule of thumb in many similar situations when
+ a character has a special meaning but you just want to treat it as a character.
+\end_layout
+
+\begin_layout Section
+Basic UNIX utilities
+\end_layout
+
+\begin_layout Standard
+In some of what follows, we'll use the 
+\emph on
+cpds.csv
+\emph default
+ file in the 
+\emph on
+data
+\emph default
+ directory of the class repository.
+\end_layout
+
+\begin_layout Standard
+Table 2 shows some basic UNIX programs, which are sometimes referred to
+ as filters.
+ The general syntax for a UNIX program is
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+> command -options argument1 argument2 ...
+\begin_inset Newline newline
+\end_inset
+
+
+\family default
+For example, 
+\family typewriter
+\series bold
+
+\begin_inset Newline newline
+\end_inset
+
+
+\series default
+> grep -i graphics file.txt
+\family default
+\series bold
+ 
+\series default
+
+\begin_inset Newline newline
+\end_inset
+
+looks for 
+\emph on
+graphics
+\emph default
+ (argument 1) in 
+\emph on
+file.txt
+\emph default
+ (argument2) with the option 
+\emph on
+-i
+\emph default
+, which says to ignore the case of the letters.
+ 
+\family typewriter
+\series bold
+
+\begin_inset Newline newline
+\end_inset
+
+
+\series default
+> less file.txt
+\family default
+\series bold
+ 
+\series default
+
+\begin_inset Newline newline
+\end_inset
+
+simply pages through a text file (you can navigate up and down) so you can
+ get a feel for what's in it.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+UNIX utilities
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Tabular
+<lyxtabular version="3" rows="12" columns="2">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Name
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+What it does
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\emph on
+tail
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+shows last few lines of a file
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\emph on
+less
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+shows a file one screen at a time
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\emph on
+cat
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+writes file to screen
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\emph on
+wc
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+counts words and lines in a file
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\emph on
+grep
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+finds patterns in files
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\emph on
+wget 
+\emph default
+or
+\emph on
+ curl
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+download files from the web
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\emph on
+sort
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+sorts a file by line
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\emph on
+nl
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+numbers lines in a file
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\emph on
+diff
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+compares two files
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\emph on
+uniq
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+removes repeated (sequential) rows
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\emph on
+cut
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+extracts fields (columns) from a file
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+UNIX programs often take options that are identified with a minus followed
+ by a letter, followed by the specific option (adding a space before the
+ specific option is fine).
+ Options may also involve two dashes, e.g., 
+\family typewriter
+R --no-save
+\family default
+.
+ Here are some examples using 
+\emph on
+tail
+\emph default
+ :
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+> tail --help
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+> tail -n 10 cpds.csv # last 10 lines of cpds.csv
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+> tail -f cpds.csv # shows end of file, continually refreshing
+\end_layout
+
+\begin_layout Standard
+A few more tidbits about 
+\emph on
+grep
+\emph default
+:
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+> grep ^2001 cpds.csv # returns lines that start with '2001'
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+> grep 0$ cpds.csv # returns lines that end with '0'
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+> grep 19.0 cpds.csv # returns lines with '19' separated from '0' by a single
+ character
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+> grep 19.*0 cpds.csv # now separated by any number of characters
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+> grep -o 19.0 cpds.csv # returns only the content matching the pattern from
+ the relevant lines
+\end_layout
+
+\begin_layout Standard
+Note that the first argument to grep is the pattern you are looking for.
+ The syntax is different from that used for wildcards in file names.
+ Also, you can use regular expressions in the pattern.
+ We won't see this in detail here, but will see regular expressions in R
+ shortly.
+\end_layout
+
+\begin_layout Standard
+It is sometimes helpful to put the pattern inside double quotes, e.g., if
+ you want spaces in your pattern, e.g.,
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+> grep "George .* Bush" cpds.csv
+\end_layout
+
+\begin_layout Standard
+More generally in UNIX, enclosing a string in quotes is often useful to
+ indicate that it is a single argument/value.
+\end_layout
+
+\begin_layout Standard
+If you want to explicitly look for one of the special characters used in
+ creating patterns (such as double quote (
+\begin_inset Quotes eld
+\end_inset
+
+), period (.), etc., you can 
+\begin_inset Quotes eld
+\end_inset
+
+escape
+\begin_inset Quotes erd
+\end_inset
+
+ them by preceding with a back-slash.
+ For example to look for 
+\emph on
+
+\begin_inset Quotes eld
+\end_inset
+
+Canada
+\begin_inset Quotes erd
+\end_inset
+
+
+\emph default
+, including the quotes.
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+> grep "
+\backslash
+"Canada
+\backslash
+"." cpds.csv
+\end_layout
+
+\begin_layout Standard
+If you have a big data file and need to subset it by line (e.g., with 
+\emph on
+grep
+\emph default
+) or by field (e.g., with 
+\emph on
+cut
+\emph default
+), then you can do it really fast from the UNIX command line, rather than
+ reading it with R, SAS, Python, etc.
+\end_layout
+
+\begin_layout Standard
+Much of the power of these utilities comes in piping between them (see Section
+ 6) and using wildcards (see Section 4) to operate on groups of files.
+ The utilities can also be used in shell scripts to do more complicated
+ things.
+ 
+\end_layout
+
+\begin_layout Section
+Redirection 
+\end_layout
+
+\begin_layout Standard
+UNIX programs that involve input and/or output often operate by reading
+ input from a stream known as standard input (
+\emph on
+stdin
+\emph default
+), and writing their results to a stream known as standard output (
+\emph on
+stdout
+\emph default
+).
+ In addition, a third stream known as standard error (
+\emph on
+stderr
+\emph default
+) receives error messages, and other information that's not part of the
+ program's results.
+ In the usual interactive session, standard output and standard error default
+ to your screen, and standard input defaults to your keyboard.
+ You can change the place from which programs read and write through redirection.
+ The shell provides this service, not the individual programs, so redirection
+ will work for all programs.
+ Table 3 shows some examples of redirection.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Redirection
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Tabular
+<lyxtabular version="3" rows="7" columns="2">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Syntax
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+What it does
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+cmd > file
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+sends stdout from 
+\emph on
+cmd
+\emph default
+ into 
+\emph on
+file
+\emph default
+, overwriting 
+\emph on
+file
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+cmd >> file
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+appends stdout from 
+\emph on
+cmd
+\emph default
+ to 
+\emph on
+file
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+cmd < file
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+execute 
+\emph on
+cmd
+\emph default
+ reading stdin from 
+\emph on
+file
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+cmd <infile >outfile 2>errors
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+reads from 
+\emph on
+infile
+\emph default
+, sending stdout to 
+\emph on
+outfile
+\emph default
+ and stderr to 
+\emph on
+errors
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+cmd <infile >outfile 2>&1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+reads from 
+\emph on
+infile
+\emph default
+, sending stdout and stderr to 
+\emph on
+outfile
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+cmd1 | cmd2
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+sends stdout from 
+\emph on
+cmd1
+\emph default
+ as stdin to 
+\emph on
+cmd2
+\emph default
+ (a pipe)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+Note that 
+\emph on
+cmd
+\emph default
+ may include options and arguments as seen in the previous section.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Operations where output from one command is used as input to another command
+ (via the | operator) are known as pipes; they are made especially useful
+ by the convention that many UNIX commands will accept their input through
+ the standard input stream when no file name is provided to them.
+ 
+\end_layout
+
+\begin_layout Standard
+Here's an example of finding out how many unique entries there are in the
+ 2rd column of a data file whose fields are separated by commas:
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+> cut -d',' -f2 cpds.csv | sort | uniq | wc
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+> cut -d',' -f2 cpds.csv | sort | uniq > countries.txt
+\end_layout
+
+\begin_layout Standard
+To see if there are any 
+\begin_inset Quotes eld
+\end_inset
+
+S
+\begin_inset Quotes erd
+\end_inset
+
+ values in certain fields (fixed width) of a set of files (note I did this
+ on 22,000 files (5 Gb or so) in about 5 minutes on my desktop; it would
+ have taken much more time to read the data into R):
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+> cut -b29,37,45,53,61,69,77,85,93,101,109,117,125,133,141,149,
+\begin_inset Newline newline
+\end_inset
+
+157,165,173,181,189,197,205,213,221,229,237,245,253,261,269 USC*.dly | grep
+ "S" | less
+\end_layout
+
+\begin_layout Standard
+A closely related, but subtly different, capability is offered by the use
+ of backticks (`).
+ When the shell encounters a command surrounded by backticks, it runs the
+ command and replaces the backticked expression with the output from the
+ command; this allows something similar to a pipe, but is appropriate when
+ a command reads its arguments directly from the command line instead of
+ through standard input.
+ For example, suppose we are interested in searching for the text 
+\emph on
+pdf
+\emph default
+ in the last 4 R code files (those with suffix 
+\emph on
+.
+\emph default
+r or .R) that were modified in the current directory.
+ We can find the names of the last 4 files ending in 
+\begin_inset Quotes eld
+\end_inset
+
+.R
+\begin_inset Quotes erd
+\end_inset
+
+ or 
+\begin_inset Quotes eld
+\end_inset
+
+.r
+\begin_inset Quotes erd
+\end_inset
+
+ which were modified using
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+> ls -t *.{R,r} | head -4
+\family default
+ 
+\begin_inset Newline newline
+\end_inset
+
+and we can search for the required pattern using 
+\emph on
+grep
+\emph default
+.
+ Putting these together with the backtick operator we can solve the problem
+ using 
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+> grep pdf `ls -t *.{R,r} | head -4`
+\family default
+ 
+\begin_inset Newline newline
+\end_inset
+
+Note that piping the output of the 
+\emph on
+ls
+\emph default
+ command into 
+\emph on
+grep
+\emph default
+ would not achieve the desired goal, since 
+\emph on
+grep
+\emph default
+ reads its filenames from the command line, not standard input.
+ 
+\end_layout
+
+\begin_layout Standard
+You can also redirect output as the arguments to another program using the
+ 
+\emph on
+xargs
+\emph default
+ utility.
+ Here's an example:
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+> ls -t *.{R,r} | head -4 | xargs grep pdf
+\end_layout
+
+\begin_layout Standard
+And you can redirect output into a shell variable (see section 9) using
+ backticks in a similar manner to that done above:
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+> files=`ls -t *.{R,r} | head -4` # NOTE - don't put any spaces around the
+ '='
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+> echo $files
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+> grep pdf $files
+\end_layout
+
+\begin_layout Section
+Job Control
+\end_layout
+
+\begin_layout Paragraph
+Starting a job
+\end_layout
+
+\begin_layout Standard
+When you run a command in a shell by simply typing its name, you are said
+ to be running in the foreground.
+ When a job is running in the foreground, you can't type additional commands
+ into that shell session, but there are two signals that can be sent to
+ the running job through the keyboard.
+ To interrupt a program running in the foreground, use 
+\family typewriter
+C-c
+\family default
+; to quit a program, use 
+\family typewriter
+C-
+\backslash
+
+\family default
+.
+ While modern windowed systems have lessened the inconvenience of tying
+ up a shell with foreground processes, there are some situations where running
+ in the foreground is not adequate.
+\end_layout
+
+\begin_layout Standard
+The primary need for an alternative to foreground processing arises when
+ you wish to have jobs continue to run after you log off the computer.
+ In cases like this you can run a program in the background by simply terminatin
+g the command with an ampersand (
+\emph on
+&
+\emph default
+).
+ However, before putting a job in the background, you should consider how
+ you will access its results, since 
+\emph on
+stdout
+\emph default
+ is not preserved when you log off from the computer.
+ Thus, redirection (including redirection of 
+\emph on
+stderr
+\emph default
+) is essential when running jobs in the background.
+ As a simple example, suppose that you wish to run an R script, and you
+ don't want it to terminate when you log off.
+ (Note that this can also be done using 
+\family typewriter
+R CMD BATCH
+\family default
+, so this is primarily an illustration.)
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+> R --no-save < code.R > code.Rout 2>&1 &
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+If you forget to put a job in the background when you first execute it,
+ you can do it while it's running in the foreground in two steps.
+ First, suspend the job using the 
+\family typewriter
+\series bold
+C-z
+\family default
+\series default
+ signal.
+ After receiving the signal, the program will interrupt execution, but will
+ still have access to all files and other resources.
+ Next, issue the 
+\family typewriter
+\emph on
+bg
+\family default
+\emph default
+ command, which will put the stopped job in the background.
+ 
+\end_layout
+
+\begin_layout Paragraph
+Listing and killing jobs
+\end_layout
+
+\begin_layout Standard
+Since only foreground jobs will accept signals through the keyboard, if
+ you want to terminate a background job you must first determine the unique
+ process id (PID) for the process you wish to terminate through the use
+ of the 
+\emph on
+ps
+\emph default
+ command.
+ For example, to see all the jobs running on a particular computer, you
+ could use a command like: 
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+> ps -aux 
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Among the output after the header (shown here) might appear a line that
+ looks like this: 
+\family typewriter
+
+\begin_inset Newline newline
+\end_inset
+
+USER PID %CPU %MEM VSZ RSS TTY STAT START TIME COMMAND 
+\begin_inset Newline newline
+\end_inset
+
+paciorek 11998 97.0 39.1 1416644 1204824 pts/16 R+ Jul27 1330:01 
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+/usr/lib64/R/bin/exec/R 
+\begin_inset Newline newline
+\end_inset
+
+
+\family default
+In this example, the 
+\emph on
+ps
+\emph default
+ output tells us that this R job has a PID of 
+\emph on
+11998
+\emph default
+, that it has been running for 1330 minutes (!), is using 97% of CPU and
+ 39% of memory, and that it started on July 27.
+ You could then issue the command:
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+> kill 11998
+\family default
+ 
+\begin_inset Newline newline
+\end_inset
+
+or, if that doesn't work 
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+> kill -9 11998
+\family default
+ 
+\begin_inset Newline newline
+\end_inset
+
+to terminate the job.
+ Another useful command in this regard is 
+\emph on
+killall
+\emph default
+, which accepts a program name instead of a process id, and will kill all
+ instances of the named program.
+ E.g.,
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+> killall R
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Of course, it will only kill the jobs that belong to you, so it will not
+ affect the jobs of other users.
+ Note that the 
+\emph on
+ps
+\emph default
+ and 
+\emph on
+kill
+\emph default
+ commands only apply to the particular computer on which they are executed,
+ not to the entire computer network.
+ Thus, if you start a job on one machine, you must log back into that same
+ machine in order to manage your job.
+\end_layout
+
+\begin_layout Paragraph
+Monitoring jobs and memory use
+\end_layout
+
+\begin_layout Standard
+The 
+\emph on
+top
+\emph default
+ command also allows you to monitor the jobs on the system and in real-time.
+ In particular, it's useful for seeing how much of the CPU and how much
+ memory is being used, as well as figuring out a PID as an alternative to
+ 
+\emph on
+ps
+\emph default
+.
+ You can also renice jobs (see below) and kill jobs from within top: just
+ type 
+\emph on
+r
+\series bold
+ 
+\series default
+\emph default
+or 
+\emph on
+k
+\emph default
+, respectively, and proceed from there.
+\end_layout
+
+\begin_layout Standard
+One of the main things to watch out for is a job that is using close to
+ 100% of memory and much less than 100% of CPU.
+ What is generally happening is that your program has run out of memory
+ and is using virtual memory on disk, spending most of its time writing
+ to/from disk, sometimes called 
+\emph on
+paging
+\emph default
+ or 
+\emph on
+swapping
+\emph default
+.
+ If this happens, it can be a very long time, if ever, before your job finishes.
+\end_layout
+
+\begin_layout Paragraph
+Nicing a job
+\end_layout
+
+\begin_layout Standard
+The most important thing to remember when starting a job on a machine that
+ is not your personal machine is how to be a good citizen.
+ This often involves 'nicing' your jobs.
+ This is required on the SCF machines, but the compute servers should automatica
+lly nice your jobs.
+ Nicing a job puts it at a lower priority so that a user working at the
+ keyboard has higher priority in using the CPU.
+ Here's how to do it, giving the job a low priority of 19, as required by
+ SCF:
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+> nice -19 R CMD BATCH --no-save code.R code.Rout &
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+If you forget and just submit the job without nicing, you can reduce the
+ priority by doing:
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+> renice +19 11998
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+where 
+\emph on
+11998
+\emph default
+ is the PID of your job.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+For short jobs (less than 5 minutes), it's ok to use a priority of 18 rather
+ than 19.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+On many larger UNIX cluster computers, all jobs are submitted via a job
+ scheduler and enter a queue, which handles the issue of prioritization
+ and jobs conflicting.
+ Syntax varies by system and queueing software, but may look something like
+ this for submitting an R job:
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+> bsub -q long R CMD BATCH --no-save code.R code.Rout # just an example; this
+ will not work on the SCF network
+\end_layout
+
+\begin_layout Section
+Aliases
+\end_layout
+
+\begin_layout Standard
+Aliases allow you to use an abbreviation for a command, to create new functional
+ity or to insure that certain options are always used when you call an existing
+ command.
+ For example, I'm lazy and would rather type 
+\family typewriter
+q
+\family default
+ instead of 
+\family typewriter
+exit
+\family default
+ to terminate a shell window.
+ You could create the alias as follow 
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+> alias q="exit"
+\family default
+ 
+\begin_inset Newline newline
+\end_inset
+
+As another example, suppose you find the 
+\emph on
+-F
+\emph default
+ option of 
+\emph on
+ls
+\emph default
+ (which displays 
+\series bold
+\emph on
+/
+\series default
+\emph default
+ after directories, 
+\series bold
+\emph on
+*
+\series default
+\emph default
+ after executable files and 
+\series bold
+\emph on
+@
+\series default
+\emph default
+ after links) to be very useful.
+ The command 
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+> alias ls="ls -F" 
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+will insure that the 
+\emph on
+-F
+\emph default
+ option will be used whenever you use 
+\emph on
+ls
+\emph default
+.
+ If you need to use the unaliased version of something for which you've
+ created an alias, precede the name with a backslash (
+\series bold
+\emph on
+
+\backslash
+
+\series default
+\emph default
+).
+ For example, to use the normal version of 
+\emph on
+ls
+\emph default
+ after you've created the alias described above, just type
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+> 
+\backslash
+ls
+\family default
+ 
+\end_layout
+
+\begin_layout Standard
+The real power of aliases is only achieved when they are automatically set
+ up whenever you log in to the computer or open a new shell window.
+ To achieve that goal with aliases (or any other bash shell commands), simply
+ insert the commands in the file 
+\emph on
+.bashrc
+\emph default
+ in your home directory.
+ See the 
+\emph on
+example.bashrc
+\emph default
+ file in the repository for some of what's in my 
+\emph on
+.bashrc
+\emph default
+ file.
+\end_layout
+
+\begin_layout Section
+Shell Variables
+\end_layout
+
+\begin_layout Standard
+We can define shell variables that will help us when writing shell scripts.
+ Here's an example of defining a variable:
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+> myDir="~/stat243-fall-2014/units
+\family default
+"
+\begin_inset Newline newline
+\end_inset
+
+The shell may not like it if you leave any spaces around the = sign.
+ To see the value of a variable we need to precede it by 
+\emph on
+$
+\emph default
+:
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+> echo $myDir
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+> cd $myDir
+\end_layout
+
+\begin_layout Standard
+You can also enclose the variable name in curly brackets, which comes in
+ handy when we're embedding a variable within a line of code to make sure
+ the shell knows where the variable name ends:
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+> echo ${myDir}
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+> touch ${myDir}/tmp.txt
+\end_layout
+
+\begin_layout Standard
+There are also special shell variables called environment variables that
+ help to control the shell's behavior.
+ These are generally named in all caps.
+ Type 
+\family typewriter
+\series bold
+env
+\family default
+ 
+\series default
+to see them.
+ You can create your own environment variable as follows:
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+> export myDir="~/stat243-fall-2014/units"
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+The 
+\emph on
+export
+\emph default
+ command ensures that other shells created by the current shell (for example,
+ to run a program) will inherit the variable.
+ Without the export command, any shell variables that are set will only
+ be modified within the current shell.
+ More generally, if one wants a variable to always be accessible, one would
+ include the definition of the variable with an 
+\emph on
+export
+\emph default
+ command in your 
+\emph on
+.bashrc
+\emph default
+ file.
+\end_layout
+
+\begin_layout Standard
+Here's an example of an environment variable that controls what your prompt
+ looks like.
+ We can modify it so that it puts the username, hostname, and pwd in your
+ prompt.
+ This is handy so you know what machine you're on and where in the filesystem
+ you are.
+ [Note that on the VM, PS1 is already set in a very similar manner.] 
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+> echo $PS1
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+> export PS1="
+\backslash
+u@
+\backslash
+h:
+\backslash
+w> "
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+For me, this is one of the most important things to put in my 
+\emph on
+.bashrc
+\emph default
+ file.
+ The 
+\series bold
+
+\backslash
+
+\series default
+ syntax tells bash what to put in the prompt string: 
+\emph on
+u
+\emph default
+ for username, 
+\emph on
+h
+\emph default
+ for hostname, and 
+\emph on
+w
+\emph default
+ for working directory.
+ 
+\end_layout
+
+\begin_layout Standard
+Finally, a note about using single vs.
+ double quotes in shell code.
+ In general, variables inside double quotes will be evaluated, but variables
+ not inside double quotes will not be:
+\end_layout
+
+\begin_layout Chunk
+
+<<chunkQuotes, engine='bash'>>=
+\end_layout
+
+\begin_layout Chunk
+
+name="chris"
+\end_layout
+
+\begin_layout Chunk
+
+echo "My name is $name"
+\end_layout
+
+\begin_layout Chunk
+
+echo 'My name is $name'
+\end_layout
+
+\begin_layout Chunk
+
+echo "He said, 
+\backslash
+"My name is $name.
+\backslash
+""
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+So we'll generally use double quotes.
+ We can always work with a literal double quote by escaping it as seen above.
+\end_layout
+
+\begin_layout Section
+Functions
+\end_layout
+
+\begin_layout Standard
+You can define your own utilities by creating a shell function.
+ This allows you to automate things that are more complicated than you can
+ do with an alias.
+ One nice thing about shell functions is that the shell automatically takes
+ care of function arguments for you.
+ It places the arguments given by the user into local variables in the function
+ called (in order): 
+\emph on
+$1 $2 $3
+\emph default
+ etc.
+ It also fills 
+\emph on
+$#
+\emph default
+ with the number of arguments given by the user.
+ Here's an example of using arguments in a function that saves me some typing
+ when I want to copy a file to the SCF filesystem:
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+function putscf() {
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+scp $1 paciorek@radagast.berkeley.edu:~/$2 
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+}
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+To use this function, I just do the following to copy 
+\emph on
+unit1.pdf
+\emph default
+ from the current directory on whatever non-SCF machine I'm on to the directory
+ 
+\emph on
+~/teaching/243
+\emph default
+ on SCF:
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+> putscf unit1-unix.pdf Desktop/.
+\end_layout
+
+\begin_layout Standard
+Of course you'd want to put such functions in your 
+\emph on
+.bashrc
+\emph default
+ file.
+\end_layout
+
+\begin_layout Section
+If/then/else
+\end_layout
+
+\begin_layout Standard
+We can use if-then-else type syntax to control the flow of a shell script.
+ For an example, see 
+\emph on
+niceR()
+\emph default
+ in the demo code file 
+\emph on
+niceR.sh
+\emph default
+ for this unit.
+\end_layout
+
+\begin_layout Standard
+For more details, look in Newham&Rosenblatt or search online.
+\end_layout
+
+\begin_layout Section
+For loops
+\end_layout
+
+\begin_layout Standard
+
+\emph on
+for
+\emph default
+ loops in shell scripting are primarily designed for iterating through a
+ set of files or directories.
+ Here's an example:
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+for file in $(ls *.txt)
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+do
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+mv $file ${file/.txt/.R} 
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+# this syntax replaces .txt with .R in $file
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+done
+\end_layout
+
+\begin_layout Standard
+You could also have done that with 
+\family typewriter
+for file in `ls *.txt`
+\end_layout
+
+\begin_layout Standard
+Another use of 
+\emph on
+for
+\emph default
+ loops is automating file downloads: see the demo code file.
+ And, in my experience, 
+\emph on
+for
+\emph default
+ loops are very useful for starting a series of jobs: see the demo code
+ files in the repository: 
+\emph on
+forloopDownload.sh
+\emph default
+ and 
+\emph on
+forloopJobs.sh
+\emph default
+.
+\end_layout
+
+\begin_layout Section
+How much shell scripting should I learn?
+\end_layout
+
+\begin_layout Standard
+You can do a fair amount of what you need from within R using the 
+\emph on
+system()
+\emph default
+ function.
+ This will enable you to avoid dealing with a lot of shell programming syntax
+ (but you'll still need to know how to use UNIX utilities, wildcards, and
+ pipes to be effective).
+ Example: a fellow student when I was in grad school programmed a tool in
+ R to extract concert information from the web for bands appearing in her
+ iTunes library.
+ Not the most elegant solution, but it got the job done.
+\end_layout
+
+\begin_layout Standard
+For more extensive shell programming, it's probably worth learning Python
+ and doing it there rather than using a shell script.
+ In particular iPython makes it very easy to interact with the operating
+ system.
+\end_layout
+
+\begin_layout Section
+Version Control 
+\end_layout
+
+\begin_layout Standard
+Note: Jarrod will cover the material on version control during Section.
+\end_layout
+
+\begin_layout Standard
+At a basic level, a simple principle is to have version numbers for all
+ your work: code, datasets, manuscripts.
+ Whenever you make a change to a dataset, increment the version number.
+ For code and manuscripts, increment when you make substantial changes or
+ have obvious breakpoints in your workflow.
+ 
+\end_layout
+
+\begin_layout Standard
+The basic idea of version control software (VCS) is that instead of manually
+ trying to keep track of what changes you've made to code, data, and documents,
+ you use software to help you manage the process.
+ This has several benefits:
+\end_layout
+
+\begin_layout Itemize
+easily allowing you to go back to earlier versions 
+\end_layout
+
+\begin_layout Itemize
+allowing you to have multiple version you can switch between 
+\end_layout
+
+\begin_layout Itemize
+allowing you to share work easily without worrying about conflicts 
+\end_layout
+
+\begin_layout Itemize
+providing built-in backup
+\end_layout
+
+\begin_layout Standard
+The material that follows is borrowed from Jarrod Millman and Fernando Perez.
+\end_layout
+
+\begin_layout Subsection
+Warnings about this demo
+\end_layout
+
+\begin_layout Enumerate
+The demo should work if you just run the demo code 'manually' on your machine.
+ However, when compiled via knitr from the Lyx/Latex document, some of the
+ later output in the branching section seems to be out of sync.
+ So the output in this PDF is not quite right in a few places.
+\end_layout
+
+\begin_layout Enumerate
+Also, note that the output from the embedded bash code chunks below is a
+ bit annoying in that all the output appears in a group after all of the
+ code lines rather than the output appearing after the individual line of
+ code.
+ This is some sort of issue with how knitr processes bash code chunks.
+\end_layout
+
+\begin_layout Subsection
+VCS Overview
+\end_layout
+
+\begin_layout Standard
+There are a number of version control systems (VCS) including CVS and subversion
+, which use client-server models.
+ Git is a distributed version control system.
+ VCS store your material in a 
+\emph on
+repository
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+The next couple figures show graphical representations of how a repository
+ is structured.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename commit_anatomy.png
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+A snapshot of work at a point in time as stored in a 'commit'.
+ Credit: ProGit book, by Scott Chacon, CC License.
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename threecommits.png
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+A sequence of commits.
+ Credit: ProGit book, by Scott Chacon, CC License.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Recall that we have been using Git in a very simple fashion.
+ We've cloned my class repository onto our local machines and have updated
+ materials from that repository.
+\end_layout
+
+\begin_layout Chunk
+
+<<chunk0, engine='bash', eval=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+
+cd /tmp
+\end_layout
+
+\begin_layout Chunk
+
+git clone https://github.com/berkeley-stat243/stat243-fall-2014
+\end_layout
+
+\begin_layout Chunk
+
+git pull
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+The goal of this section is to learn how to do more with Git to actually
+ manage a project of your own.
+\end_layout
+
+\begin_layout Subsection
+Hashing
+\end_layout
+
+\begin_layout Standard
+Hashing provides a way to have a fixed-length identifier for a given set
+ of information, such as a file or set of files.
+ The identifier is not guaranteed to be unique, but if the number of items
+ is small, it will almost always be unique.
+\end_layout
+
+\begin_layout Standard
+A toy "implementation"
+\end_layout
+
+\begin_layout Chunk
+
+<<chunk1>>=
+\end_layout
+
+\begin_layout Chunk
+
+library('digest')
+\end_layout
+
+\begin_layout Chunk
+
+# first commit 
+\end_layout
+
+\begin_layout Chunk
+
+data1 <- 'This is the start of my paper2.' 
+\end_layout
+
+\begin_layout Chunk
+
+meta1 <- 'date: 8/20/13' 
+\end_layout
+
+\begin_layout Chunk
+
+hash1 <- digest(c(data1,meta1), algo="sha1") 
+\end_layout
+
+\begin_layout Chunk
+
+cat('Hash:', hash1, '
+\backslash
+n')
+\end_layout
+
+\begin_layout Chunk
+
+# second commit, linked to the first 
+\end_layout
+
+\begin_layout Chunk
+
+data2 <- 'Some more text in my paper...' 
+\end_layout
+
+\begin_layout Chunk
+
+meta2 <- 'date: 8/20/13' 
+\end_layout
+
+\begin_layout Chunk
+
+# Note we add the parent hash here! q
+\end_layout
+
+\begin_layout Chunk
+
+hash2 <- digest(c(data2,meta2,hash1), algo="sha1") 
+\end_layout
+
+\begin_layout Chunk
+
+cat('Hash:', hash2, '
+\backslash
+n')
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+We'll see that Git uses hashes as identifiers for different versions of
+ your work.
+\end_layout
+
+\begin_layout Subsection
+Local, single-user, linear workflow
+\end_layout
+
+\begin_layout Standard
+Simply type 
+\family typewriter
+git
+\family default
+ (or 
+\family typewriter
+git help
+\family default
+) to see a full list of all the 'core' commands.
+ We'll now go through most of these via small practical exercises:
+\end_layout
+
+\begin_layout Chunk
+
+<<chunk2, engine='bash'>>= 
+\end_layout
+
+\begin_layout Chunk
+
+git help 
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Subsubsection
+Initializing a Git repository
+\end_layout
+
+\begin_layout Standard
+We use 
+\emph on
+git init
+\emph default
+ to create an empty repository
+\end_layout
+
+\begin_layout Chunk
+
+<<chunk3, engine='bash'>>= 
+\end_layout
+
+\begin_layout Chunk
+
+cd /tmp 
+\end_layout
+
+\begin_layout Chunk
+
+rm -rf git-demo 
+\end_layout
+
+\begin_layout Chunk
+
+git init git-demo 
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+Let's look at what git did:
+\end_layout
+
+\begin_layout Chunk
+
+<<chunk4, engine='bash'>>= 
+\end_layout
+
+\begin_layout Chunk
+
+cd /tmp/git-demo 
+\end_layout
+
+\begin_layout Chunk
+
+ls -al
+\end_layout
+
+\begin_layout Chunk
+
+ls -al .git
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Subsubsection
+Adding content to a repository 
+\end_layout
+
+\begin_layout Standard
+Now let's edit our first file in the test directory with a text editor...
+ I'm doing it programatically here for automation purposes, but you'd normally
+ be editing by hand
+\end_layout
+
+\begin_layout Chunk
+
+<<chunk5, engine='bash'>>= 
+\end_layout
+
+\begin_layout Chunk
+
+cd /tmp/git-demo 
+\end_layout
+
+\begin_layout Chunk
+
+echo "My first bit of text" > file1.txt 
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+Now we can tell git about this new file using the 
+\emph on
+add
+\emph default
+ command:
+\end_layout
+
+\begin_layout Chunk
+
+<<chunk6, engine='bash'>>= 
+\end_layout
+
+\begin_layout Chunk
+
+cd /tmp/git-demo 
+\end_layout
+
+\begin_layout Chunk
+
+git add file1.txt 
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+We can now ask git about what happened with 
+\emph on
+status
+\emph default
+:
+\end_layout
+
+\begin_layout Chunk
+
+<<chunk7, engine='bash'>>= 
+\end_layout
+
+\begin_layout Chunk
+
+cd /tmp/git-demo 
+\end_layout
+
+\begin_layout Chunk
+
+git status 
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Subsubsection
+Committing changes
+\end_layout
+
+\begin_layout Standard
+We now permanently record our changes in git's database.
+\end_layout
+
+\begin_layout Standard
+For now, we are always going to call 
+\emph on
+git commit
+\emph default
+ either with the `-a` option or with specific filenames (
+\family typewriter
+git commit file1 file2...
+\family default
+).
+ This avoids discussion of an aspect of git called the 
+\emph on
+index
+\emph default
+ (often referred to also as the 'staging area').
+ Most everyday work in regular scientific practice doesn't require understanding
+ the extra moving parts that the index involves, so we'll bypass it.
+ 
+\end_layout
+
+\begin_layout Chunk
+
+<<chunk8, engine='bash'>>= 
+\end_layout
+
+\begin_layout Chunk
+
+cd /tmp/git-demo 
+\end_layout
+
+\begin_layout Chunk
+
+git commit -am"This is our first commit"
+\end_layout
+
+\begin_layout Chunk
+
+git status
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+In the commit above, we used the `-m` flag to specify a message at the command
+ line.
+ If we don't do that, git will open the editor we specified in our configuration
+ above and require that we enter a message.
+ By default, git refuses to record changes that don't have a message to
+ go along with them (though you can obviously 'cheat' by using an empty
+ or meaningless string).
+\end_layout
+
+\begin_layout Standard
+We can use git log to see what has been committed to the repository so far:
+\end_layout
+
+\begin_layout Chunk
+
+<<chunk9, engine='bash'>>= 
+\end_layout
+
+\begin_layout Chunk
+
+cd /tmp/git-demo 
+\end_layout
+
+\begin_layout Chunk
+
+git log 
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+Let's do a little bit more work...
+ Again, in practice you'll be editing the files by hand, here we do it via
+ shell commands for the sake of automation (and therefore the reproducibility
+ of this tutorial!)
+\end_layout
+
+\begin_layout Chunk
+
+<<chunk10, engine='bash'>>= 
+\end_layout
+
+\begin_layout Chunk
+
+cd /tmp/git-demo 
+\end_layout
+
+\begin_layout Chunk
+
+echo "And now some more text..." >> file1.txt 
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+And now we can ask git what is different:
+\end_layout
+
+\begin_layout Chunk
+
+<<chunk11, engine='bash'>>= 
+\end_layout
+
+\begin_layout Chunk
+
+cd /tmp/git-demo 
+\end_layout
+
+\begin_layout Chunk
+
+git diff 
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+So the cycle of work in a git context is: work, commit, work, commit, ...
+\end_layout
+
+\begin_layout Chunk
+
+<<chunk12, engine='bash'>>= 
+\end_layout
+
+\begin_layout Chunk
+
+cd /tmp/git-demo 
+\end_layout
+
+\begin_layout Chunk
+
+git commit -am"I have made great progress on this critical matter." 
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+Now let's see what the log shows us now:
+\end_layout
+
+\begin_layout Chunk
+
+<<chunk13, engine='bash'>>= 
+\end_layout
+
+\begin_layout Chunk
+
+cd /tmp/git-demo 
+\end_layout
+
+\begin_layout Chunk
+
+git log 
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+Sometimes it's handy to see a very summarized version of the log:
+\end_layout
+
+\begin_layout Chunk
+
+<<chunk14, engine='bash'>>= 
+\end_layout
+
+\begin_layout Chunk
+
+cd /tmp/git-demo 
+\end_layout
+
+\begin_layout Chunk
+
+git log --oneline --topo-order --graph 
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+Git supports 
+\emph on
+aliases
+\emph default
+, new names given to command combinations.
+ Let's make this handy shortlog an alias, so we only have to type 
+\family typewriter
+git slog
+\family default
+ and see this compact log:
+\end_layout
+
+\begin_layout Chunk
+
+<<chunk15, engine='bash'>>= 
+\end_layout
+
+\begin_layout Chunk
+
+cd /tmp/git-demo 
+\end_layout
+
+\begin_layout Chunk
+
+# We create our alias (this saves it in git's permanent configuration file):
+ 
+\end_layout
+
+\begin_layout Chunk
+
+git config --global alias.slog "log --oneline --topo-order --graph" 
+\end_layout
+
+\begin_layout Chunk
+
+# And now we can use it 
+\end_layout
+
+\begin_layout Chunk
+
+git slog 
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Subsubsection
+Renaming and removing files
+\end_layout
+
+\begin_layout Standard
+Once a file is added to a repository, we need to use git commands to rename
+ and remove files.
+ In familiar Unix fashion, the 
+\emph on
+mv
+\emph default
+ and 
+\emph on
+rm
+\emph default
+ git commands do precisely this:
+\end_layout
+
+\begin_layout Chunk
+
+<<chunk16, engine='bash'>>= 
+\end_layout
+
+\begin_layout Chunk
+
+cd /tmp/git-demo
+\end_layout
+
+\begin_layout Chunk
+
+git mv file1.txt file-newname.txt 
+\end_layout
+
+\begin_layout Chunk
+
+git status 
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+Note that these changes must be committed too, to become permanent! In git's
+ world, until something hasn't been committed, it isn't permanently recorded
+ anywhere.
+\end_layout
+
+\begin_layout Chunk
+
+<<chunk17, engine='bash'>>= 
+\end_layout
+
+\begin_layout Chunk
+
+cd /tmp/git-demo 
+\end_layout
+
+\begin_layout Chunk
+
+git commit -am"I like this new name better" 
+\end_layout
+
+\begin_layout Chunk
+
+git slog 
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+Let's see 
+\emph on
+git rm
+\emph default
+ in action.
+ First a little setup.
+\end_layout
+
+\begin_layout Chunk
+
+<<chunk18, engine='bash'>>= 
+\end_layout
+
+\begin_layout Chunk
+
+cd /tmp/git-demo 
+\end_layout
+
+\begin_layout Chunk
+
+echo 'stuff' > test.txt
+\end_layout
+
+\begin_layout Chunk
+
+git add test.txt
+\end_layout
+
+\begin_layout Chunk
+
+git commit -am'added test file'
+\end_layout
+
+\begin_layout Chunk
+
+ls -l test*
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+Now let's do the removal.
+\end_layout
+
+\begin_layout Chunk
+
+<<chunk18a, engine='bash'>>=
+\end_layout
+
+\begin_layout Chunk
+
+cd /tmp/git-demo
+\end_layout
+
+\begin_layout Chunk
+
+git rm test.txt
+\end_layout
+
+\begin_layout Chunk
+
+ls -l test*
+\end_layout
+
+\begin_layout Chunk
+
+git status
+\end_layout
+
+\begin_layout Chunk
+
+git commit -am'removed test file'
+\end_layout
+
+\begin_layout Chunk
+
+git status
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+Be careful: 
+\emph on
+git rm
+\emph default
+ removes the file from the local filesystem as well as the repository.
+ If we want to remove a file from the repository but keep it on the local
+ disk, we can do: 
+\family typewriter
+git rm --cached file
+\end_layout
+
+\begin_layout Subsubsection
+Undoing changes
+\end_layout
+
+\begin_layout Standard
+If we want to make a change before we do a commit, we can do that as follows.
+\end_layout
+
+\begin_layout Standard
+First, let's remove a file.
+\end_layout
+
+\begin_layout Chunk
+
+<<chunk19, engine='bash'>>= 
+\end_layout
+
+\begin_layout Chunk
+
+cd /tmp/git-demo 
+\end_layout
+
+\begin_layout Chunk
+
+echo 'stuff' > test.txt
+\end_layout
+
+\begin_layout Chunk
+
+git add test.txt
+\end_layout
+
+\begin_layout Chunk
+
+git commit -am'added test file'
+\end_layout
+
+\begin_layout Chunk
+
+git rm test.txt
+\end_layout
+
+\begin_layout Chunk
+
+git status
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+Now suppose I realize I don't want to remove 
+\emph on
+test.txt
+\emph default
+.
+\end_layout
+
+\begin_layout Chunk
+
+<<chunk19a, engine='bash'>>=
+\end_layout
+
+\begin_layout Chunk
+
+cd /tmp/git-demo
+\end_layout
+
+\begin_layout Chunk
+
+git reset -- test.txt # restore file in index (unstage)
+\end_layout
+
+\begin_layout Chunk
+
+git checkout -- test.txt # get a copy of the file back
+\end_layout
+
+\begin_layout Chunk
+
+ls -l test*
+\end_layout
+
+\begin_layout Chunk
+
+git status
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+Note that if you want to unstage an addition before you've committed it,
+ you can do 
+\family typewriter
+git reset -- <file>
+\family default
+.
+ If you want to remove a file from the repository but not the filesystem
+ after you've committed the addition of the file, you can do 
+\family typewriter
+git rm --cached
+\family default
+ and then a commit.
+\end_layout
+
+\begin_layout Standard
+If you have a bunch of files that have been removed or changed (but not
+ committed) and you want to reset for all of them, you can do: 
+\family typewriter
+git reset --hard HEAD
+\family default
+, which should remove working directory changes and changes changed through
+ git, e.g.
+ 
+\emph on
+git add
+\emph default
+ and 
+\emph on
+git rm
+\emph default
+ changes.
+\end_layout
+
+\begin_layout Standard
+Understanding the difference between the working directory, the index, and
+ HEAD can be confusing and something I'm still wrapping my head around.
+ Fig.
+ 3 helps.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename git-index.png
+
+\end_inset
+
+
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Working tree, staging area, and repository.
+ Credit: ProGit book, by Scott Chacon, CC License.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The 
+\emph on
+working directory
+\emph default
+ or 
+\emph on
+working tree
+\emph default
+ is the state of your local directory on the filesystem.
+ The staging area (or 
+\emph on
+index
+\emph default
+) reflects your 
+\emph on
+git add
+\emph default
+, 
+\emph on
+git rm
+\emph default
+, etc.
+ changes that have been staged but not committed.
+ The repository reflects your commits.
+ HEAD is the last commit on the current branch.
+ In our 
+\emph on
+git reset
+\emph default
+ and 
+\emph on
+git checkout
+\emph default
+ operations above, we had to use
+\emph on
+ git reset
+\emph default
+ to restore the file in the index from HEAD (from the commit).
+ We then had to use 
+\emph on
+git checkout
+\emph default
+ to check the file back into the working directory (i.e, have the index and
+ the working directory match).
+\end_layout
+
+\begin_layout Subsection
+Branches
+\end_layout
+
+\begin_layout Standard
+What is a branch? It's a label for the 'current' commit in a sequence of
+ ongoing commits.
+\end_layout
+
+\begin_layout Standard
+There can be multiple branches alive at any point in time; the working directory
+ is the state of a special pointer called HEAD.
+\end_layout
+
+\begin_layout Standard
+Let's now illustrate all of this with a concrete example.
+ Let's get our bearings first:
+\end_layout
+
+\begin_layout Chunk
+
+<<chunk20, engine='bash'>>= 
+\end_layout
+
+\begin_layout Chunk
+
+cd /tmp/git-demo 
+\end_layout
+
+\begin_layout Chunk
+
+git status 
+\end_layout
+
+\begin_layout Chunk
+
+ls -l
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+We are now going to try two different routes of development: on the 
+\emph on
+master
+\emph default
+ branch we will add one file and on the 
+\emph on
+experiment
+\emph default
+ branch, which we will create, we will add a different one.
+ We will then merge the experimental branch into 
+\emph on
+master
+\emph default
+.
+\end_layout
+
+\begin_layout Chunk
+
+<<chunk21, engine='bash'>>= 
+\end_layout
+
+\begin_layout Chunk
+
+cd /tmp/git-demo 
+\end_layout
+
+\begin_layout Chunk
+
+git branch experiment # creating new branch
+\end_layout
+
+\begin_layout Chunk
+
+git checkout experiment  # switch to it
+\end_layout
+
+\begin_layout Chunk
+
+echo "Some crazy idea" > experiment.txt 
+\end_layout
+
+\begin_layout Chunk
+
+git add experiment.txt 
+\end_layout
+
+\begin_layout Chunk
+
+git commit -am"Trying something new" 
+\end_layout
+
+\begin_layout Chunk
+
+ls -l
+\end_layout
+
+\begin_layout Chunk
+
+git slog 
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+We can see the branches, and which branch we are currently in with
+\family typewriter
+ git branch
+\family default
+.
+ We'll switch to the master and notice that 
+\emph on
+experiment.txt
+\emph default
+ is not in the master branch.
+\end_layout
+
+\begin_layout Chunk
+
+<<chunk21a, engine='bash'>>=
+\end_layout
+
+\begin_layout Chunk
+
+cd /tmp/git-demo 
+\end_layout
+
+\begin_layout Chunk
+
+git branch
+\end_layout
+
+\begin_layout Chunk
+
+git checkout master 
+\end_layout
+
+\begin_layout Chunk
+
+ls -l # notice the lack of 'experiment.txt'
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+Now, let's make a different change to the master branch.
+\end_layout
+
+\begin_layout Chunk
+
+<<chunk22, engine='bash'>>= 
+\end_layout
+
+\begin_layout Chunk
+
+cd /tmp/git-demo
+\end_layout
+
+\begin_layout Chunk
+
+echo "All the while, more work goes on in master..." >> progress.txt
+\end_layout
+
+\begin_layout Chunk
+
+git add progress.txt
+\end_layout
+
+\begin_layout Chunk
+
+git commit -am"The mainline keeps moving" 
+\end_layout
+
+\begin_layout Chunk
+
+git slog 
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+Now we'll merge the two together.
+ Git can do this without guidance from us because the differences in the
+ two branches do not conflict with each other.
+\end_layout
+
+\begin_layout Chunk
+
+<<chunk23, engine='bash'>>= 
+\end_layout
+
+\begin_layout Chunk
+
+cd /tmp/git-demo 
+\end_layout
+
+\begin_layout Chunk
+
+git checkout master
+\end_layout
+
+\begin_layout Chunk
+
+git merge experiment 
+\end_layout
+
+\begin_layout Chunk
+
+git slog 
+\end_layout
+
+\begin_layout Chunk
+
+ls -l
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Subsection
+Using remotes as a single user
+\end_layout
+
+\begin_layout Standard
+We are now going to introduce the concept of a remote repositor
+\emph on
+y
+\emph default
+: a pointer to another copy of the repository that lives on a different
+ location.
+ This can be simply a different path on the filesystem or a server on the
+ internet.
+ Of course we've already used a remote repository a little by cloning the
+ class repository from Github.
+ 
+\end_layout
+
+\begin_layout Standard
+For this discussion, we'll be using remotes hosted on the Github.com service,
+ but you can equally use other services like BitBucket (http://bitbucket.org)
+ or Gitorious (http://gitorious.org).
+ The SCF provides 
+\begin_inset CommandInset href
+LatexCommand href
+name "hosting of git repositories as well"
+target "statistics.berkeley.edu/computing/git"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Chunk
+
+<<chunk24, engine='bash'>>= 
+\end_layout
+
+\begin_layout Chunk
+
+cd /tmp/git-demo 
+\end_layout
+
+\begin_layout Chunk
+
+# Let's see if we have any remote repositories here
+\end_layout
+
+\begin_layout Chunk
+
+git remote -v 
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+Since the 
+\family typewriter
+git remote -v
+\family default
+ call didn't produce any results, it means we have no remote repositories
+ configured.
+ We will now proceed to do so.
+ We need a Github account.
+ Login to GitHub, and go to the new repository page (https://github.com/new).
+ For our demo purposes, we'll make a repository called 
+\emph on
+test
+\emph default
+.
+ Do 
+\series bold
+not
+\series default
+ check the box that says `Initialize this repository with a README`, since
+ we already have an existing repository on our local machine.
+ That option is useful when you're starting first at Github and don't have
+ a repo made already on a local computer.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Before making PDF, need to create the berkeley-243/test repository w/o README
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We can now follow the instructions from the next page:
+\end_layout
+
+\begin_layout Chunk
+
+<<chunk25, engine='bash'>>= 
+\end_layout
+
+\begin_layout Chunk
+
+cd /tmp/git-demo 
+\end_layout
+
+\begin_layout Chunk
+
+git remote add origin git@github.com:berkeley-stat243/test.git 
+\end_layout
+
+\begin_layout Chunk
+
+git push -u origin master 
+\end_layout
+
+\begin_layout Chunk
+
+git remote -v
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+We can now 
+\begin_inset CommandInset href
+LatexCommand href
+name "see the repository publicly"
+target "https://github.com/paciorek/test"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Let's see how this can be useful for backup and syncing work between two
+ different computers.
+ 
+\end_layout
+
+\begin_layout Chunk
+
+<<chunk26, engine='bash'>>= 
+\end_layout
+
+\begin_layout Chunk
+
+cd /tmp # Here I clone my 'test' repo but with a different name, test2,
+ to simulate a 2nd computer
+\end_layout
+
+\begin_layout Chunk
+
+# in class we'll actually do this on a separate computer
+\end_layout
+
+\begin_layout Chunk
+
+git clone git@github.com:berkeley-stat243/test.git test2 
+\end_layout
+
+\begin_layout Chunk
+
+cd test2 
+\end_layout
+
+\begin_layout Chunk
+
+ls -l
+\end_layout
+
+\begin_layout Chunk
+
+git remote -v
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+Let's now make some changes in one computer.
+\end_layout
+
+\begin_layout Chunk
+
+<<chunk27, engine='bash'>>= 
+\end_layout
+
+\begin_layout Chunk
+
+cd /tmp/test2 # working on computer #2 
+\end_layout
+
+\begin_layout Chunk
+
+echo "More new content on my experiment" >> experiment.txt 
+\end_layout
+
+\begin_layout Chunk
+
+git commit -am"More work, on machine #2" 
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+Now we put this new work up on the github server so it's available from
+ the internet
+\end_layout
+
+\begin_layout Chunk
+
+<<chunk28, engine='bash'>>= 
+\end_layout
+
+\begin_layout Chunk
+
+cd /tmp/test2 
+\end_layout
+
+\begin_layout Chunk
+
+# working on computer #2 
+\end_layout
+
+\begin_layout Chunk
+
+git push 
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+Now let's fetch that work from machine #1:
+\end_layout
+
+\begin_layout Chunk
+
+<<chunk29, engine='bash'>>= 
+\end_layout
+
+\begin_layout Chunk
+
+cd /tmp/git-demo 
+\end_layout
+
+\begin_layout Chunk
+
+git pull 
+\end_layout
+
+\begin_layout Chunk
+
+cat experiment.txt
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Subsection
+Conflict management
+\end_layout
+
+\begin_layout Standard
+While git is very good at merging, if two different users or two different
+ branches modify the same file in the same location, it simply can't decide
+ which change should prevail.
+ At that point, human intervention is necessary to make the decision.
+ Git will help you by marking the location in the file that has a problem,
+ but it's up to you to resolve the conflict.
+ Let's see how that works by intentionally creating a conflict.
+\end_layout
+
+\begin_layout Standard
+We start by creating a branch and making a change to our experiment file:
+\end_layout
+
+\begin_layout Chunk
+
+<<chunk30, engine='bash'>>= 
+\end_layout
+
+\begin_layout Chunk
+
+cd /tmp/git-demo 
+\end_layout
+
+\begin_layout Chunk
+
+git branch trouble 
+\end_layout
+
+\begin_layout Chunk
+
+git checkout trouble 
+\end_layout
+
+\begin_layout Chunk
+
+echo "This is going to be a problem..." >> experiment.txt 
+\end_layout
+
+\begin_layout Chunk
+
+git commit -am"Changes in the trouble branch" 
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+And now we go back to the master branch, where we change the 
+\series bold
+same
+\series default
+ file:
+\end_layout
+
+\begin_layout Chunk
+
+<<chunk31, engine='bash'>>= 
+\end_layout
+
+\begin_layout Chunk
+
+cd /tmp/git-demo 
+\end_layout
+
+\begin_layout Chunk
+
+git checkout master 
+\end_layout
+
+\begin_layout Chunk
+
+echo "More work on the master branch..." >> experiment.txt 
+\end_layout
+
+\begin_layout Chunk
+
+git commit -am"Mainline work" 
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+So now let's see what happens if we try to merge the `trouble` branch into
+ `master`:
+\end_layout
+
+\begin_layout Chunk
+
+<<chunk32, engine='bash'>>= 
+\end_layout
+
+\begin_layout Chunk
+
+cd /tmp/git-demo 
+\end_layout
+
+\begin_layout Chunk
+
+git merge trouble
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+Let's see what git has put into our file:
+\end_layout
+
+\begin_layout Chunk
+
+<<chunk33, engine='bash'>>= 
+\end_layout
+
+\begin_layout Chunk
+
+cd /tmp/git-demo 
+\end_layout
+
+\begin_layout Chunk
+
+cat experiment.txt 
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+At this point, we go into the file with a text editor, decide which changes
+ to keep, and make a new commit that records our decision.
+ To automate my edits, I use the `sed` command.
+\end_layout
+
+\begin_layout Chunk
+
+<<chunk34, engine='bash'>>= 
+\end_layout
+
+\begin_layout Chunk
+
+cd /tmp/git-demo 
+\end_layout
+
+\begin_layout Chunk
+
+sed -i '/^</d' experiment.txt 
+\end_layout
+
+\begin_layout Chunk
+
+sed -i '/^>/d' experiment.txt 
+\end_layout
+
+\begin_layout Chunk
+
+sed -i '/^=/d' experiment.txt 
+\end_layout
+
+\begin_layout Chunk
+
+cat experiment.txt
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+I've now made the edits, in this case I decided that both pieces of text
+ were useful, so I just accepted both additions.
+\end_layout
+
+\begin_layout Standard
+Let's then make our new commit:
+\end_layout
+
+\begin_layout Chunk
+
+<<chunk35, engine='bash'>>= 
+\end_layout
+
+\begin_layout Chunk
+
+cd /tmp/git-demo 
+\end_layout
+
+\begin_layout Chunk
+
+git commit -am"Completed merge of trouble, fixing conflicts along the way"
+ 
+\end_layout
+
+\begin_layout Chunk
+
+git slog 
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+Note: While it's a good idea to understand the basics of fixing merge conflicts
+ by hand, in some cases you may find the use of an automated tool useful.
+ Git supports multiple 
+\begin_inset CommandInset href
+LatexCommand href
+name "merge tools"
+target "https://www.kernel.org/pub/software/scm/git/docs/git-mergetool.html"
+
+\end_inset
+
+: a merge tool is a piece of software that conforms to a basic interface
+ and knows how to merge two files into a new one.
+ Since these are typically graphical tools, there are various to choose
+ from for the different operating systems, and as long as they obey a basic
+ command structure, git can work with any of them.
+\end_layout
+
+\begin_layout Subsection
+Collaborating on github with a small team
+\end_layout
+
+\begin_layout Standard
+Single remote with shared access: we are going to set up a shared collaboration
+ with one partner (the person sitting next to you).
+ This will show the basic workflow of collaborating on a project with a
+ small team where everyone has write privileges to the same repository.
+\end_layout
+
+\begin_layout Standard
+We will have two people, let's call them Alice and Bob, sharing a repository.
+ Alice will be the owner of the repo and she will give Bob write privileges.
+\end_layout
+
+\begin_layout Standard
+We begin with a simple synchronization example, much like we just did above,
+ but now between two people instead of one person.
+ Otherwise it's the same:
+\end_layout
+
+\begin_layout Itemize
+Bob clones Alice's repository.
+ 
+\end_layout
+
+\begin_layout Itemize
+Bob makes changes to a file and commits them locally.
+ 
+\end_layout
+
+\begin_layout Itemize
+Bob pushes his changes to github.
+ 
+\end_layout
+
+\begin_layout Itemize
+Alice pulls Bob's changes into her own repository.
+\end_layout
+
+\begin_layout Standard
+Next, we will have both parties make non-conflicting changes each, and commit
+ them locally.
+ Then both try to push their changes:
+\end_layout
+
+\begin_layout Itemize
+Alice adds a new file, 
+\emph on
+alice.txt
+\emph default
+ to the repo and commits.
+ 
+\end_layout
+
+\begin_layout Itemize
+Bob adds 
+\emph on
+bob.txt
+\emph default
+ and commits.
+\end_layout
+
+\begin_layout Itemize
+Alice pushes to github.
+ 
+\end_layout
+
+\begin_layout Itemize
+Bob tries to push to github.
+ 
+\end_layout
+
+\begin_layout Standard
+What happens here?
+\end_layout
+
+\begin_layout Standard
+The problem is that Bob's changes create a commit that conflicts with Alice's,
+ so git refuses to apply them.
+ It forces Bob to first do the merge on his machine, so that if there is
+ a conflict in the merge, Bob deals with the conflict manually (git could
+ try to do the merge on the server, but in that case if there's a conflict,
+ the server repo would be left in a conflicted state without a human to
+ fix things up).
+ The solution is for Bob to first pull the changes (pull in git is really
+ fetch+merge), and then push again.
+\end_layout
+
+\begin_layout Subsection
+More Git resources
+\end_layout
+
+\begin_layout Itemize
+Git for Scientists: A Tutorial: 
+\begin_inset CommandInset href
+LatexCommand href
+target "http://nyuccl.org/pages/GitTutorial/"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Gitwash: workflow for scientific Python projects:
+\begin_inset Newline newline
+\end_inset
+
+ 
+\begin_inset CommandInset href
+LatexCommand href
+target "http://matthew-brett.github.io/pydagogue/gitwash_build.html"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Git branching demo: 
+\begin_inset CommandInset href
+LatexCommand href
+target "http://pcottle.github.io/learnGitBranching/"
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
