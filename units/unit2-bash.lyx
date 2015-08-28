@@ -557,6 +557,25 @@ nproc
  
 \end_layout
 
+\begin_layout Standard
+Note: before trying this out, please set up BCE so that it uses two virtual
+ processors.
+ Go to 
+\family typewriter
+Settings -> System -> Processor
+\family default
+ and choose 
+\begin_inset Quotes eld
+\end_inset
+
+2 CPU
+\begin_inset Quotes erd
+\end_inset
+
+.
+ Then start up the VM.
+\end_layout
+
 \begin_layout Subsection
 Second challenge
 \end_layout
