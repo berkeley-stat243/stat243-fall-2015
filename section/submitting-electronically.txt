@@ -1,0 +1,58 @@
+You will need to create a private repository on GitHub for submitting your
+problem sets (in addition to submitting a paper copy).
+
+1. If you don't have a GitHub account, you will need to create one:
+https://github.com/join
+
+You can choose a silly name, but I **recommend** choosing something
+straightforward and informative. For instance, my GitHub username is
+`pimentel`. You should register using your `@berkeley.edu` account (you will
+need to have a verified *.edu email address for step 2).
+
+2. Once you have a GitHub account you will need to request an educational
+discount so that you can create private repos for this class. If you don't have
+private accounts already (if you don't know if you do or not, you don't),
+please request one here: https://education.github.com/
+
+You are a `Student` and you want an `Individual account`.
+
+Once you have a GitHub account and the ability to create private GitHub
+repos, you will need to complete the following steps:
+
+1. Create a private repository on GitHub called "stat243" (without the quotes).
+You will need to use this exact name (no space, no capital letters, etc.).
+Select "Initialize this repository with a README" and choose "R" in the
+pull-down menu to add a .gitignore file.
+
+2. Add Chris (use his GitHub name: paciorek) and me (us my GitHub name:
+pimentel) as collaborators so we can push and pull to your private GitHub
+repo. In the lower right-hand corner of your repository's main page, you should
+see a button labelled "Settings". Click on the "Settings" button will take you
+to a page where you can edit various settings for your repository. Choose the
+"Collaborators" button on the "Settings" page.
+
+3. Clone the repo to your home directory (I would clone it into a directory
+just for repositories (e.g., I use ~/src). In the top-level of your working
+directory, create a file named (exactly) `info.r` without the quotes. In this
+file, you need to set the following variables:
+
+-------------------------
+name = "Joe Cool"
+SID = "0123456789"
+email = "jcool@berkeley.edu"
+github_name = "joecool"
+-------------------------
+
+The variable names have to be exactly as specified above. Then add, commit, and
+push.
+
+If you need additional details, here are more detailed directions that Jarrod
+Millman provided to undergraduates for a different class:
+http://www.jarrodmillman.com/stat133-summer2014/lab02.html
+
+If you use the above link, make sure you don't just type in what it says to do
+as you will need to modify the instructions to apply to this class. For
+instance, use 'stat243' not 'stat133'. And make sure to add Chris and me as
+collaborators (and not Karl or Inga).
+
+
