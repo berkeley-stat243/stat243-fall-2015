@@ -130,6 +130,10 @@ Adler
 \end_layout
 
 \begin_layout Itemize
+Nolan and Temple Lang, XML and Web Technologies for Data Sciences with R.
+\end_layout
+
+\begin_layout Itemize
 Chambers
 \end_layout
 
@@ -142,10 +146,6 @@ target "http://cran.r-project.org/doc/manuals/R-intro.html"
 \end_inset
 
  on CRAN (R-intro).
-\end_layout
-
-\begin_layout Itemize
-Nolan and Temple Lang, XML and Web Technologies for Data Sciences with R.
 \end_layout
 
 \begin_layout Itemize
@@ -174,12 +174,10 @@ Data storage and formats (outside R)
 \end_layout
 
 \begin_layout Standard
-At this point, we're going to turn to reading data into R and manipulating
- text, including regular expressions.
- We'll focus on doing these manipulations in R, but the concepts involved
- in reading in data, database manipulations, and regular expressions are
- common to other languages, so familarity with these in R should allow you
- to pick up other tools more easily.
+At this point, we're going to turn to reading data into R.
+ We'll focus on doing these manipulations in R, but the concepts and tools
+ involved are common to other languages, so familarity with these in R should
+ allow you to pick up other tools more easily.
  The main downside to working with datasets in R is that the entire dataset
  resides in memory, so R is not so good for dealing with very large datasets.
  More on alternatives in a bit.
@@ -210,11 +208,11 @@ Flat text files (ASCII files): data are often provided as simple text files.
 .csv
 \emph default
 .
- Metadata (information about the data) is often stored in a separate file.
+ Metadata (information about the data) are often stored in a separate file.
  I like CSV files but if you have files where the data contain commas, other
  delimiters can be good.
  Text can be put in quotes in CSV files.
- This was difficult to deal with in the shell in PS1, but 
+ This is difficult to deal with in bash, but 
 \emph on
 read.table()
 \emph default
@@ -223,7 +221,7 @@ read.table()
 \end_layout
 
 \begin_deeper
-\begin_layout Enumerate
+\begin_layout Itemize
 One occasionally tricky difficulty is as follows.
  If you have a text file created in Windows, the line endings are coded
  differently than in UNIX (a newline (the ASCII character
@@ -509,6 +507,20 @@ NULL
 colClasses
 \emph default
  argument explicitly should make for faster file reading.
+ Finally, setting 
+\family typewriter
+stringsAsFactors=FALSE
+\family default
+ is standard practice.
+ You can set that by default to apply generally in your 
+\emph on
+.Rprofile
+\emph default
+ using 
+\family typewriter
+options(stringsAsFactors = FALSE)
+\family default
+.
 \end_layout
 
 \begin_layout Standard
@@ -528,6 +540,8 @@ RTADataSub.csv
 \emph default
  is a 1000-line subset of a much larger file of data available from the
  kaggle.com website.
+ So more sophisticated use of UNIX utilities as we saw in Unit 2 is often
+ useful before trying to read something into R.
 \end_layout
 
 \begin_layout Standard
@@ -568,29 +582,6 @@ readLines()
 
 \begin_layout Chunk
 
-<<>>=
-\end_layout
-
-\begin_layout Chunk
-
-a <-5 
-\end_layout
-
-\begin_layout Chunk
-print(a)
-\end_layout
-
-\begin_layout Chunk
-
-@
-\end_layout
-
-\begin_layout Chunk
-
-\end_layout
-
-\begin_layout Chunk
-
 <<readLines>>=
 \end_layout
 
@@ -600,7 +591,19 @@ print(a)
 \end_layout
 
 \begin_layout Standard
-Note that for 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+noindent
+\end_layout
+
+\end_inset
+
+ Note that for 
 \emph on
 precip.txt
 \emph default
@@ -719,7 +722,7 @@ curl()
 
 \begin_layout Chunk
 
-<<stream-curl, eval=TRUE>>=
+<<stream-curl, eval=TRUE, cache=TRUE>>=
 \end_layout
 
 \begin_layout Chunk
@@ -925,8 +928,8 @@ XML and Web Technologies for Data Sciences with R
 \emph default
  by Deb Nolan (UCB Stats faculty) and Duncan Temple Lang (UCB Stats PhD
  alumnus) provides extensive information about getting and processing data
- off of the web, including interacting with web services such as SOAP and
- REST and programmatically handling authentication.
+ off of the web, including interacting with web services such as REST and
+ SOAP and programmatically handling authentication.
  
 \end_layout
 
@@ -943,15 +946,15 @@ target "http://jeroenjanssens.com/2013/09/19/seven-command-line-tools-for-data-s
 \end_layout
 
 \begin_layout Standard
-We'll cover a few examples of this sort of thing briefly here, but going
- into the details of HTML and XML formatting and navigating the structure
- of such pages is beyond the scope of what we can cover in detail.
- The key thing is to know that these tools exist so that you can learn how
+We'll cover a few basic examples in this section, but HTML and XML formatting
+ and navigating the structure of such pages is beyond the scope of what
+ we can cover in detail.
+ The key thing is to know that the tools exist so that you can learn how
  to use them if faced with such formats.
 \end_layout
 
 \begin_layout Subsection
-Reading HTML and XML
+Reading HTML
 \end_layout
 
 \begin_layout Standard
@@ -959,8 +962,11 @@ Let's see a brief example of reading in HTML tables.
  One lesson here is not to write a lot of your own code to do something
  that someone else has probably already written a package for.
  Unfortunately, there are some issues with dealing with https that we need
- to work around, rather than directly using readHTMLTable as can be done
- with http.
+ to work around, rather than directly using 
+\emph on
+readHTMLTable()
+\emph default
+ as can be done with http.
  So we need to use 
 \emph on
 curl()
@@ -1004,8 +1010,15 @@ readHTMLList()
 
 \begin_layout Standard
 It's often useful to be able to extract the hyperlinks in an HTML document.
- In this example, I'm not sure why the relative argument doesn't seem to
- work in terms of giving back absolute paths.
+ In this example, I'm not sure why the 
+\emph on
+relative
+\emph default
+ argument (see 
+\family typewriter
+help(getHTMLLinks)
+\family default
+) doesn't seem to work in terms of giving back absolute paths.
 \end_layout
 
 \begin_layout Chunk
@@ -1025,7 +1038,11 @@ More generally, we may want to read an HTML document and parse it into its
 \emph on
 XPath
 \emph default
- language in the second argument to getNodeSet.
+ language in the second argument to 
+\emph on
+getNodeSet()
+\emph default
+.
  XPath can also be used for navigating through XML documents.
 \end_layout
 
@@ -1059,6 +1076,10 @@ Here's another example of extracting specific components of information
 \family typewriter
 Developer -> Page Source
 \family default
+ and in Chrome 
+\family typewriter
+More tools -> View Source
+\family default
 )
 \end_layout
 
@@ -1072,9 +1093,13 @@ Developer -> Page Source
 @
 \end_layout
 
+\begin_layout Subsection
+XML
+\end_layout
+
 \begin_layout Standard
 XML is a markup language used to store data in self-describing (no metadata
- needed) way, often with a hierarchical structure.
+ needed) format, often with a hierarchical structure.
  It consists of sets of elements (also known as nodes) with tags that identify/n
 ame the elements, with some similarity to HTML.
  Some examples of the use of XML include serving as the underlying format
@@ -1260,11 +1285,7 @@ XPath
 xml2
 \emph default
  is a new package from RStudio for reading XML and HTML.
- Finally 
-\emph on
-rvest
-\emph default
- is a package that helps with scraping information from HTML pages.
+ 
 \end_layout
 
 \begin_layout Subsection
@@ -1526,14 +1547,21 @@ HTTP requests
 \end_layout
 
 \begin_layout Standard
-First as was noted as a sidenote earlier, we can use RCurl to access secure
- http pages (i.e., pages that use https).
+First as was noted as a sidenote earlier, we can use 
+\emph on
+RCurl
+\emph default
+ to access secure http pages (i.e., pages that use https).
  This may not be possible or may be more difficult when using base R functionali
 ty.
 \end_layout
 
 \begin_layout Standard
-Here getURLContent makes a GET request.
+Here 
+\emph on
+getURLContent()
+\emph default
+ makes an HTTP GET request.
 \end_layout
 
 \begin_layout Chunk
@@ -1551,6 +1579,21 @@ Sometime specific information can be downloaded simply by constructing a
  static URL.
  Suppose we want to get data off of Yahoo Finance.
  By going to 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+
+\backslash
+
+\end_layout
+
+\end_inset
+
+
 \begin_inset CommandInset href
 LatexCommand href
 target "http://finance.yahoo.com/q/hp?s=DATA+Historical+Prices"
@@ -1559,24 +1602,31 @@ target "http://finance.yahoo.com/q/hp?s=DATA+Historical+Prices"
 
 , we can enter a date range and a company and see the HTML output, which
  we could download and extract the data from using tools seen in this Unit.
- But often we'll see a download link (or we can see the HTTP request by
- using features of the browser (e.g., 
-\family typewriter
-Ctrl-Shift-q
-\family default
- in Firefox or 
-\family typewriter
-More Tools -> Developer Tools -> Network
-\family default
- in Chrome) and if we look at the URL associated with that link, we can
- see it looks like this:
+ But often we'll see a download link, and if we look at the URL associated
+ with that link, we can see it looks like this: 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+
+\backslash
+
+\end_layout
+
+\end_inset
+
+
 \begin_inset CommandInset href
 LatexCommand href
 target "http://real-chart.finance.yahoo.com/table.csv?s=AAPL&d=7&e=30&f=2015&g=d&a=2&b=27&c=2014&ignore=.csv"
 
 \end_inset
 
-.
+, where the stuff at the end specifies inputs passed to the server separated
+ by `&', in this case the date range information.
  So we could more easily download the data using that URL, which we can
  fairly easily construct using string processing in bash, R, or Python (more
  in Unit 4).
@@ -1596,11 +1646,25 @@ target "http://real-chart.finance.yahoo.com/table.csv?s=AAPL&d=7&e=30&f=2015&g=d
 \end_layout
 
 \begin_layout Standard
+More generally, rather than looking at the URL associated with a link we
+ may need to view the actual HTTP request sent by our browser to the server.
+ We can do this using features of the browser (e.g., 
+\family typewriter
+Ctrl-Shift-q
+\family default
+ in Firefox or 
+\family typewriter
+More Tools -> Developer Tools -> Network
+\family default
+ in Chrome)
+\end_layout
+
+\begin_layout Standard
 In some cases we may need to send a lot of information as part of the URL
  in a GET request.
  If it gets to be too long (e.g,, more than 2048 characters) many web servers
  will reject the request.
- Instead we may need to use http POST.
+ Instead we may need to use an HTTP POST request.
  A typical request would have syntax like this, supposing that the inputs
  were named 
 \emph on
@@ -1608,9 +1672,7 @@ start-year
 \emph default
  and 
 \emph on
-end-year
-\emph default
-.
+end-year.
 \end_layout
 
 \begin_layout Chunk
@@ -1673,7 +1735,7 @@ target "http://data.worldbank.org/developers/climate-data-api"
 
 .
  Following that documentation we can download monthly average precipitation
- data for 1980-1999 for the US (ISO3 code 'USA').
+ data for 1980-1999 for the US (ISO3 code `USA').
 \end_layout
 
 \begin_layout Chunk

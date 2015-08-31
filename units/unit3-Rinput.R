@@ -22,6 +22,8 @@ unique(dat2[ ,2])
 ## hmmm, what happened to the blank values this time?
 which(dat[ ,2] == "")
 dat2[which(dat[, 2] == "")[1], ] # deconstruct it!
+
+# using 'colClasses'
 sequ <- read.table('hivSequ.csv', sep = ',', header = TRUE,
   colClasses = c('integer','integer','character',
     'character','numeric','integer'))
@@ -32,7 +34,7 @@ sapply(sequ, class)
 ## @knitr readLines
 dat <- readLines('../data/precip.txt')
 id <- as.factor(substring(dat, 4, 11) )
-year <- substring(dat, 17, 20)
+year <- substring(dat, 18, 21)
 year[1:5]
 class(year)
 year <- as.integer(substring(dat, 18, 21))
@@ -47,11 +49,13 @@ dat <- readLines("http://www.stat.berkeley.edu/~paciorek/index.html")
 
 ## @knitr curl
 library(curl)
-# equivalent to readLines(url("https://cran.r-project.org")):
-cran <- readLines("https://cran.r-project.org")
-cran <- readLines(curl("https://cran.r-project.org"))
+# equivalent to readLines(url("https://wikipedia.org")):
+# reports that https not supported by default method:
+wikip <- readLines("https://wikipedia.org")
 
-## @knitr streaming, cache=TRUE
+wikip <- readLines(curl("https://wikipedia.org"))
+
+## @knitr streaming
 con <- file("../data/precip.txt", "r")
 ## "r" for 'read' - you can also open files for writing with "w"
 ## (or "a" for appending)
@@ -64,11 +68,12 @@ for(i in 1:ceiling(nLines / blockSize)){
 }
 close(con)
 
-## @knitr stream-curl, cache=TRUE
+## @knitr stream-curl
 library(jsonlite)
 URL <- "http://www.stat.berkeley.edu/share/paciorek/2008.csv.gz"
 con <- gzcon(curl(URL, open = "r"))
-for(i in 1:10) {
+# url() would work here for http too
+for(i in 1:8) {
 	print(i)
 	print(system.time(tmp <- readLines(con, n = 100000)))
 	print(tmp[1])
@@ -80,6 +85,8 @@ dat <- readLines('../data/precip.txt')
 con <- textConnection(dat[1], "r")
 read.fwf(con, c(3,8,4,2,4,2))
 
+## @knitr
+
 ### 2.2 The readr package
 
 ## @knitr readr
@@ -88,11 +95,13 @@ setwd('~/staff/workshops/r-bootcamp-2015/data')
 system.time(dat <- read.csv('airline.csv', stringsAsFactors = FALSE)) 
 system.time(dat2 <- read_csv('airline.csv'))
 
+## @knitr
+
 #####################################################
 # 3: Webscraping and working with XML and JSON
 #####################################################
 
-### 3.1 Reading HTML and XML
+### 3.1 Reading HTML 
 
 
 ## @knitr https
@@ -123,12 +132,16 @@ doc <- htmlParse("http://www.nytimes.com")
 storyDivs <- getNodeSet(doc, "//h2[@class = 'story-heading']")
 sapply(storyDivs, xmlValue)[1:5]
 
+## @knitr
+
+### 3.2 XML
+
 ## @knitr xml
 doc <- xmlParse("http://api.kivaws.org/v1/loans/newest.xml")
 data <- xmlToList(doc, addAttributes = FALSE)
 names(data)
 length(data$loans)
-data$loans[[2]]
+data$loans[[2]][c('name', 'activity', 'sector', 'location', 'loan_amount')]
 # let's try to get the loan data into a data frame
 loansNode <- xmlRoot(doc)[["loans"]]
 loans <- xmlToDataFrame(xmlChildren(loansNode))
@@ -136,21 +149,26 @@ head(loans)
 # suppose we only want the country locations of the loans
 countries <- sapply(xmlChildren(loansNode), function(node) 
    xmlValue(node[['location']][['country']]))
+countries[1:10]
 countries <- sapply(xmlChildren(loansNode), function(node) 
    xmlValue(node$location$country)) # node is not a standard list...
 
-### 3.2 Reading JSON
+## @knitr
+
+### 3.3 Reading JSON
 
 ## @knitr json
 library(jsonlite)
-data <- fromJSON("http://api.kivaws.org/v1/loans/newest.json", nullValue = NA)
+data <- fromJSON("http://api.kivaws.org/v1/loans/newest.json")
 names(data)
 class(data$loans) # nice!
 head(data$loans)
 
-### 3.3 Using web APIs to get data
+## @knitr
 
-### 3.3.1 HTTP requests
+### 3.4 Using web APIs to get data
+
+### 3.4.1 HTTP requests
 
 ## @knitr http-get
 URL <- "https://en.wikipedia.org/wiki/List_of_countries_and_dependencies_by_population"
@@ -160,16 +178,20 @@ tbls <- readHTMLTable(html)
 
 ## @knitr http-get2
 txt <- getForm("http://ichart.finance.yahoo.com/table.csv", 
-s = "AAPL", a = 2, b = 27, c = 2014, d = 7, e = 30, f = 2015, g = "d", ignore = ".csv")
+s = "AAPL", a = 2, b = 27, c = 2014, d = 7, e = 30, f = 2015,
+               g = "d", ignore = ".csv")
 aapl <- read.csv(textConnection(txt))
 head(aapl)
 
 ## @knitr http-post
 URL <- "http://somewhere.com"
-txt <- postForm(URL, "start-year" = "1995", "end-year" = "2005", style = "post")
+txt <- postForm(URL, "start-year" = "1995", "end-year" = "2005",
+                style = "post")
 result <- readHTMLTable(txt, header = TRUE)
 
-### 3.3.2 REST- and SOAP-based web services
+## @knitr
+
+### 3.4.2 REST- and SOAP-based web services
 
 ## @knitr REST
 times <- c(1980, 1999)
@@ -177,8 +199,11 @@ countryCode <- 'USA'
 baseURL <- "http://climatedataapi.worldbank.org/climateweb/rest/v1/country"
 type <- "mavg"
 var <- "pr"
-data <- read.csv(paste(baseURL, type, var, times[1], times[2], paste0(countryCode, '.csv'), sep = '/'))
+data <- read.csv(paste(baseURL, type, var, times[1], times[2],
+                       paste0(countryCode, '.csv'), sep = '/'))
 head(data)
+
+## @knitr
 
 #####################################################
 # 4: Output from R
@@ -221,6 +246,7 @@ city <- "Boston"
 sprintf("The temperature in %s was %.4f C.", city, temps[1])
 sprintf("The temperature in %s was %9.4f C.", city, temps[1])
 
+## @knitr
 
 #####################################################
 # 5: File and string encodings
