@@ -581,12 +581,10 @@ readLines()
 \end_layout
 
 \begin_layout Chunk
-
 <<readLines>>=
 \end_layout
 
 \begin_layout Chunk
-
 @
 \end_layout
 
@@ -625,12 +623,10 @@ connection
 \end_layout
 
 \begin_layout Chunk
-
 <<connections, eval=FALSE>>=
 \end_layout
 
 \begin_layout Chunk
-
 @
 \end_layout
 
@@ -648,12 +644,10 @@ curl
 \end_layout
 
 \begin_layout Chunk
-
 <<curl>>=
 \end_layout
 
 \begin_layout Chunk
-
 @
 \end_layout
 
@@ -703,12 +697,10 @@ readLines()
 \end_layout
 
 \begin_layout Chunk
-
 <<streaming, eval=FALSE>>=
 \end_layout
 
 \begin_layout Chunk
-
 @
 \end_layout
 
@@ -721,12 +713,10 @@ curl()
 \end_layout
 
 \begin_layout Chunk
-
 <<stream-curl, eval=TRUE, cache=TRUE>>=
 \end_layout
 
 \begin_layout Chunk
-
 @
 \end_layout
 
@@ -750,12 +740,10 @@ con
 \end_layout
 
 \begin_layout Chunk
-
 <<text-connection>>=
 \end_layout
 
 \begin_layout Chunk
-
 @
 \end_layout
 
@@ -877,12 +865,10 @@ read_csv()
 \end_layout
 
 \begin_layout Chunk
-
 <<readr>>=
 \end_layout
 
 \begin_layout Chunk
-
 @
 \end_layout
 
@@ -976,12 +962,10 @@ curl()
 \end_layout
 
 \begin_layout Chunk
-
 <<https>>=
 \end_layout
 
 \begin_layout Chunk
-
 @
 \end_layout
 
@@ -1022,12 +1006,10 @@ help(getHTMLLinks)
 \end_layout
 
 \begin_layout Chunk
-
 <<htmlLinks>>=
 \end_layout
 
 \begin_layout Chunk
-
 @
 \end_layout
 
@@ -1047,12 +1029,10 @@ getNodeSet()
 \end_layout
 
 \begin_layout Chunk
-
 <<XPath>>=
 \end_layout
 
 \begin_layout Chunk
-
 @
 \end_layout
 
@@ -1084,12 +1064,10 @@ More tools -> View Source
 \end_layout
 
 \begin_layout Chunk
-
 <<XPath2>>=
 \end_layout
 
 \begin_layout Chunk
-
 @
 \end_layout
 
@@ -1260,12 +1238,10 @@ target "http://api.kivaws.org/v1/loans/newest.xml"
 \end_layout
 
 \begin_layout Chunk
-
 <<xml>>=
 \end_layout
 
 \begin_layout Chunk
-
 @
 \end_layout
 
@@ -1498,12 +1474,10 @@ target "http://api.kivaws.org/v1/loans/newest.json"
 \end_layout
 
 \begin_layout Chunk
-
 <<json>>=
 \end_layout
 
 \begin_layout Chunk
-
 @
 \end_layout
 
@@ -1565,12 +1539,10 @@ getURLContent()
 \end_layout
 
 \begin_layout Chunk
-
 <<http-get>>=
 \end_layout
 
 \begin_layout Chunk
-
 @
 \end_layout
 
@@ -1636,12 +1608,10 @@ target "http://real-chart.finance.yahoo.com/table.csv?s=AAPL&d=7&e=30&f=2015&g=d
 \end_layout
 
 \begin_layout Chunk
-
 <<http-get2>>=
 \end_layout
 
 \begin_layout Chunk
-
 @
 \end_layout
 
@@ -1676,12 +1646,10 @@ end-year.
 \end_layout
 
 \begin_layout Chunk
-
 <<http-post, eval=FALSE>>=
 \end_layout
 
 \begin_layout Chunk
-
 @
 \end_layout
 
@@ -1691,6 +1659,15 @@ RCurl can handle other kinds of HTTP requests such as PUT and DELETE.
  to download a cookie in the first interaction with the HTTP server and
  then send that cookie with later interactions.
  More details are available in the Nolan and Temple Lang book.
+\end_layout
+
+\begin_layout Standard
+Finally, an alternative to RCurl is the 
+\emph on
+httr
+\emph default
+ package, which has a separate function for each type of HTTP request, e.g.,
+ GET, POST, PUT, DELETE.
 \end_layout
 
 \begin_layout Subsubsection
@@ -1739,12 +1716,10 @@ target "http://data.worldbank.org/developers/climate-data-api"
 \end_layout
 
 \begin_layout Chunk
-
 <<REST>>=
 \end_layout
 
 \begin_layout Chunk
-
 @
 \end_layout
 
@@ -1887,12 +1862,10 @@ print()
 \end_layout
 
 \begin_layout Chunk
-
 <<print>>=
 \end_layout
 
 \begin_layout Chunk
-
 @
 \end_layout
 
@@ -1905,12 +1878,10 @@ cat()
 \end_layout
 
 \begin_layout Chunk
-
 <<cat, eval=FALSE>>=
 \end_layout
 
 \begin_layout Chunk
-
 @
 \end_layout
 
@@ -1972,12 +1943,10 @@ f
 \end_layout
 
 \begin_layout Chunk
-
 <<sprintf>>=
 \end_layout
 
 \begin_layout Chunk
-
 @
 \end_layout
 
@@ -2048,12 +2017,10 @@ In US installations of R, the default encoding is UTF-8; note that various
 \end_layout
 
 \begin_layout Chunk
-
 <<locale>>=
 \end_layout
 
 \begin_layout Chunk
-
 @
 \end_layout
 
@@ -2066,12 +2033,10 @@ iconv()
 \end_layout
 
 \begin_layout Chunk
-
 <<iconv>>=
 \end_layout
 
 \begin_layout Chunk
-
 @
 \end_layout
 
@@ -2081,12 +2046,10 @@ You can also mark a string with an encoding, so R knows how to display it
 \end_layout
 
 \begin_layout Chunk
-
 <<encoding>>=
 \end_layout
 
 \begin_layout Chunk
-
 @
 \end_layout
 
@@ -2100,12 +2063,10 @@ An R error message with "multi-byte string" in the message often indicates
 \end_layout
 
 \begin_layout Chunk
-
 <<encoding-error>>=
 \end_layout
 
 \begin_layout Chunk
-
 @
 \end_layout
 
