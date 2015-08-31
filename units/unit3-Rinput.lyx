@@ -1,0 +1,2051 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\begin_preamble
+\usepackage{times,graphics}
+%\renewcommand{\baselinestretch}{1.5}
+\hypersetup{unicode=true, pdfusetitle,
+bookmarks=true,bookmarksnumbered=false,bookmarksopen=false,
+ breaklinks=false,pdfborder={0 0 1},backref=false,colorlinks=true,}
+\end_preamble
+\use_default_options false
+\begin_modules
+knitr
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 12
+\spacing onehalf
+\use_hyperref false
+\papersize letterpaper
+\use_geometry true
+\use_amsmath 1
+\use_esint 0
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 1in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Chunk
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<setup, include=FALSE>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+## I use = but I can replace it with <-; set code/output width to be 68
+\end_layout
+
+\begin_layout Plain Layout
+
+library(knitr)
+\end_layout
+
+\begin_layout Plain Layout
+
+options(replace.assign=TRUE, width=56)
+\end_layout
+
+\begin_layout Plain Layout
+
+read_chunk('unit3-Rinput.R')
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Title
+Reading and Writing to/from R
+\end_layout
+
+\begin_layout Standard
+References: 
+\end_layout
+
+\begin_layout Itemize
+Adler
+\end_layout
+
+\begin_layout Itemize
+Chambers
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "R intro manual"
+target "http://cran.r-project.org/doc/manuals/R-intro.html"
+
+\end_inset
+
+ on CRAN (R-intro).
+\end_layout
+
+\begin_layout Itemize
+Nolan and Temple Lang, XML and Web Technologies for Data Sciences with R.
+\end_layout
+
+\begin_layout Itemize
+Venables and Ripley, Modern Applied Statistics with S
+\end_layout
+
+\begin_layout Itemize
+Murrell, Introduction to Data Technologies.
+ 
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "R Data Import/Export manual"
+target "http://cran.r-project.org/doc/manuals/R-data.html"
+
+\end_inset
+
+ on CRAN (R-data).
+ 
+\end_layout
+
+\begin_layout Section
+Data storage and formats (outside R)
+\end_layout
+
+\begin_layout Standard
+At this point, we're going to turn to reading data into R and manipulating
+ text, including regular expressions.
+ We'll focus on doing these manipulations in R, but the concepts involved
+ in reading in data, database manipulations, and regular expressions are
+ common to other languages, so familarity with these in R should allow you
+ to pick up other tools more easily.
+ The main downside to working with datasets in R is that the entire dataset
+ resides in memory, so R is not so good for dealing with very large datasets.
+ More on alternatives in a bit.
+ Another common frustration is controlling how the variables are interpreted
+ (numeric, character, factor) when reading data into a data frame.
+\end_layout
+
+\begin_layout Standard
+R has the capability to read in a wide variety of file formats.
+ Let's get a feel for some of the common ones.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Flat text files (ASCII files): data are often provided as simple text files.
+ Often one has one record or observation per row and each column or field
+ is a different variable or type of information about the record.
+ Such files can either have a fixed number of characters in each field (fixed
+ width format) or a special character (a delimiter) that separates the fields
+ in each row.
+ Common delimiters are tabs, commas, one or more spaces, and the pipe (|).
+ Common file extensions are 
+\emph on
+.txt
+\emph default
+ and 
+\emph on
+.csv
+\emph default
+.
+ Metadata (information about the data) is often stored in a separate file.
+ I like CSV files but if you have files where the data contain commas, other
+ delimiters can be good.
+ Text can be put in quotes in CSV files.
+ This was difficult to deal with in the shell in PS1, but 
+\emph on
+read.table()
+\emph default
+ in R handles this situation.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+One occasionally tricky difficulty is as follows.
+ If you have a text file created in Windows, the line endings are coded
+ differently than in UNIX (a newline (the ASCII character
+\emph on
+ 
+\backslash
+n
+\emph default
+) and a carriage return (the ASCII character 
+\emph on
+
+\backslash
+r
+\emph default
+) in Windows vs.
+ only a newline in UNIX).
+ There are UNIX utilities (
+\emph on
+fromdos
+\emph default
+ in Ubuntu, including the SCF Linux machines and 
+\emph on
+dos2unix
+\emph default
+ in other Linux distributions) that can do the necessary conversion.
+ If you see 
+\emph on
+^M
+\emph default
+ at the end of the lines in a file, that's the tool you need.
+ Alternatively, if you open a UNIX file in Windows, it may treat all the
+ lines as a single line.
+ You can fix this with 
+\emph on
+todos
+\emph default
+ or 
+\emph on
+unix2dos
+\emph default
+.
+\begin_inset Newline newline
+\end_inset
+
+As a side note, Macs have line endings as in UNIX, but before Mac OS X,
+ lines ended only in a carriage return.
+ There is a UNIX utility call 
+\emph on
+mac2unix
+\emph default
+ that can convert such text files.
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+In some contexts, such as textual data and bioinformatics data, the data
+ may in a text file with one piece of information per row, but without meaningfu
+l columns/fields.
+ 
+\end_layout
+
+\begin_layout Enumerate
+In scientific contexts, netCDF (
+\emph on
+.nc
+\emph default
+) (and the related HDF5) are popular format for gridded data that allows
+ for highly-efficient storage and contains the metadata within the file.
+ The basic structure of a netCDF file is that each variable is an array
+ with multiple dimensions (e.g., latitude, longitude, and time), and one can
+ also extract the values of and metadata about each dimension.
+ The 
+\emph on
+ncdf4
+\emph default
+ package in R nicely handles working with netCDF files.
+ These are examples of a binary format, which is not (easily) human readable
+ but can be more space-efficient and faster to work with (because they can
+ allow random access into the data rather than requiring sequential reading).
+ 
+\end_layout
+
+\begin_layout Enumerate
+Data may also be in text files in formats designed for data interchange
+ between various languages, in particular XML or JSON.
+ These formats are self-describing; namely the metadata is part of the file.
+ The 
+\emph on
+XML
+\emph default
+ and 
+\emph on
+jsonlite
+\emph default
+ packages are useful for reading and writing from these formats.
+ 
+\end_layout
+
+\begin_layout Enumerate
+You may be scraping information on the web, so dealing with text files in
+ various formats, including HTML.
+ The 
+\emph on
+XML
+\emph default
+ package is also useful for reading HTML.
+\end_layout
+
+\begin_layout Enumerate
+Data may already be in a database or in the data storage of another statistical
+ package (
+\emph on
+Stata
+\emph default
+, 
+\emph on
+SAS
+\emph default
+, 
+\emph on
+SPSS
+\emph default
+, etc.).
+ The 
+\emph on
+foreign
+\emph default
+ package in R has excellent capabilities for importing Stata (
+\emph on
+read.dta()
+\emph default
+), SPSS (
+\emph on
+read.spss()
+\emph default
+), SAS (
+\emph on
+read.ssd()
+\emph default
+ and, for XPORT files, 
+\emph on
+read.xport()
+\emph default
+), and dbf (a common database format) (
+\emph on
+read.dbf()
+\emph default
+), among others.
+\end_layout
+
+\begin_layout Enumerate
+For Excel, there are capabilities to read an Excel file (see the 
+\emph on
+readxl
+\emph default
+ and 
+\emph on
+XLConnect
+\emph default
+ package among others), but you can also just go into Excel and export as
+ a CSV file or the like and then read that into R.
+ In general, it's best not to pass around data files as Excel or other spreadshe
+et format files because (1) Excel is proprietary, so someone may not have
+ Excel and the format is subject to change, (2) Excel imposes limits on
+ the number of rows, (3) one can easily manipulate text files such as CSV
+ using UNIX tools, but this is not possible with an Excel file, (4) Excel
+ files often have more than one sheet, graphs, macros, etc., so they're not
+ a data storage format per se.
+\end_layout
+
+\begin_layout Section
+Reading data from text files into R
+\end_layout
+
+\begin_layout Subsection
+Core R functions
+\end_layout
+
+\begin_layout Standard
+
+\emph on
+read.table()
+\emph default
+ is probably the most commonly-used function for reading in data.
+ It reads in delimited files (
+\emph on
+read.csv()
+\emph default
+ and 
+\emph on
+read.delim()
+\emph default
+ are special cases of 
+\emph on
+read.table()
+\emph default
+).
+ The key arguments are the delimiter (the 
+\emph on
+sep
+\emph default
+ argument) and whether the file contains a header, a line with the variable
+ names.
+ We can use 
+\emph on
+read.fwf()
+\emph default
+ to read from a fixed width text file into a data frame.
+ 
+\end_layout
+
+\begin_layout Standard
+The most difficult part of reading in such files can be dealing with how
+ R determines the classes of the fields that are read in.
+ There are a number of arguments to 
+\emph on
+read.table()
+\emph default
+ and 
+\emph on
+read.fwf()
+\emph default
+ that allow the user to control the classes.
+ One difficulty is that character and numeric fields are sometimes read
+ in as factors.
+ Basically 
+\emph on
+read.table()
+\emph default
+ tries to read fields in as numeric and if it finds non-numeric and non-NA
+ values, it reads in as a factor.
+ This can be annoying.
+\end_layout
+
+\begin_layout Standard
+Let's work through a couple examples.
+ Before we do that, let's look at the arguments to 
+\emph on
+read.table()
+\emph default
+.
+ Note that 
+\emph on
+sep=''
+\emph default
+ separates on any amount of white space.
+ In the code chunk below, I've told 
+\emph on
+knitr
+\emph default
+ not to print the output to the PDF; we'll see the full output in class
+ during the demo.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<readcsv, eval=FALSE>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Note that you can avoid reading in one or more columns by specifying 
+\emph on
+NULL
+\emph default
+ as the column class for those columns to be omitted.
+ Also, specifying the 
+\emph on
+colClasses
+\emph default
+ argument explicitly should make for faster file reading.
+\end_layout
+
+\begin_layout Standard
+If possible, it's a good idea to look through the input file in the shell
+ or in an editor before reading into R to catch such issues in advance.
+ Using 
+\emph on
+less
+\emph default
+ on 
+\emph on
+RTADataSub.csv
+\emph default
+ would have revealed these various issues, but note that 
+\emph on
+RTADataSub.csv
+\emph default
+ is a 1000-line subset of a much larger file of data available from the
+ kaggle.com website.
+\end_layout
+
+\begin_layout Standard
+The basic function 
+\emph on
+scan()
+\emph default
+ simply reads everything in, ignoring lines, which works well and very quickly
+ if you are reading in a numeric vector or matrix.
+ 
+\emph on
+scan()
+\emph default
+ is also useful if your file is free format - i.e., if it's not one line per
+ observation, but just all the data one value after another; in this case
+ you can use 
+\emph on
+scan()
+\emph default
+ to read it in and then format the resulting character or numeric vector
+ as a matrix with as many columns as fields in the dataset.
+ Remember that the default is to fill the matrix by column.
+\end_layout
+
+\begin_layout Standard
+If the file is not nicely arranged by field (e.g., if it has ragged lines),
+ we'll need to do some more work.
+ 
+\emph on
+readLines()
+\emph default
+ will read in each line into a separate character vector, after which we
+ can process the lines using text manipulation.
+ Here's an example from some US meteorological data where I know from metadata
+ (not provided here) that the 4-11th values are an identifier, the 17-20th
+ are the year, the 22-23rd the month, etc.
+\end_layout
+
+\begin_layout Chunk
+
+<<>>=
+\end_layout
+
+\begin_layout Chunk
+
+a <-5 
+\end_layout
+
+\begin_layout Chunk
+print(a)
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Chunk
+
+\end_layout
+
+\begin_layout Chunk
+
+<<readLines>>=
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+Note that for 
+\emph on
+precip.txt
+\emph default
+, reading in using 
+\emph on
+read.fwf()
+\emph default
+ would be a good strategy.
+\end_layout
+
+\begin_layout Standard
+R allows you to read in not just from a file but from a more general construct
+ called a 
+\emph on
+connection
+\emph default
+.
+ Here are some examples of connections:
+\end_layout
+
+\begin_layout Chunk
+
+<<connections, eval=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+The 
+\emph on
+curl()
+\emph default
+ function in the 
+\emph on
+curl
+\emph default
+ package provides some nice features for reading off the internet, including
+ being able to use https.
+\end_layout
+
+\begin_layout Chunk
+
+<<curl>>=
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Chunk
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+The curl() function provides a drop-in replacement for base url() with better
+ performance and support for http 2.0, ssl (https, ftps), gzip, deflate and
+ other libcurl goodies.
+ This interface is implemented using the RConnection API in order to support
+ incremental processing of both binary and text streams.
+ What this means is that curl() should be able to do anything that url()
+ does, but better.
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If a file is large, we may want to read it in in chunks (of lines), do some
+ computations to reduce the size of things, and iterate.
+ 
+\emph on
+read.table()
+\emph default
+, 
+\emph on
+read.fwf()
+\emph default
+ and 
+\emph on
+readLines()
+\emph default
+ all have the arguments that let you read in a fixed number of lines.
+ To read-on-the-fly in blocks, we need to first establish the connection
+ and then read from it sequentially.
+ 
+\end_layout
+
+\begin_layout Chunk
+
+<<streaming, eval=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+Here's an example of using 
+\emph on
+curl()
+\emph default
+ to do this for a file on the web.
+\end_layout
+
+\begin_layout Chunk
+
+<<stream-curl, eval=TRUE>>=
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+One cool trick that can come in handy is to create a 
+\emph on
+text connection
+\emph default
+.
+ This lets you 'read' from an R character vector as if it were a text file
+ and could be handy for processing text.
+ For example, you could then use 
+\emph on
+read.fwf()
+\emph default
+ applied to 
+\emph on
+con
+\emph default
+.
+\end_layout
+
+\begin_layout Chunk
+
+<<text-connection>>=
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+We can create connections for writing output too.
+ Just make sure to open the connection first.
+\end_layout
+
+\begin_layout Standard
+Be careful with the directory separator in Windows files: you can either
+ do 
+\emph on
+
+\begin_inset Quotes eld
+\end_inset
+
+C:
+\backslash
+
+\backslash
+mydir
+\backslash
+
+\backslash
+file.txt
+\begin_inset Quotes erd
+\end_inset
+
+
+\emph default
+ or 
+\emph on
+
+\begin_inset Quotes eld
+\end_inset
+
+C:/mydir/file.txt
+\begin_inset Quotes erd
+\end_inset
+
+
+\emph default
+, but not 
+\emph on
+
+\begin_inset Quotes eld
+\end_inset
+
+C:
+\backslash
+mydir
+\backslash
+file.txt
+\begin_inset Quotes erd
+\end_inset
+
+
+\emph default
+.
+ 
+\end_layout
+
+\begin_layout Subsection
+The 
+\emph on
+readr
+\emph default
+ package
+\end_layout
+
+\begin_layout Standard
+
+\emph on
+readr
+\emph default
+ is intended to deal with some of the shortcomings of the base R functions,
+ such as defaulting to 
+\family typewriter
+stringsAsFactors=FALSE
+\family default
+, leaving column names unmodified, and recognizing dates/times.
+ It reads data in much more quickly than the base R equivalents.
+ See 
+\begin_inset CommandInset href
+LatexCommand href
+name "this blog post"
+target "http://blog.rstudio.org/2015/04/09/readr-0-1-0/"
+
+\end_inset
+
+.
+ Some of the readr functions that are analogs to the comparably-named base
+ R functions are 
+\emph on
+read_csv()
+\emph default
+, 
+\emph on
+read_fwf()
+\emph default
+, 
+\emph on
+read_lines()
+\emph default
+, and 
+\emph on
+read_table()
+\emph default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Let's try out 
+\emph on
+read_csv()
+\emph default
+ on the airline dataset used in the R bootcamp.
+\end_layout
+
+\begin_layout Chunk
+
+<<readr>>=
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Chunk
+
+\end_layout
+
+\begin_layout Subsection
+Reading data quickly
+\end_layout
+
+\begin_layout Standard
+In addition to the tips above, there are a number of packages that allow
+ one to read large data files quickly, in particular 
+\emph on
+data.table
+\emph default
+, 
+\emph on
+ff
+\emph default
+, and 
+\emph on
+bigmemory
+\emph default
+.
+ In general, these provide the ability to load datasets into R without having
+ them in memory, but rather stored in clever ways on disk that allow for
+ fast access.
+ Metadata is stored in R.
+ More on this in the unit on big data.
+ 
+\end_layout
+
+\begin_layout Section
+Webscraping and working with XML and JSON
+\end_layout
+
+\begin_layout Standard
+The new book 
+\emph on
+XML and Web Technologies for Data Sciences with R
+\emph default
+ by Deb Nolan (UCB Stats faculty) and Duncan Temple Lang (UCB Stats PhD
+ alumnus) provides extensive information about getting and processing data
+ off of the web, including interacting with web services such as SOAP and
+ REST and programmatically handling authentication.
+ 
+\end_layout
+
+\begin_layout Standard
+Here are some UNIX command-line tools to help in webscraping and working
+ with files in formats such as JSON, XML, and HTML: 
+\begin_inset CommandInset href
+LatexCommand href
+target "http://jeroenjanssens.com/2013/09/19/seven-command-line-tools-for-data-science.html"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+We'll cover a few examples of this sort of thing briefly here, but going
+ into the details of HTML and XML formatting and navigating the structure
+ of such pages is beyond the scope of what we can cover in detail.
+ The key thing is to know that these tools exist so that you can learn how
+ to use them if faced with such formats.
+\end_layout
+
+\begin_layout Subsection
+Reading HTML and XML
+\end_layout
+
+\begin_layout Standard
+Let's see a brief example of reading in HTML tables.
+ One lesson here is not to write a lot of your own code to do something
+ that someone else has probably already written a package for.
+ Unfortunately, there are some issues with dealing with https that we need
+ to work around, rather than directly using readHTMLTable as can be done
+ with http.
+ So we need to use 
+\emph on
+curl()
+\emph default
+ to get the HTML via https and then use the XML package functionality for
+ parsing the HTML.
+\end_layout
+
+\begin_layout Chunk
+
+<<https>>=
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+
+\emph on
+readHTMLTable()
+\emph default
+ works by using 
+\emph on
+htmlParse()
+\emph default
+ and then looking for 
+\emph on
+<table>
+\emph default
+ tags.
+ In the example above, there were multiple tables, so we need to either
+ specify or (after reading all of them) extract the one of interest.
+ There is a related function, 
+\emph on
+readHTMLList()
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+It's often useful to be able to extract the hyperlinks in an HTML document.
+ In this example, I'm not sure why the relative argument doesn't seem to
+ work in terms of giving back absolute paths.
+\end_layout
+
+\begin_layout Chunk
+
+<<htmlLinks>>=
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+More generally, we may want to read an HTML document and parse it into its
+ components.
+ Here we use the 
+\emph on
+XPath
+\emph default
+ language in the second argument to getNodeSet.
+ XPath can also be used for navigating through XML documents.
+\end_layout
+
+\begin_layout Chunk
+
+<<XPath>>=
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+The XPath syntax above in 
+\family typewriter
+getNodeSet()
+\family default
+ says to find all of the nodes that are named `a' and have attribute 
+\emph on
+href
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Here's another example of extracting specific components of information
+ from a webpage.
+ We can explore the underlying HTML source in advance of writing our code
+ by looking at the page source (e.g., in Firefox see 
+\family typewriter
+Developer -> Page Source
+\family default
+)
+\end_layout
+
+\begin_layout Chunk
+
+<<XPath2>>=
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+XML is a markup language used to store data in self-describing (no metadata
+ needed) way, often with a hierarchical structure.
+ It consists of sets of elements (also known as nodes) with tags that identify/n
+ame the elements, with some similarity to HTML.
+ Some examples of the use of XML include serving as the underlying format
+ for Microsoft Office and Google Docs documents and for the KML language
+ used for spatial information in Google Earth.
+\end_layout
+
+\begin_layout Standard
+Here's a brief example.
+ The book with id attribute 
+\emph on
+bk101
+\emph default
+ is an element; the author of the book is also an element that is a child
+ element of the book.
+ The id attribute allows us to uniquely identify the element.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{verbatim}
+\end_layout
+
+\begin_layout Plain Layout
+
+<?xml version="1.0"?>
+\end_layout
+
+\begin_layout Plain Layout
+
+<catalog>
+\end_layout
+
+\begin_layout Plain Layout
+
+   <book id="bk101">
+\end_layout
+
+\begin_layout Plain Layout
+
+      <author>Gambardella, Matthew</author>
+\end_layout
+
+\begin_layout Plain Layout
+
+      <title>XML Developer's Guide</title>
+\end_layout
+
+\begin_layout Plain Layout
+
+      <genre>Computer</genre>
+\end_layout
+
+\begin_layout Plain Layout
+
+      <price>44.95</price>
+\end_layout
+
+\begin_layout Plain Layout
+
+      <publish_date>2000-10-01</publish_date>
+\end_layout
+
+\begin_layout Plain Layout
+
+      <description>An in-depth look at creating applications with XML.</descripti
+on>
+\end_layout
+
+\begin_layout Plain Layout
+
+   </book>
+\end_layout
+
+\begin_layout Plain Layout
+
+   <book id="bk102">
+\end_layout
+
+\begin_layout Plain Layout
+
+      <author>Ralls, Kim</author>
+\end_layout
+
+\begin_layout Plain Layout
+
+      <title>Midnight Rain</title>
+\end_layout
+
+\begin_layout Plain Layout
+
+      <genre>Fantasy</genre>
+\end_layout
+
+\begin_layout Plain Layout
+
+      <price>5.95</price>
+\end_layout
+
+\begin_layout Plain Layout
+
+      <publish_date>2000-12-16</publish_date>
+\end_layout
+
+\begin_layout Plain Layout
+
+     <description>A former architect battles corporate zombies, an evil
+ sorceress, and her own childhood to become queen of the world.</description>
+\end_layout
+
+\begin_layout Plain Layout
+
+   </book>
+\end_layout
+
+\begin_layout Plain Layout
+
+</catalog>
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{verbatim}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We can read XML documents into R using 
+\emph on
+xmlToList()
+\emph default
+ or 
+\emph on
+xmlToDataFrame()
+\emph default
+.
+ Here's an example of working with lending data from the Kiva lending non-profit.
+ You can see the XML format in a browser at 
+\begin_inset CommandInset href
+LatexCommand href
+target "http://api.kivaws.org/v1/loans/newest.xml"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Chunk
+
+<<xml>>=
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+XML documents have a tree structure with information at nodes.
+ As above with HTML, one can use the 
+\emph on
+XPath
+\emph default
+ language for navigating the tree and finding and extracting information
+ from the node(s) of interest.
+\end_layout
+
+\begin_layout Standard
+
+\emph on
+xml2
+\emph default
+ is a new package from RStudio for reading XML and HTML.
+ Finally 
+\emph on
+rvest
+\emph default
+ is a package that helps with scraping information from HTML pages.
+\end_layout
+
+\begin_layout Subsection
+Reading JSON
+\end_layout
+
+\begin_layout Standard
+JSON files are structured as 
+\begin_inset Quotes eld
+\end_inset
+
+attribute-value
+\begin_inset Quotes erd
+\end_inset
+
+ pairs (aka 
+\begin_inset Quotes eld
+\end_inset
+
+key-value
+\begin_inset Quotes erd
+\end_inset
+
+ pairs), often with a hierarchical structure.
+ Here's a brief example:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Preview
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{verbatim}
+\end_layout
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\begin_layout Plain Layout
+
+  "firstName": "John",
+\end_layout
+
+\begin_layout Plain Layout
+
+  "lastName": "Smith",
+\end_layout
+
+\begin_layout Plain Layout
+
+  "isAlive": true,
+\end_layout
+
+\begin_layout Plain Layout
+
+  "age": 25,
+\end_layout
+
+\begin_layout Plain Layout
+
+  "address": {
+\end_layout
+
+\begin_layout Plain Layout
+
+    "streetAddress": "21 2nd Street",
+\end_layout
+
+\begin_layout Plain Layout
+
+    "city": "New York",
+\end_layout
+
+\begin_layout Plain Layout
+
+    "state": "NY",
+\end_layout
+
+\begin_layout Plain Layout
+
+    "postalCode": "10021-3100"
+\end_layout
+
+\begin_layout Plain Layout
+
+  },
+\end_layout
+
+\begin_layout Plain Layout
+
+  "phoneNumbers": [
+\end_layout
+
+\begin_layout Plain Layout
+
+    {
+\end_layout
+
+\begin_layout Plain Layout
+
+      "type": "home",
+\end_layout
+
+\begin_layout Plain Layout
+
+      "number": "212 555-1234"
+\end_layout
+
+\begin_layout Plain Layout
+
+    },
+\end_layout
+
+\begin_layout Plain Layout
+
+    {
+\end_layout
+
+\begin_layout Plain Layout
+
+      "type": "office",
+\end_layout
+
+\begin_layout Plain Layout
+
+      "number": "646 555-4567"
+\end_layout
+
+\begin_layout Plain Layout
+
+    }
+\end_layout
+
+\begin_layout Plain Layout
+
+  ],
+\end_layout
+
+\begin_layout Plain Layout
+
+  "children": [],
+\end_layout
+
+\begin_layout Plain Layout
+
+  "spouse": null
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{verbatim}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+A set of key-value pairs is a named array and is placed inside braces (squiggly
+ brackets).
+ Note the nestedness of arrays within arrays (e.g., address within the overarching
+ person array and the use of square brackets for unnamed arrays (i.e., vectors
+ of information), as well as the use of different types: character strings,
+ numbers, null, and (not shown) boolean/logical values.
+ JSON and XML can be used in similar ways, but JSON is less verbose than
+ XML.
+\end_layout
+
+\begin_layout Standard
+We can read JSON into R using 
+\emph on
+fromJSON()
+\emph default
+ in the 
+\emph on
+jsonlite
+\emph default
+ package.
+ Let's play again with the Kiva data.
+ The same data that we had worked with in XML format is also available in
+ JSON format: 
+\begin_inset CommandInset href
+LatexCommand href
+target "http://api.kivaws.org/v1/loans/newest.json"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Chunk
+
+<<json>>=
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+One disadvantage of JSON is that it is not set up to deal with missing values,
+ infinity, etc.
+\end_layout
+
+\begin_layout Subsection
+Using web APIs to get data
+\end_layout
+
+\begin_layout Standard
+Here we'll see briefly some examples of making requests over the Web to
+ get data.
+ We'll see simple http requests, as well as use of RESTful and SOAP APIs.
+ The package 
+\emph on
+RCurl
+\emph default
+ is the main package useful for a wide variety of such functionality.
+ Note that all of the functionality I describe below is also possible within
+ bash using either 
+\emph on
+wget
+\emph default
+ or 
+\emph on
+curl
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+We've already seen some basic downloading of html from webpages, which uses
+ the HTTP request GET.
+\end_layout
+
+\begin_layout Subsubsection
+HTTP requests
+\end_layout
+
+\begin_layout Standard
+First as was noted as a sidenote earlier, we can use RCurl to access secure
+ http pages (i.e., pages that use https).
+ This may not be possible or may be more difficult when using base R functionali
+ty.
+\end_layout
+
+\begin_layout Standard
+Here getURLContent makes a GET request.
+\end_layout
+
+\begin_layout Chunk
+
+<<http-get>>=
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+Sometime specific information can be downloaded simply by constructing a
+ static URL.
+ Suppose we want to get data off of Yahoo Finance.
+ By going to 
+\begin_inset CommandInset href
+LatexCommand href
+target "http://finance.yahoo.com/q/hp?s=DATA+Historical+Prices"
+
+\end_inset
+
+, we can enter a date range and a company and see the HTML output, which
+ we could download and extract the data from using tools seen in this Unit.
+ But often we'll see a download link (or we can see the HTTP request by
+ using features of the browser (e.g., 
+\family typewriter
+Ctrl-Shift-q
+\family default
+ in Firefox or 
+\family typewriter
+More Tools -> Developer Tools -> Network
+\family default
+ in Chrome) and if we look at the URL associated with that link, we can
+ see it looks like this:
+\begin_inset CommandInset href
+LatexCommand href
+target "http://real-chart.finance.yahoo.com/table.csv?s=AAPL&d=7&e=30&f=2015&g=d&a=2&b=27&c=2014&ignore=.csv"
+
+\end_inset
+
+.
+ So we could more easily download the data using that URL, which we can
+ fairly easily construct using string processing in bash, R, or Python (more
+ in Unit 4).
+ A more sophisticated way to do the download is to pass the request in a
+ structured way with named input parameters.
+ This request is easier to construct programmatically.
+\end_layout
+
+\begin_layout Chunk
+
+<<http-get2>>=
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+In some cases we may need to send a lot of information as part of the URL
+ in a GET request.
+ If it gets to be too long (e.g,, more than 2048 characters) many web servers
+ will reject the request.
+ Instead we may need to use http POST.
+ A typical request would have syntax like this, supposing that the inputs
+ were named 
+\emph on
+start-year
+\emph default
+ and 
+\emph on
+end-year
+\emph default
+.
+\end_layout
+
+\begin_layout Chunk
+
+<<http-post, eval=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+RCurl can handle other kinds of HTTP requests such as PUT and DELETE.
+ Finally, some websites use cookies to keep track of users and you may need
+ to download a cookie in the first interaction with the HTTP server and
+ then send that cookie with later interactions.
+ More details are available in the Nolan and Temple Lang book.
+\end_layout
+
+\begin_layout Subsubsection
+REST- and SOAP-based web services
+\end_layout
+
+\begin_layout Standard
+While webscraping with requests such as just described can work well, it
+ was a bit convoluted.
+ We basically needed to deconstruct the queries a browser makes and then
+ mimic that behavior, in some cases having to parse HTML output to get at
+ data.
+ If the webpage changes even a little bit, our carefully constructed query
+ syntax may fail.
+ An alternative is to use a web service specifically designed to serve data
+ or allow other interactions via an Applications Programming Interface (API).
+ Both REST and SOAP use HTTP requests; we'll focus on REST as it is more
+ common and simpler.
+\end_layout
+
+\begin_layout Standard
+When using REST, we access 
+\emph on
+resources
+\emph default
+, which might be a Facebook account or a database of stock quotes.
+ The resource may return information in the form of an HTML file or JSON,
+ CSV or something else.
+ REST generally uses XML or JSON as the format for the request and what
+ is returned.
+\end_layout
+
+\begin_layout Standard
+Let's see an example of accessing climate model output data from the World
+ Bank.
+ The API is documented here: 
+\begin_inset CommandInset href
+LatexCommand href
+target "http://data.worldbank.org/developers/climate-data-api"
+
+\end_inset
+
+.
+ Following that documentation we can download monthly average precipitation
+ data for 1980-1999 for the US (ISO3 code 'USA').
+\end_layout
+
+\begin_layout Chunk
+
+<<REST>>=
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+The Nolan and Temple Lang book provides a number of examples of different
+ ways of authenticating with web services that control access to the service.
+\end_layout
+
+\begin_layout Standard
+Finally, some web services allow us to pass information to the service in
+ addition to just getting data or information.
+ E.g., you can programmatically interact with your Facebook, Dropbox, and
+ Google Drive accounts using REST based on HTTP POST, PUT, and DELETE.
+ Authentication is of course important in these contexts and some times
+ you would first authenticate with your login and password and receive a
+ token.
+ This token would then be used in susequent interactions in the same session.
+ 
+\end_layout
+
+\begin_layout Section
+Output from R
+\end_layout
+
+\begin_layout Subsection
+Writing output to files
+\end_layout
+
+\begin_layout Standard
+Functions for text output are generally analogous to those for input.
+ 
+\emph on
+write.table()
+\emph default
+,
+\series bold
+ 
+\series default
+\emph on
+write.csv()
+\emph default
+, and
+\series bold
+ 
+\series default
+\emph on
+writeLines()
+\emph default
+ are analogs of 
+\emph on
+read.table()
+\emph default
+, 
+\emph on
+read.csv()
+\emph default
+, and 
+\emph on
+readLines()
+\emph default
+.
+ 
+\emph on
+write_csv()
+\emph default
+ is the 
+\emph on
+readr
+\emph default
+ version of write.csv.
+
+\emph on
+ write()
+\emph default
+ can be used to write a matrix to a file, specifying the number of columns
+ desired.
+ 
+\emph on
+cat()
+\emph default
+ can be used when you want fine control of the format of what is written
+ out and allows for outputting to a connection (e.g., a file).
+
+\emph on
+ 
+\end_layout
+
+\begin_layout Standard
+
+\emph on
+toJSON()
+\emph default
+ in the
+\emph on
+ jsonlite
+\emph default
+ package will output R objects as JSON.
+ One use of JSON as output from R would be to 
+\emph on
+serialize
+\emph default
+ the information in an R object such that it could be read into another
+ program.
+\end_layout
+
+\begin_layout Standard
+And of course you can always save to an R data file using 
+\emph on
+save.image()
+\emph default
+ (to save all the objects in the workspace or 
+\emph on
+save()
+\emph default
+ to save only some objects.
+ Happily this is platform-independent so can be used to transfer R objects
+ between different OS.
+\end_layout
+
+\begin_layout Subsection
+Formatting output
+\end_layout
+
+\begin_layout Standard
+
+\emph on
+cat()
+\emph default
+ is a good choice for printing a message to the screen, often better than
+ 
+\emph on
+print()
+\emph default
+, which is an object-oriented method.
+ You generally won't have control over how the output of a 
+\emph on
+print()
+\emph default
+ statement is actually printed.
+\end_layout
+
+\begin_layout Chunk
+
+<<print>>=
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+We can do more to control formatting with 
+\emph on
+cat()
+\emph default
+:
+\end_layout
+
+\begin_layout Chunk
+
+<<cat, eval=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+One thing to be aware of when writing out numerical data is how many digits
+ are included.
+ For example, the default with 
+\emph on
+write()
+\emph default
+ and
+\series bold
+\emph on
+ 
+\series default
+cat()
+\emph default
+ is the number of digits displayed to the screen, controlled by 
+\family typewriter
+\emph on
+options()$digits
+\family default
+\emph default
+.
+ (to change this, do
+\family typewriter
+\series bold
+ 
+\series default
+options(digits = 5)
+\family default
+ or specify as an argument to 
+\emph on
+write()
+\emph default
+ or 
+\emph on
+cat()
+\emph default
+) If you want finer control, use 
+\emph on
+sprintf()
+\emph default
+, e.g.
+ to print out print out temperatures as reals (
+\begin_inset Quotes eld
+\end_inset
+
+
+\emph on
+f
+\emph default
+
+\begin_inset Quotes erd
+\end_inset
+
+=floating points) with four decimal places and nine total character positions,
+ followed by a C for Celsius:
+\end_layout
+
+\begin_layout Chunk
+
+<<sprintf>>=
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Section
+File and string encodings
+\end_layout
+
+\begin_layout Standard
+Text (either in the form of a file with regular language in it or a data
+ file with fields of character strings) will often contain characters that
+ are not part of the [limited ASCII set of characters](http://en.wikipedia.org/wik
+i/ASCII), which has 
+\begin_inset Formula $2^{7}=128$
+\end_inset
+
+ characters and control codes; basically what you see on a standard US keyboard.
+ So for non-ASCII files you may need to deal with the text encoding (the
+ mapping of individual characters (including tabs, returns, etc.) to a set
+ of numeric codes).
+ There are a variety of different encodings for text files, with different
+ ones common on different operating systems.
+ UTF-8 is an encoding for the Unicode characters that include more than
+ 110,000 characters from 100 different alphabets/scripts.
+ It's widely used on the web.
+ Latin-1 encodes a small subset of Unicode and contains the characters used
+ in many European languages (e.g., letters with accents).
+ 
+\end_layout
+
+\begin_layout Standard
+The UNIX utility 
+\emph on
+file
+\emph default
+, e.g.
+ 
+\family typewriter
+file tmp.txt
+\family default
+ can help provide some information.
+ 
+\emph on
+read.table()
+\emph default
+ in R takes arguments 
+\emph on
+fileEncoding
+\emph default
+ and 
+\emph on
+encoding
+\emph default
+ that address this issue.
+ The UNIX utility 
+\emph on
+iconv
+\emph default
+ and the R function 
+\emph on
+iconv()
+\emph default
+ can help with conversions.
+\end_layout
+
+\begin_layout Standard
+In US installations of R, the default encoding is UTF-8; note that various
+ types of information are interpreted in US English with the encoding UTF-8:
+\end_layout
+
+\begin_layout Chunk
+
+<<locale>>=
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+With strings already in R, you can convert between encodings with 
+\emph on
+iconv()
+\emph default
+:
+\end_layout
+
+\begin_layout Chunk
+
+<<iconv>>=
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+You can also mark a string with an encoding, so R knows how to display it
+ correctly:
+\end_layout
+
+\begin_layout Chunk
+
+<<encoding>>=
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+An R error message with "multi-byte string" in the message often indicates
+ an encoding issue.
+ In particular errors often arise when trying to do string manipulations
+ in R on character vectors for which the encoding is not properly set.
+ Here's an example with some Internet logging data that we used last year
+ in 243 in a problem set and which caused some problems.
+\end_layout
+
+\begin_layout Chunk
+
+<<encoding-error>>=
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\end_body
+\end_document

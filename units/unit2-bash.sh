@@ -1,3 +1,13 @@
+##########################################################
+### Demo code for Unit 2 of Stat243, 
+### "The bash shell, UNIX utilities, and version control"
+### Chris Paciorek, August 2015
+##########################################################
+
+#####################################################
+# 3: bash shell examples
+#####################################################
+
 ## @knitr git-clone
 git clone https://github.com/berkeley-stat243/stat243-fall-2014
 
