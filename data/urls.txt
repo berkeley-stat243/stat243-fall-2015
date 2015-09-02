@@ -1,0 +1,8 @@
+Feb 20 07:00:40 myMachine xinetd[30530]: START: rsync pid=27953 from=192.168.1.1
+Feb 20 07:00:41 myMachine xinetd[30530]: START: rsync pid=27954 from=10.1.2.1
+Feb 20 07:35:47 myMachine sshd[28046]: Accepted publickey for user1 from 192.168.3.1 port 58868 ssh2
+Feb 20 07:35:52 myMachine sshd[28048]: Received disconnect from 192.168.3.1: 11: disconnected by user
+Feb 20 07:42:07 myMachine sshd[28075]: Accepted publickey for user1 from 192.168.3.1 port 59173 ssh2
+Feb 20 07:42:09 myMachine sshd[28077]: Received disconnect from 192.168.3.1: 11: disconnected by user
+Feb 25 08:47:48 myMachine sudo:   user3 : TTY=pts/2 ; PWD=/var/log ; USER=root ; COMMAND=/bin/more secure
+Feb 25 08:47:59 myMachine sudo:   user3 : TTY=pts/2 ; PWD=/var/log ; USER=root ; COMMAND=/bin/cp secure /home/user3
