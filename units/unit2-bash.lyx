@@ -76,7 +76,7 @@ knitr
 \begin_body
 
 \begin_layout Title
-The bash shell, UNIX utilities, and version control
+Unit 2: The bash shell, UNIX utilities, and version control
 \end_layout
 
 \begin_layout Standard
@@ -117,22 +117,18 @@ Reference: Newham and Rosenblatt, Learning the bash Shell, 2nd ed.
 \end_layout
 
 \begin_layout Chunk
-
 <<setup, include=FALSE>>=
 \end_layout
 
 \begin_layout Chunk
-
 opts_chunk$set(engine='bash', eval=FALSE)
 \end_layout
 
 \begin_layout Chunk
-
 read_chunk('unit2-bash.sh')
 \end_layout
 
 \begin_layout Chunk
-
 @
 \end_layout
 
@@ -217,12 +213,10 @@ First let's get the files from last year's 243 class so we have a sufficient
 \end_layout
 
 \begin_layout Chunk
-
 <<git-clone>>=
 \end_layout
 
 \begin_layout Chunk
-
 @
 \end_layout
 
@@ -241,12 +235,10 @@ coop.txt
 \end_layout
 
 \begin_layout Chunk
-
 <<data>>=
 \end_layout
 
 \begin_layout Chunk
-
 @
 \end_layout
 
@@ -266,12 +258,10 @@ Our second mission
 \end_layout
 
 \begin_layout Chunk
-
 <<mission2>>=
 \end_layout
 
 \begin_layout Chunk
-
 @
 \end_layout
 
@@ -290,12 +280,10 @@ example.pdf
 \end_layout
 
 \begin_layout Chunk
-
 <<mission3>>=
 \end_layout
 
 \begin_layout Chunk
-
 @
 \end_layout
 
@@ -325,22 +313,18 @@ Our fourth mission
 \end_layout
 
 \begin_layout Chunk
-
 <<mission4>>=
 \end_layout
 
 \begin_layout Chunk
-
 @
 \end_layout
 
 \begin_layout Chunk
-
 <<mission4a>>=
 \end_layout
 
 \begin_layout Chunk
-
 @
 \end_layout
 
@@ -354,22 +338,18 @@ Our fifth mission
 \end_layout
 
 \begin_layout Chunk
-
 <<mission5>>=
 \end_layout
 
 \begin_layout Chunk
-
 @
 \end_layout
 
 \begin_layout Chunk
-
 <<mission5a>>=
 \end_layout
 
 \begin_layout Chunk
-
 @
 \end_layout
 
