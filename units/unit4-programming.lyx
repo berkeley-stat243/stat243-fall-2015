@@ -1,0 +1,8441 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\begin_preamble
+\usepackage{/accounts/gen/vis/paciorek/latex/paciorek-asa,times,graphics}
+\input{/accounts/gen/vis/paciorek/latex/paciorekMacros}
+%\renewcommand{\baselinestretch}{1.5}
+\hypersetup{unicode=true, pdfusetitle,
+bookmarks=true,bookmarksnumbered=false,bookmarksopen=false,
+ breaklinks=false,pdfborder={0 0 1},backref=false,colorlinks=true,}
+\end_preamble
+\use_default_options false
+\begin_modules
+knitr
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 12
+\spacing onehalf
+\use_hyperref false
+\papersize letterpaper
+\use_geometry true
+\use_amsmath 1
+\use_esint 0
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 1in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Chunk
+<<setup, include=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+if(exists('format.bytes')) rm(format.bytes)
+\end_layout
+
+\begin_layout Chunk
+library(knitr) 
+\end_layout
+
+\begin_layout Chunk
+library(pryr)
+\end_layout
+
+\begin_layout Chunk
+opts_chunk$set(fig.path = 'figure/listings-') 
+\end_layout
+
+\begin_layout Chunk
+options(replace.assign = TRUE, width = 55) 
+\end_layout
+
+\begin_layout Chunk
+read_chunk("unit4-programming.R")
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Title
+Unit 4: Programming concepts, illustrated with R
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Note that in this material, I often sneak an extra trick into my example
+ code.
+ Focus first on the key thing I'm illustrating and then you might absorb
+ the extra trick.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This unit covers a variety of programming concepts, illustrated in the context
+ of R.
+ So it also serves as a way to teach advanced features of R.
+ In general the concepts are relevant in other languages, though other languages
+ may implement things differently.
+ One of my goals here for us to think about why things are the way they
+ are in R.
+ I.e., what principles were used in creating the language and what choices
+ were made? While other languages use different principles and made difference
+ choices, understanding what R does in detail will be helpful when you are
+ learning another language.
+\end_layout
+
+\begin_layout Standard
+References: 
+\end_layout
+
+\begin_layout Itemize
+Books on R listed on the syllabus: Adler, Chambers, Wickham
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "R intro manual"
+target "http://cran.r-project.org/doc/manuals/R-intro.html"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset href
+LatexCommand href
+name "R language manual"
+target "http://cran.r-project.org/doc/manuals/R-lang.html"
+
+\end_inset
+
+ (R-lang), both on CRAN.
+\end_layout
+
+\begin_layout Itemize
+Venables and Ripley, Modern Applied Statistics with S
+\end_layout
+
+\begin_layout Itemize
+Murrell, Introduction to Data Technologies
+\end_layout
+
+\begin_layout Standard
+I'm going to try to refer to R syntax as 
+\emph on
+statements
+\emph default
+, where a statement is any code that is a valid, complete R expression.
+ I'll try not to use the term 
+\emph on
+expression
+\emph default
+, as this actually means a specific type of object within the R language,
+ as seen in Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Computing-on-the"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Section
+Interacting with the operating system from R and controlling R's behavior
+\end_layout
+
+\begin_layout Standard
+I'll assume everyone knows about the following functions/functionality in
+ R:
+\end_layout
+
+\begin_layout Standard
+
+\emph on
+getwd(), setwd(), source(), pdf(), save(), save.image(), load()
+\end_layout
+
+\begin_layout Itemize
+To run UNIX commands from within R, use 
+\emph on
+system()
+\emph default
+, as follows, noting that we can save the result of a system call to an
+ R object:
+\end_layout
+
+\begin_deeper
+\begin_layout Chunk
+<<system>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+There are also a bunch of functions that will do specific queries of the
+ filesystem, including
+\end_layout
+
+\begin_deeper
+\begin_layout Chunk
+<<file-commands, eval=TRUE>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+There are some tools for dealing with differences between operating systems.
+ Here's an example:
+\end_layout
+
+\begin_deeper
+\begin_layout Chunk
+<<list-files>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+To get some info on the system you're running on:
+\end_layout
+
+\begin_deeper
+\begin_layout Chunk
+<<sys-info>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+To see some of the options that control how R behaves, try the 
+\emph on
+options()
+\emph default
+ function.
+ The 
+\emph on
+width
+\emph default
+ option changes the number of characters of width printed to the screen,
+ while the 
+\emph on
+max.print
+\emph default
+ option prevents too much of a large object from being printed to the screen.
+ The 
+\emph on
+digits
+\emph default
+ option changes the number of digits of numbers printed to the screen (but
+ be careful as this can be deceptive if you then try to compare two numbers
+ based on what you see on the screen).
+\end_layout
+
+\begin_deeper
+\begin_layout Chunk
+<<options>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Use 
+\family typewriter
+Ctrl-C
+\family default
+ to interrupt execution.
+ This will generally back out gracefully, returning you to a state as if
+ the command had not been started.
+ Note that if R is exceeding memory availability, there can be a long delay.
+ This can be frustrating, particularly since a primary reason you would
+ want to interrupt is when R runs out of memory.
+\end_layout
+
+\begin_layout Itemize
+The 
+\begin_inset CommandInset href
+LatexCommand href
+name "R mailing list archives"
+target "http://tolstoy.newcastle.edu.au/R/"
+
+\end_inset
+
+ are very helpful for getting help - always search the archive before posting
+ a question.
+ More info on where to find R help in Unit 5 on debugging.
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\emph on
+sessionInfo()
+\emph default
+ gives information on the current R session - it's a good idea to include
+ this information (and information on the operating system such as from
+ 
+\emph on
+Sys.info()
+\emph default
+) when you ask for help on a mailing list
+\end_layout
+
+\begin_deeper
+\begin_layout Chunk
+<<sessionInfo>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\end_deeper
+\end_deeper
+\begin_layout Itemize
+Any code that you wanted executed automatically when starting R can be placed
+ in 
+\emph on
+~/.Rprofile
+\emph default
+ (or in individual 
+\emph on
+.Rprofile
+\emph default
+ files in specific directories).
+ This could include loading packages (see below), sourcing files that contain
+ user-defined functions that you commonly use (you can also put the function
+ code itself in 
+\emph on
+.Rprofile
+\emph default
+), assigning variables, and specifying options via 
+\emph on
+options()
+\emph default
+.
+\end_layout
+
+\begin_layout Itemize
+You can have an R script act as a shell script (like running a bash shell
+ script) as follows.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+Write your R code in a text file, say 
+\emph on
+exampleRscript.R
+\emph default
+.
+ 
+\end_layout
+
+\begin_layout Enumerate
+As the first line of the file, include 
+\family typewriter
+#!/usr/bin/Rscript
+\family default
+ (like 
+\family typewriter
+#!/bin/bash
+\family default
+ in a bash shell file, as seen in Unit 2).
+ 
+\end_layout
+
+\begin_layout Enumerate
+Make the R code file executable with 
+\emph on
+chmod
+\emph default
+: 
+\family typewriter
+chmod ugo+x exampleRscript.R
+\family default
+.
+\end_layout
+
+\begin_layout Enumerate
+Run the script from the command line: 
+\family typewriter
+./exampleRscript.R
+\end_layout
+
+\begin_layout Standard
+If you want to pass arguments into your script, you can do so as long as
+ you set up the R code to interpret the incoming arguments:
+\end_layout
+
+\begin_layout Chunk
+<<rscript-args, eval=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\end_deeper
+\begin_layout Chunk
+<<rscript-run, engine='bash'>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Section
+Packages and namespaces
+\end_layout
+
+\begin_layout Standard
+One of the killer apps of R is the extensive collection of add-on packages
+ on 
+\begin_inset CommandInset href
+LatexCommand href
+name "CRAN (www.cran.r-project.org)"
+target "www.cran.r-project.org"
+
+\end_inset
+
+ that provide much of R's functionality.
+ To make use of a package it needs to be installed on your system (using
+ 
+\emph on
+install.packages()
+\emph default
+ once only) and loaded into R (using 
+\emph on
+library()
+\emph default
+ every time you start R).
+ 
+\end_layout
+
+\begin_layout Standard
+Some packages are 
+\emph on
+installed
+\emph default
+ by default with R and of these, some are 
+\emph on
+loaded
+\emph default
+ by default, while others require a call to 
+\emph on
+library()
+\emph default
+.
+ For packages I use a lot, I install them once and then load them automatically
+ every time I start R using my 
+\emph on
+~/.Rprofile
+\emph default
+ file.
+ 
+\end_layout
+
+\begin_layout Standard
+If you want to sound like an R expert, make sure to call them 
+\emph on
+packages
+\emph default
+ and not 
+\emph on
+libraries
+\emph default
+.
+ A 
+\emph on
+library
+\emph default
+ is the location in the directory structure where the packages are installed/sto
+red.
+ 
+\end_layout
+
+\begin_layout Paragraph
+Loading packages
+\end_layout
+
+\begin_layout Standard
+You can use 
+\emph on
+library()
+\emph default
+ to either (1) make a package available (loading it), (2) get an overview
+ of the package, or (3) (if called without arguments) to see all the installed
+ packages.
+\begin_inset Quotes erd
+\end_inset
+
+foo
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Chunk
+<<library>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+If you run 
+\family typewriter
+library()
+\family default
+, you'll notice that some of the packages are in a system directory and
+ some are in your home directory.
+ Packages often depend on other packages.
+ In general, if one package depends on another, R will load the dependency,
+ but if the dependency is installed locally (see below), R may not find
+ it automatically and you may have to use 
+\emph on
+library()
+\emph default
+ to load the dependency first.
+ 
+\emph on
+.libPaths()
+\emph default
+ shows where R looks for packages on your system and 
+\emph on
+searchpaths()
+\emph default
+ shows where individual packages are loaded from.
+ Looking the help info for 
+\emph on
+.libPaths()
+\emph default
+ gives some information about how R decides what locations to look in for
+ packages.
+ 
+\end_layout
+
+\begin_layout Chunk
+<<libpaths>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Paragraph
+Installing packages
+\end_layout
+
+\begin_layout Standard
+If a package is on CRAN but not on your system, you can install it easily
+ (usually).
+ You don't need root permission on a machine to install a package (though
+ sometimes you run into hassles if you are installing it just as a user,
+ so if you have administrative privileges it may help to use them).
+ Of course in RStudio, you can install via the GUI.
+ If you are installing by specifying the 
+\emph on
+lib
+\emph default
+ argument, you'd generally want to use whatever user-owned directory (i.e.,
+ library) is specified by the output of 
+\emph on
+.libPaths()
+\emph default
+.
+ If none of them are user-owned, you may need to add a library via .libPaths()
+ (e.g., by putting something like 
+\family typewriter
+.libPaths('~/Rlibs')
+\family default
+ in your 
+\emph on
+.Rprofile
+\emph default
+).
+\end_layout
+
+\begin_layout Chunk
+<<install, eval=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+Note that R will generally install the package in a reasonable place if
+ you omit the 
+\emph on
+lib
+\emph default
+ argument.
+ 
+\end_layout
+
+\begin_layout Standard
+You can also download the zipped source file from CRAN and install from
+ the file; see the help page for 
+\emph on
+install.packages()
+\emph default
+.
+ This is called 
+\begin_inset Quotes eld
+\end_inset
+
+installing from source.
+ On Windows and Mac, you'll need to do something like this:
+\end_layout
+
+\begin_layout Chunk
+<<install-source, eval=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+If you've downloaded the binary package (files ending in .tgz for Mac and
+ .zip for Windows) and want to install the package directly from the file,
+ use the syntax above but omit the 
+\family typewriter
+type='source'
+\family default
+ argument.
+\end_layout
+
+\begin_layout Standard
+The difference between the source package and the binary package is that
+ the source package has the raw R (and C and Fortran, in some cases) code
+ while the binary package has all the code in a binary/non-text format,
+ including any C and Fortran code having been compiled.
+ To install a source package with C or Fortran code in it, you'll need to
+ have developer/command-line tools (e.g., 
+\emph on
+XCode
+\emph default
+ on Mac or 
+\emph on
+Rtools.exe
+\emph default
+ on Windows) installed on your system so that you have a compiler.
+\end_layout
+
+\begin_layout Paragraph
+Package namespaces
+\end_layout
+
+\begin_layout Standard
+The objects in a package (primarily functions, but also data) are in their
+ own workspaces, and are accessible after you load the package using 
+\emph on
+library()
+\emph default
+, but are not directly visible when you use 
+\emph on
+ls()
+\emph default
+.
+ In other words, each package has its own 
+\emph on
+namespace
+\emph default
+.
+ Namespaces help achieve modularity and avoid having zillions of objects
+ all reside in your workspace.
+ We'll talk more about this when we talk about scope and environments.
+ If we want to see the objects in a package's namespace, we can do the following
+:
+\end_layout
+
+\begin_layout Chunk
+<<namespace>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Section
+Text manipulation, string processing and regular expressions (regex)
+\end_layout
+
+\begin_layout Standard
+Text manipulations in R have a number of things in common with Perl, Python
+ and UNIX, as many of these evolved from UNIX.
+ When I use the term 
+\emph on
+string
+\emph default
+ here, I'll be referring to any sequence of characters that may include
+ numbers, white space, and special characters, rather than to the character
+ class of R objects.
+ The string or strings will generally be stored as R character vectors.
+\end_layout
+
+\begin_layout Standard
+For material on string processing in R, see the tutorial, 
+\emph on
+String processing in R and Python
+\emph default
+.
+ (You can ignore the sections on Python for now.) That tutorial then refers
+ to the 
+\emph on
+Using the bash shell
+\emph default
+ tutorial for details on regular expressions.
+ Finally, to test out regular expression syntax see 
+\begin_inset CommandInset href
+LatexCommand href
+target "this online tool"
+
+\end_inset
+
+ (pointed out to me by a Stat243 student last year).
+\end_layout
+
+\begin_layout Standard
+Recall that when characters are used for special purposes, we need to escape
+ them if we want them interpreted as the actual character.
+ In the second example, the first backslash says to interpret the next backslash
+ literally, with the second backslash being used to indicate that the bracket
+ should be interpreted literally.
+\end_layout
+
+\begin_layout Chunk
+<<escape>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+For more information, see 
+\family typewriter
+?Quotes
+\family default
+ in R.
+ Be careful when cutting and pasting from documents that are not text files
+ as you may paste in something that looks like a single or double quote,
+ but which R cannot interpret as a quote because it's some other ASCII quote
+ character.
+ If you paste in a 
+\begin_inset Quotes eld
+\end_inset
+
+ from PDF, it will not be interpreted as a standard R double quote mark.
+\end_layout
+
+\begin_layout Chunk
+<<paste-quote>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Subsection
+Regex practice
+\end_layout
+
+\begin_layout Standard
+Write a regular expression that matches the following:
+\end_layout
+
+\begin_layout Enumerate
+Only the strings 
+\begin_inset Quotes eld
+\end_inset
+
+cat
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+at
+\begin_inset Quotes erd
+\end_inset
+
+, and 
+\begin_inset Quotes eld
+\end_inset
+
+t
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate
+The strings 
+\begin_inset Quotes eld
+\end_inset
+
+cat
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+caat
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+caaat
+\begin_inset Quotes erd
+\end_inset
+
+, etc.
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Quotes eld
+\end_inset
+
+dog
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+Dog
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+dOg
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+doG
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+DOg
+\begin_inset Quotes erd
+\end_inset
+
+, etc.
+ (the word dog in any combination of lower and upper case).
+\end_layout
+
+\begin_layout Enumerate
+Any positive number with or without a decimal point.
+\end_layout
+
+\begin_layout Enumerate
+Any line with exactly two words separated by any amount of whitespace (spaces
+ or tabs).
+ There may or may not be whitespace at the beginning or end of the line.
+\end_layout
+
+\begin_layout Subsection
+Regex/string processing challenges
+\end_layout
+
+\begin_layout Enumerate
+What regex would I use to find a spam-like pattern with digits or non-letters
+ inside a word? E.g., I want to find "V1agra" or "Fancy repl!c@ted watches".
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+[[:alpha:]][[:digit:][:punct:]][[:alpha:]]
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+How would I extract email addresses from lines of text using regular expressions
+ and R string processing?
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+[^[:alnum:]][[:alnum:]][_
+\backslash
+
+\backslash
+.[:alnum:]]*@([_
+\backslash
+
+\backslash
+.[:alnum:]]+
+\backslash
+
+\backslash
+.){1,3}[_
+\backslash
+
+\backslash
+.[:alnum:]]+[^[:alnum:]]
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+Suppose a text string has dates in the form 
+\begin_inset Quotes eld
+\end_inset
+
+Aug-3
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+May-9
+\begin_inset Quotes erd
+\end_inset
+
+, etc.
+ and I want them in the form 
+\begin_inset Quotes eld
+\end_inset
+
+3 Aug
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+9 May
+\begin_inset Quotes erd
+\end_inset
+
+, etc.
+ How would I do this search and replace operation? (Alternatively, how could
+ I do this without using regular expressions at all?) 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+str_replace_all(text, 
+\begin_inset Quotes eld
+\end_inset
+
+(Jan|Feb|...|Dec)-([[:digit:]]{1,2})
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+
+\backslash
+
+\backslash
+2 
+\backslash
+
+\backslash
+1
+\begin_inset Quotes erd
+\end_inset
+
+)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+How would I search for numeric URLs such as in the file 
+\emph on
+urls.txt
+\emph default
+.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+see regExpExample.q
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Types, classes, and object-oriented programming
+\end_layout
+
+\begin_layout Subsection
+Types and classes
+\end_layout
+
+\begin_layout Standard
+You should be familiar with vectors as the basic data structure in R, with
+ character, integer, numeric, etc.
+ classes.
+ Vectors are either 
+\emph on
+atomic vectors
+\emph default
+ or 
+\emph on
+lists
+\emph default
+.
+ Atomic vectors generally contain one of the four following types: 
+\emph on
+logical
+\emph default
+, 
+\emph on
+integer
+\emph default
+, 
+\emph on
+double/numeric
+\emph default
+, and 
+\emph on
+character
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Objects in general have a type, which relates to what kind of values are
+ in the objects and how objects are stored internally in R (i.e., in C).
+ 
+\end_layout
+
+\begin_layout Standard
+Let's look at Adler's Table 7.1 to see some other types.
+ 
+\end_layout
+
+\begin_layout Chunk
+<<typeof>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+Everything in R is an object and all objects have a class.
+ For simple objects class and type are often closely related, but this is
+ not the case for more complicated objects.
+ The class describes what the object contains and standard functions associated
+ with it.
+ In general, you mainly need to know what class an object is rather than
+ its type.
+ Classes can 
+\emph on
+inherit
+\emph default
+ from other classes; for example, the 
+\emph on
+glm
+\emph default
+ class inherits characteristics from the 
+\emph on
+lm
+\emph default
+ class.
+ We'll see more on the details of object-oriented programming shortly.
+\end_layout
+
+\begin_layout Standard
+We can create objects with our own defined class.
+\end_layout
+
+\begin_layout Chunk
+<<class>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Subsection
+Attributes
+\end_layout
+
+\begin_layout Standard
+
+\emph on
+Attributes
+\emph default
+ are information about an object attached to an object as something that
+ looks like a named list.
+ Attributes are often copied when operating on an object.
+ This can lead to some weird-looking formatting:
+\end_layout
+
+\begin_layout Chunk
+<<attr1>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+Thus in an subsequent operations with 
+\emph on
+qs
+\emph default
+, the 
+\emph on
+names
+\emph default
+ attribute will often get carried along.
+ We can get rid of it:
+\end_layout
+
+\begin_layout Chunk
+<<attr2>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+A common use of attributes is that rows and columns may be named in matrices
+ and data frames, and elements in vectors:
+\end_layout
+
+\begin_layout Chunk
+<<attr3>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Subsection
+Assignment and coercion
+\end_layout
+
+\begin_layout Standard
+We assign into an object using either '
+\emph on
+=
+\emph default
+' or '
+\emph on
+<-
+\emph default
+'.
+ A rule of thumb is that for basic assignments where you have an object
+ name, then the assignment operator, and then some code, '
+\emph on
+=
+\emph default
+' is fine, but otherwise use '
+\emph on
+<-
+\emph default
+'.
+\end_layout
+
+\begin_layout Chunk
+<<assign>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+Let's look at these examples to understand the distinction between `=' and
+ `<-' when passing arguments to a function.
+\end_layout
+
+\begin_layout Chunk
+<<assign2>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+What can you tell me about what is going on in each case above?
+\end_layout
+
+\begin_layout Standard
+One situation in which you want to use '
+\emph on
+<-
+\emph default
+' is if it is being used as part of an argument to a function, so that R
+ realizes you're not indicating one of the function arguments, e.g.:
+\end_layout
+
+\begin_layout Chunk
+<<assign3>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+R often treats integers as numerics, but we can force R to store values
+ as integers:
+\end_layout
+
+\begin_layout Chunk
+<<intL>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+We convert between classes using variants on 
+\emph on
+as()
+\emph default
+: e.g., 
+\end_layout
+
+\begin_layout Chunk
+<<as>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+Some common conversions are converting numbers that are being interpreted
+ as characters into actual numbers, converting between factors and characters,
+ and converting between logical TRUE/FALSE vectors and numeric 1/0 vectors.
+ In some cases R will automatically do conversions behind the scenes in
+ a smart way (or occasionally not so smart way).
+ We saw see implicit conversion (also called coercion) when we read in character
+s into R using 
+\emph on
+read.table()
+\emph default
+ - strings are often automatically coerced to factors.
+ Consider these examples of implicit coercion:
+\end_layout
+
+\begin_layout Chunk
+<<coercion>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+Be careful of using factors as indices:
+\end_layout
+
+\begin_layout Chunk
+<<factor-indices>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+What has gone wrong and how does it relate to type coercion?
+\end_layout
+
+\begin_layout Standard
+In other languages, converting between different classes is sometimes called
+ 
+\emph on
+casting
+\emph default
+ a variable.
+\end_layout
+
+\begin_layout Standard
+Here's an example we can work through that will help illustrate how type
+ conversions occur behind the scenes in R.
+\end_layout
+
+\begin_layout Chunk
+<<coercion2>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Chunk
+
+\end_layout
+
+\begin_layout Subsection
+Object-oriented programming
+\end_layout
+
+\begin_layout Standard
+Popular languages that use OOP include C++, Java, and Python.
+ In fact C++ is the object-oriented version of C.
+ Different languages implement OOP in different ways.
+\end_layout
+
+\begin_layout Standard
+The idea of OOP is that all operations are built around objects, which have
+ a class, and methods that operate on objects in the class.
+ Classes are constructed to build on (inherit from) each other, so that
+ one class may be a specialized form of another class, extending the components
+ and methods of the simpler class (e.g., 
+\emph on
+lm
+\emph default
+ and 
+\emph on
+glm
+\emph default
+ objects).
+ 
+\end_layout
+
+\begin_layout Standard
+Note that in more formal OOP languages, all functions are associated with
+ a class, while in R, only some are.
+\end_layout
+
+\begin_layout Standard
+Often when you get to the point of developing OOP code in R, you're doing
+ more serious programming, and you're going to be acting as a software engineer.
+ It's a good idea to think carefully in advance about the design of the
+ classes and methods.
+ 
+\end_layout
+
+\begin_layout Subsubsection
+S3 approach
+\end_layout
+
+\begin_layout Standard
+S3 classes are widely-used, in particular for statistical models in the
+ 
+\emph on
+stats
+\emph default
+ package.
+ S3 classes are very informal in that there's not a formal definition for
+ an S3 class.
+ Instead, an S3 object is just a primitive R object such as a list or vector
+ with additional attributes including a class name.
+ 
+\end_layout
+
+\begin_layout Paragraph
+Inheritance
+\end_layout
+
+\begin_layout Standard
+Let's look at the 
+\emph on
+lm
+\emph default
+ class, which builds on lists, and 
+\emph on
+glm
+\emph default
+ class, which builds on the 
+\emph on
+lm
+\emph default
+ class.
+ Here 
+\emph on
+mod
+\emph default
+ is an object (an instance) of class 
+\emph on
+lm
+\emph default
+.
+ An analogy is the difference between a random variable and a realization
+ of that random variable.
+\end_layout
+
+\begin_layout Chunk
+<<inherit>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+Often S3 classes inherit from lists (i.e., are special cases of lists), so
+ you can obtain components of the object using the $ operator.
+\end_layout
+
+\begin_layout Paragraph
+Creating our own class
+\end_layout
+
+\begin_layout Standard
+We can create an object with a new class as follows:
+\end_layout
+
+\begin_layout Chunk
+<<s3>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+Actually, if we want to create a new class that we'll use again, we want
+ to create a 
+\emph on
+constructor
+\emph default
+ function that initializes new bears:
+\end_layout
+
+\begin_layout Chunk
+<<constructor>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+For those of you used to more formal OOP, the following is probably disconcertin
+g:
+\end_layout
+
+\begin_layout Chunk
+<<s3weird>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Paragraph
+Methods
+\end_layout
+
+\begin_layout Standard
+The real power of OOP comes from defining 
+\emph on
+methods
+\emph default
+.
+ For example,
+\end_layout
+
+\begin_layout Chunk
+<<s3methods, eval=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+Here 
+\emph on
+summary()
+\emph default
+ is a generic method (or generic function) that, based on the type of object
+ given to it (the first argument), dispatches a class-specific function
+ (method) that operates on the object.
+ This is convenient for working with objects using familiar functions.
+ Consider the generic methods 
+\emph on
+plot()
+\emph default
+, 
+\emph on
+print()
+\emph default
+, 
+\emph on
+summary()
+\emph default
+, 
+\emph on
+`[`
+\emph default
+, and others.
+ We can look at a function and easily see that it is a generic method.
+ We can also see what classes have methods for a given generic method.
+\end_layout
+
+\begin_layout Chunk
+<<generic>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+In many cases there will be a default method (here, 
+\emph on
+mean.default()
+\emph default
+), so if no method is defined for the class, R uses the default.
+ Sidenote: arguments to a generic method are passed along to the selected
+ method by passing along the calling environment.
+ 
+\end_layout
+
+\begin_layout Standard
+We can define new generic methods:
+\end_layout
+
+\begin_layout Chunk
+<<new-generic>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+Once 
+\emph on
+UseMethod()
+\emph default
+ is called, R searches for the specific method associated with the class
+ of 
+\emph on
+object
+\emph default
+ and calls that method, without ever returning to the generic method.
+ Let's try this out on our 
+\emph on
+indiv
+\emph default
+ class.
+ In reality, we'd write either 
+\emph on
+summary.indiv()
+\emph default
+ or 
+\emph on
+print.indiv()
+\emph default
+ (and of course the generics for 
+\emph on
+summary
+\emph default
+ and 
+\emph on
+print
+\emph default
+ already exist) but for illustration, I wanted to show how we would write
+ both the generic and the specific method, so I'll write a 
+\emph on
+summarize
+\emph default
+ method.
+\end_layout
+
+\begin_layout Chunk
+<<class-specific>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+Note that the 
+\emph on
+print()
+\emph default
+ function is what is called when you simply type the name of the object,
+ so we can have object information printed out in a structured way.
+ Recall that the output when we type the name of an 
+\emph on
+lm
+\emph default
+ object is NOT simply a regurgitation of the elements of the list - rather
+ 
+\emph on
+print.lm()
+\emph default
+ is called.
+\end_layout
+
+\begin_layout Standard
+Similarly, when we used 
+\family typewriter
+print(object.size(x))
+\family default
+ we were invoking the 
+\emph on
+object_size
+\emph default
+-specific print method which gets the value of the size and then formats
+ it.
+ So there's actually a fair amount going on behind the scenes.
+\end_layout
+
+\begin_layout Standard
+Surprisingly, the 
+\emph on
+summary()
+\emph default
+ method generally doesn't actually print out information; rather it computes
+ things not stored in the original object and returns it as a new class
+ (e.g., class 
+\emph on
+summary.lm
+\emph default
+), which is then automatically printed, per my comment above, using 
+\emph on
+print.summary.lm()
+\emph default
+, unless one assigns it to a new object.
+ Note that 
+\emph on
+print.summary.lm()
+\emph default
+ is hidden from user view.
+\end_layout
+
+\begin_layout Chunk
+<<summary, eval=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Paragraph
+More on inheritance
+\end_layout
+
+\begin_layout Standard
+As noted with 
+\emph on
+lm
+\emph default
+ and 
+\emph on
+glm
+\emph default
+ objects, we can assign more than one class to an object.
+ Here 
+\emph on
+summarize()
+\emph default
+ still works, even though the primary class is 
+\emph on
+grizzly_bear
+\emph default
+.
+\end_layout
+
+\begin_layout Chunk
+<<inherit2>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+The classes should nest within one another with the more specific classes
+ to the left, e.g., here a 
+\emph on
+grizzly_bear
+\emph default
+ would have some additional objects on top of those of a 
+\emph on
+bear
+\emph default
+, perhaps 
+\emph on
+number_of_people_eaten 
+\emph default
+(since grizzly bears are much more dangerous than some other kinds of bears),
+ and perhaps additional or modified methods.
+ 
+\emph on
+grizzly_bear
+\emph default
+ inherits from 
+\emph on
+bear
+\emph default
+, and R uses methods for the first class before methods for the next class(es),
+ unless no such method is defined for the first class.
+ If no methods are defined for any of the classes, R looks for 
+\emph on
+method.default()
+\emph default
+, e.g., 
+\emph on
+print.default()
+\emph default
+, 
+\emph on
+plot.default()
+\emph default
+, etc..
+\end_layout
+
+\begin_layout Paragraph
+Class-specific operators
+\end_layout
+
+\begin_layout Standard
+We can also use operators with our classes.
+ The following example will be a bit silly (it would make more sense with
+ a class that is a mathematical object) but indicates the power of having
+ methods.
+\end_layout
+
+\begin_layout Chunk
+<<class-operators>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Paragraph
+Class-specific replacement functions
+\end_layout
+
+\begin_layout Standard
+We can use replacement functions with our classes.
+ For more on what a replacement function is, see Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Unexpected-functions-and"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+This is again a bit silly but we could do the following.
+ We need to define the generic replacement function and then the class-specific
+ one.
+\end_layout
+
+\begin_layout Chunk
+<<replacement>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Paragraph
+Why use class-specific methods?
+\end_layout
+
+\begin_layout Standard
+We could have implemented different functionality (e.g., for 
+\emph on
+summary()
+\emph default
+) for different objects using a bunch of 
+\emph on
+if
+\emph default
+ statements (or 
+\emph on
+switch()
+\emph default
+) to figure out what class of object is the input, but then we need to have
+ all that checking.
+ Furthermore, we don't control the 
+\emph on
+summary()
+\emph default
+ function, so we would have no way of adding the additional conditions in
+ a big if-else statement.
+ The OOP framework makes things 
+\emph on
+extensible
+\emph default
+, so we can build our own new functionality on what is already in R.
+\end_layout
+
+\begin_layout Paragraph
+Final thoughts
+\end_layout
+
+\begin_layout Standard
+Consider the 
+\emph on
+Date
+\emph default
+ class discussed in the R bootcamp.
+ This is another example of an S3 class, with methods such as 
+\emph on
+julian()
+\emph default
+, 
+\emph on
+weekdays()
+\emph default
+, etc.
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Challenge
+\series default
+: how would you get R to quit immediately, without asking for any more informati
+on, when you simply type '
+\emph on
+q
+\emph default
+' (no parentheses!)? 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Hint: if you type 'q', what function is R going to use?
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+What we've just discussed are the old-style R (and S) object orientation,
+ called S3 methods.
+ The new style is called S4 and we'll discuss it next.
+ S3 is still commonly used, in part because S4 can be slow (or at least
+ it was when I last looked into this a few years ago).
+ S4 is more structured than S3.
+ 
+\end_layout
+
+\begin_layout Subsubsection
+S4 approach
+\end_layout
+
+\begin_layout Standard
+S4 methods are used a lot in 
+\emph on
+bioconductor
+\emph default
+, a project that provides a lot of bioinformatics-related code.
+ They're also used in 
+\emph on
+lme4
+\emph default
+, among other packages.
+ Tools for working with S4 classes are in the 
+\emph on
+methods
+\emph default
+ package.
+\end_layout
+
+\begin_layout Standard
+Note that components of S4 objects are obtained as 
+\family typewriter
+object@component
+\family default
+ so they do not use the usual list syntax.
+ The components are called 
+\emph on
+slots
+\emph default
+, and there is careful checking that the slots are specified and valid when
+ a new object of a class is created.
+ You can use the 
+\emph on
+prototype
+\emph default
+ argument to 
+\emph on
+setClass()
+\emph default
+ to set default values for the slots.
+ There is a default constructor (the method is actually called 
+\emph on
+initialize()
+\emph default
+), but you can modify it.
+ One can create methods for operators and for replacement functions too.
+ For S4 classes, there is a default method invoked when 
+\emph on
+print()
+\emph default
+ is called on an object in the class (either explicitly or implicitly) -
+ the method is actually called 
+\emph on
+show()
+\emph default
+ and it can also be modified.
+ Let's reconsider our 
+\emph on
+indiv
+\emph default
+ class example in the S4 context.
+\end_layout
+
+\begin_layout Chunk
+<<s4>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+S4 methods are designed to be more structured than S3, with careful checking
+ of the slots.
+\end_layout
+
+\begin_layout Chunk
+<<s4structured>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+To deal with this latter issue of the user mucking with the slots, it's
+ recommended when using OOP that slots only be accessible through methods
+ that operate on the object, e.g., a 
+\emph on
+setAge()
+\emph default
+ method, and then check the validity of the supplied age within 
+\emph on
+setAge()
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Here's how we create generic and class-specific methods.
+ Note that in some cases the generic will already exist.
+\end_layout
+
+\begin_layout Chunk
+<<s4methods>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+We can have method signatures involve multiple objects.
+ Here's some syntax where we'd fill in the function body with appropriate
+ code - perhaps the plus operator would create a child.
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+setMethod(`+`, signature = c("bear", "bear"), 
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+definition = function(bear1, bear2) { }
+\end_layout
+
+\begin_layout Standard
+As with S3, classes can inherit from one or more other classes.
+ Chambers calls the class that is being inherited from a 
+\emph on
+superclass
+\emph default
+.
+ 
+\end_layout
+
+\begin_layout Chunk
+<<s4inherit>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+For a more relevant example suppose we had spatially-indexed time series.
+ We could have a time series class, a spatial location class, and a 
+\begin_inset Quotes eld
+\end_inset
+
+location time series
+\begin_inset Quotes erd
+\end_inset
+
+ class that inherits from both.
+ Be careful that there are not conflicts in the slots or methods from the
+ multiple classes.
+ For conflicting methods, you can define a method specific to the new class
+ to deal with this.
+ Also, if you define your own 
+\emph on
+initialize()
+\emph default
+ method, you'll need to be careful that you account for any initialization
+ of the superclass(es) and for any classes that might inherit from your
+ class (see help on 
+\emph on
+new()
+\emph default
+ and Chambers, p.
+ 360).
+\end_layout
+
+\begin_layout Standard
+You can inherit from other S4 classes (which need to be defined or imported
+ into the environment in which your class is created), but not S3 classes.
+ You can inherit (at most one) of the basic R types, but not environments,
+ symbols, or other non-standard types.
+ You can use S3 classes in slots, but this requires that the S3 class be
+ declared as an S4 class.
+ To do this, you create S4 versions of S3 classes use 
+\emph on
+setOldClass()
+\emph default
+ - this creates a virtual class.
+ This has been done, for example, for the 
+\emph on
+data.frame
+\emph default
+ class:
+\end_layout
+
+\begin_layout Chunk
+<<s4tos3>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+You can use 
+\emph on
+setClassUnion()
+\emph default
+ to create what Adler calls 
+\emph on
+superclass 
+\emph default
+and what Chambers calls a 
+\emph on
+virtual class
+\emph default
+ that allows for methods that apply to multiple classes.
+ So if you have a person class and a pet class, you could create a 
+\begin_inset Quotes eld
+\end_inset
+
+named lifeform
+\begin_inset Quotes erd
+\end_inset
+
+ virtual class that has methods for working with name and age slots, since
+ both people and pets would have those slots.
+ You can't directly create an object in the virtual class.
+\end_layout
+
+\begin_layout Subsubsection
+Reference classes
+\end_layout
+
+\begin_layout Standard
+Reference classes are a new construct in R.
+ They are classes somewhat similar to S4 that allow us to access their fields
+ by reference.
+ Importantly, they behave like pointers (the fields in the objects are 'mutable'
+).
+ Let's work through an example where we set up the fields of the class (like
+ S4 slots) and class methods, including a constructor.
+ Note that one cannot add fields to an already existing class.
+\end_layout
+
+\begin_layout Standard
+Here's the initial definition of the class.
+\end_layout
+
+\begin_layout Chunk
+<<refclass>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+We can add methods after defining the class.
+\end_layout
+
+\begin_layout Chunk
+<<refMethod>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+Now let's see how we would use the class.
+\end_layout
+
+\begin_layout Chunk
+<<refUse, fig.width=4, eval=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+A few additional points:
+\end_layout
+
+\begin_layout Itemize
+As we just saw, a copy of an object is just a pointer to the original object,
+ unless we explicitly invoke the 
+\emph on
+copy()
+\emph default
+ method.
+\end_layout
+
+\begin_layout Itemize
+As with S3 and S4, classes can inherit from other classes.
+ E.g., if we had a 
+\emph on
+simClass
+\emph default
+ and we wanted the 
+\emph on
+tsSimClass
+\emph default
+ to inherit from it:
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+
+\family typewriter
+setRefClass("tsSimClass", contains = "simClass") 
+\end_layout
+
+\begin_layout Itemize
+We can call a method inherited from the superclass from within a method
+ of the same name with 
+\emph on
+callSuper(...)
+\emph default
+, as we saw for our 
+\emph on
+initialize()
+\emph default
+ method.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+If we need to refer to a field or change a field we can do so without hard-codin
+g the field name as:
+\end_layout
+
+\begin_layout Chunk
+<<refAccess, eval=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Itemize
+Note that reference classes have Python style doc strings.
+ We get help on a class with 
+\emph on
+class$help()
+\emph default
+, e.g.
+ 
+\family typewriter
+tsSimClass$help()
+\family default
+.
+ This prints out information, including the doc strings.
+\end_layout
+
+\begin_layout Itemize
+If you need to refer to the entire object within an object method, you refer
+ to it as 
+\emph on
+.self
+\emph default
+.
+ E.g., with our 
+\emph on
+tsSimClass
+\emph default
+ object, 
+\family typewriter
+.self$U
+\family default
+ would refer to the Cholesky factor.
+ This is sometimes necessary to distinguish a class field from an argument
+ to a method.
+\end_layout
+
+\begin_layout Itemize
+There is a new, more efficient version of ReferenceClasses call R6 classes.
+ See the 
+\emph on
+R6
+\emph default
+ package.
+\end_layout
+
+\begin_layout Section
+Standard dataset manipulations
+\end_layout
+
+\begin_layout Standard
+Base R provides a variety of functions for manipulating data frames, but
+ now many researchers use add-on packages (many written by Hadley Wickham)
+ to do these manipulations in a more elegant, often more efficient way.
+ Module 5 of the R bootcamp describes some of these new tools, but I'll
+ summarize them here.
+\end_layout
+
+\begin_layout Subsection
+split-apply-combine
+\end_layout
+
+\begin_layout Standard
+Often analyses are done in a stratified fashion - the same operation or
+ analysis is done on subsets of the data set.
+ The subsets might be different time points, different locations, different
+ hospitals, different people, etc.
+ 
+\end_layout
+
+\begin_layout Standard
+The split-apply-combine framework is intended to operate in this kind of
+ context: first one splits the dataset by one or more variables, then one
+ does something to each subset, and then one combines the results.
+ The 
+\emph on
+plyr
+\emph default
+ and 
+\emph on
+dplyr
+\emph default
+ packages implement this framework, with 
+\emph on
+dplyr
+\emph default
+ newer and faster.
+ One can also do similar operations using various flavors of the apply()
+ family of functions such as 
+\emph on
+by()
+\emph default
+, 
+\emph on
+tapply()
+\emph default
+, and 
+\emph on
+aggregate()
+\emph default
+, but the plyr-based tools are often nicer to use.
+\end_layout
+
+\begin_layout Subsection
+Long and wide formats
+\end_layout
+
+\begin_layout Standard
+Finally, we may want to convert between so-called 'long' and 'wide' formats,
+ which we can motivate in the context of longitudinal data (multiple observation
+s per subject) and panel data (temporal data for each of multiple units
+ such as in econometrics).
+ The wide format has repeated measurements for a subject in separate columns,
+ while the long format has repeated measurements in separate rows, with
+ a column for differentiating the repeated measurements.
+ The wide format is useful for doing separate analyses by group, while the
+ long format is useful for doing a single analysis that makes use of the
+ groups, such as ANOVA or mixed models or for plotting, such as with 
+\emph on
+ggplot2
+\emph default
+.
+ 
+\end_layout
+
+\begin_layout Chunk
+<<long-wide>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+There are a variety of functions for converting between wide and long formats.
+ Check out 
+\emph on
+melt()
+\emph default
+ and 
+\emph on
+cast()
+\emph default
+ in the 
+\emph on
+reshape2
+\emph default
+ package.
+ These are easier to use than the functions in base R such as 
+\emph on
+reshape()
+\emph default
+ or 
+\emph on
+stack()
+\emph default
+ and 
+\emph on
+unstack()
+\emph default
+ functions
+\emph on
+.
+\end_layout
+
+\begin_layout Section
+Functions, variable scope, and frames
+\end_layout
+
+\begin_layout Standard
+R is a functional programming language.
+ All operations are carried out by functions including assignment, various
+ operators, printing to the screen, etc.
+\end_layout
+
+\begin_layout Standard
+Functions are at the heart of R.
+ In general, you should try to have functions be self-contained - operating
+ only on arguments provided to them, and producing no side effects, though
+ in some cases there are good reasons for making an exception.
+\end_layout
+
+\begin_layout Standard
+Functions that are not implemented internally in R (i.e., user-defined functions)
+ are also referred to offically as 
+\emph on
+closures
+\emph default
+ (this is their 
+\emph on
+type
+\emph default
+) - this terminology sometimes comes up in error messages.
+\end_layout
+
+\begin_layout Subsection
+Functions as objects
+\end_layout
+
+\begin_layout Standard
+Everything in R is an object, including functions.
+\end_layout
+
+\begin_layout Chunk
+<<function-object>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+We can call a function based on the text name of the function.
+ 
+\end_layout
+
+\begin_layout Chunk
+<<eval-fun>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+We can also pass a function into another function either as the actual function
+ object or as a character vector of length one with the name of the function.
+ Here 
+\emph on
+match.fun()
+\emph default
+ is a handy function that extracts a function when the function is passed
+ in as an argument of a function.
+ It looks in the calling environment for the function and can handle when
+ the function is passed in as a function object or as a character vector
+ of length 1 giving the function name.
+\end_layout
+
+\begin_layout Chunk
+<<match-fun>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+This allows us to write functions in which the user passes in the function
+ (as an example, this works when using 
+\emph on
+outer()
+\emph default
+).
+ Caution: one may need to think carefully about scoping issues in such contexts.
+\end_layout
+
+\begin_layout Standard
+Function objects contain three components: an argument list, a body (a parsed
+ R statement), and an environment.
+\end_layout
+
+\begin_layout Chunk
+<<fun-parts>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+We'll see more about objects relating to the R language and parsed code
+ in Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Computing-on-the"
+
+\end_inset
+
+.
+ For now, just realize that the parsed code itself is treated as an object(s)
+ with certain types and certain classes.
+\end_layout
+
+\begin_layout Subsubsection*
+
+\emph on
+do.call()
+\end_layout
+
+\begin_layout Standard
+The 
+\emph on
+do.call()
+\emph default
+ function will apply a function to the elements of a list.
+ For example, we can 
+\emph on
+rbind()
+\emph default
+ together (if compatible) the elements of a list of vectors instead of having
+ to loop over the elements or manually type them in:
+\end_layout
+
+\begin_layout Chunk
+<<do-call>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+Why couldn't we just use 
+\emph on
+rbind()
+\emph default
+ directly? Basically we're using 
+\emph on
+do.call()
+\emph default
+ to use functions that take 
+\begin_inset Quotes eld
+\end_inset
+
+...
+\begin_inset Quotes erd
+\end_inset
+
+ as input (i.e., functions accepting an arbitrary number of arguments) and
+ to use the list as the input instead (i.e., to use the list elements).
+ 
+\end_layout
+
+\begin_layout Standard
+More generally do.call() is a way to pass arguments to a function where the
+ arguments are a list:
+\end_layout
+
+\begin_layout Chunk
+<<do-call2>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Subsection
+Inputs
+\end_layout
+
+\begin_layout Standard
+Arguments can be specifed in the correct order, or given out of order by
+ specifying 
+\emph on
+name = value
+\emph default
+.
+ R first tries to match arguments by name and then by position.
+ In general the more important arguments are specified first.
+ You can see the arguments and defaults for a function using 
+\emph on
+args()
+\emph default
+:
+\end_layout
+
+\begin_layout Chunk
+<<args>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+Functions may have unspecified arguments, which are designated using '...'.
+ Unspecified arguments occurring at the beginning of the argument list are
+ generally a collection of like objects that will be manipulated (consider
+ 
+\emph on
+paste()
+\emph default
+, 
+\emph on
+c()
+\emph default
+, and 
+\emph on
+rbind()
+\emph default
+), while unspecified arguments occurring at the end are often optional arguments
+ (consider 
+\emph on
+plot()
+\emph default
+).
+ These optional arguments are sometimes passed along to a function within
+ the function.
+ For example, here's my own wrapper for plotting, where any additional arguments
+ specified by the user will get passed along to plot:
+\end_layout
+
+\begin_layout Chunk
+<<dots>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Do you see any issues that might arise in using my 
+\emph on
+pplot()
+\emph default
+ function - what am I getting at here? Can we fix it?
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+pplot=function(x,y,pch=16,cex=.4,...) plot(x,y,pch=pch,cex=cex,...)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If you want to manipulate what the user passed in as the 
+\emph on
+...
+
+\emph default
+ args, rather than just passing them along, you can extract them (the following
+ code would be used within a function to which 
+\emph on
+'...'
+\emph default
+ is an argument:
+\end_layout
+
+\begin_layout Chunk
+<<dots-list>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+You can check if an argument is missing with 
+\emph on
+missing()
+\emph default
+.
+ Arguments can also have default values, which may be 
+\emph on
+NULL
+\emph default
+.
+ If you are writing a function and designate the default as 
+\emph on
+argname = NULL
+\emph default
+, you can check whether the user provided anything using
+\family typewriter
+ is.null(argname).
+
+\family default
+ The default values can also relate to other arguments.
+ As an example, consider 
+\emph on
+dgamma()
+\emph default
+:
+\end_layout
+
+\begin_layout Chunk
+<<dgamma>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+Functions can be passed in as arguments (e.g., see the variants of 
+\emph on
+apply()
+\emph default
+).
+ Note that one does not need to pass in a named function - you can create
+ the function on the spot - this is called an 
+\emph on
+anonymous function
+\emph default
+ (also called a 
+\emph on
+lambda function
+\emph default
+ in some languages such as Python):
+\end_layout
+
+\begin_layout Chunk
+<<funs-as-args>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+We can see the arguments using 
+\emph on
+args()
+\emph default
+ and extract the arguments using 
+\emph on
+formals().
+
+\emph default
+ 
+\emph on
+formals()
+\emph default
+ can be helpful if you need to manipulate the arguments.
+\end_layout
+
+\begin_layout Chunk
+<<formals>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+A 
+\emph on
+pairlist 
+\emph default
+is like a list, but with pairing that in this case pairs argument names
+ with default values.
+\end_layout
+
+\begin_layout Standard
+
+\emph on
+match.call()
+\emph default
+ will show the user-suppled arguments explicitly matched to named arguments.
+\end_layout
+
+\begin_layout Chunk
+<<match-call>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Subsection
+Outputs
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+return(x)
+\family default
+ will specify 
+\emph on
+x
+\emph default
+ as the output of the function.
+ By default, if 
+\emph on
+return()
+\emph default
+ is not specified, the output is the result of the last evaluated statement.
+ 
+\emph on
+return()
+\emph default
+ can occur anywhere in the function, and allows the function to exit as
+ soon as it is done.
+\end_layout
+
+\begin_layout Chunk
+<<return>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+
+\emph on
+invisible(x)
+\emph default
+ will return 
+\emph on
+x
+\emph default
+ and the result can be assigned in the calling environment but it will not
+ be printed if not assigned:
+\end_layout
+
+\begin_layout Chunk
+<<invisible>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+A function can only return a single object (unlike Matlab, e.g.), but of course
+ we can tack things together as a list and return that, as with 
+\emph on
+lm()
+\emph default
+ and many other functions.
+\end_layout
+
+\begin_layout Chunk
+<<return-list>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Subsection
+Approaches to passing arguments to functions
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Approaches-to-passing"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Pass by value vs.
+ pass by reference
+\end_layout
+
+\begin_layout Standard
+When talking about programming languages, one often distinguishes 
+\emph on
+pass-by-value
+\emph default
+ and 
+\emph on
+pass-by-reference
+\emph default
+.
+ Pass-by-value means that when a function is called with one or more arguments,
+ a copy is made of each argument and the function operates on those copies.
+ Pass-by-reference means that the arguments are not copied, but rather that
+ information is passed allowing the function to find and modify the original
+ value of the objects passed into the function.
+ In pass-by-value, changes to an argument made within a function do not
+ affect the value of the argument in the calling environment.
+ In pass-by-reference changes inside a function do affect the object outside
+ of the function.
+ R's designers chose not to allow pass by reference because they didn't
+ like the idea that a function could have the side effect of changing an
+ object.
+ However, passing by reference can sometimes be very helpful, and we'll
+ see ways of passing by reference later in this Unit.
+\end_layout
+
+\begin_layout Standard
+Pass-by-value is elegant and modular in that functions do not have side
+ effects - the effect of the function occurs only through the return value
+ of the function.
+ However, it can be inefficient in terms of the amount of computation and
+ of memory used.
+ In contrast, pass-by-reference is more efficient, but also more dangerous
+ and less modular.
+ It's more difficult to reason about code that uses pass-by-reference because
+ effects of calling a function can be hidden inside the function.
+ 
+\end_layout
+
+\begin_layout Standard
+An important exception is 
+\emph on
+par()
+\emph default
+.
+ If you change graphics parameters by calling 
+\emph on
+par()
+\emph default
+ in a user-defined function, they are changed permanently outside of the
+ function.
+ One trick is as follows:
+\end_layout
+
+\begin_layout Chunk
+<<par, eval=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+Note that changing graphics parameters within a specific plotting function
+ - e.g., 
+\family typewriter
+plot(x, y, pch = '+')
+\family default
+, doesn't change things except for that particular plot.
+ Can you think of other R functions that have side effects?
+\end_layout
+
+\begin_layout Paragraph*
+Pointers
+\end_layout
+
+\begin_layout Standard
+By way of contrast to a pass-by-value system, I want to briefly discuss
+ the idea of a pointer, common in compiled languages such as C.
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+int x = 3;
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+int* ptr;
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+ptr = &x;
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+*ptr * 7; // returns 21
+\end_layout
+
+\begin_layout Standard
+Here 
+\emph on
+ptr
+\emph default
+ is the address of the integer 
+\emph on
+x
+\emph default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Vectors in C are really pointers to a block of memory:
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+int x[10];
+\end_layout
+
+\begin_layout Standard
+In this case 
+\emph on
+x
+\emph default
+ will be the address of the first element of the vector.
+ We can access the first element as 
+\family typewriter
+x[0]
+\family default
+ or 
+\family typewriter
+*x
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+Why have we gone into this? In C, you can pass a pointer as an argument
+ to a function.
+ The result is that only the scalar address is copied and not the entire
+ vector, and inside the function, one can modify the original vector, with
+ the new value persisting on exit from the function.
+ For example:
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+int myCal(int *ptr){
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+*ptr = *ptr + *ptr;
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+}
+\family default
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+ [draw picture of memory location of y with two pointers to it, one local
+ and one global]
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+When calling C or C++ from R, one (implicitly) passes pointers to the vectors
+ into C.
+ Let's see an example:
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+out <- rep(0, n)
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+out <- .C(
+\begin_inset Quotes eld
+\end_inset
+
+logLik
+\begin_inset Quotes erd
+\end_inset
+
+, out = as.double(out), 
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+theta = as.double(theta))$out
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+In C, the function definition looks like this:
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+void logLik(double* out, double* theta)
+\end_layout
+
+\begin_layout Subsubsection
+Promises and lazy evaluation
+\end_layout
+
+\begin_layout Standard
+In actuality, R is not quite pass-by-value; rather it is 
+\emph on
+call-by-value
+\emph default
+.
+ Copying of arguments is delayed in two ways.
+ The first is the idea of promises and lazy evaluation, described here.
+ The second is the idea of 
+\emph on
+copy-on-change
+\emph default
+, described in Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Evaluating-memory-use"
+
+\end_inset
+
+.
+ Basically, with copy-on-change, copies of arguments are only made if the
+ argument is changed within the function.
+ Until then the object in the function just refers back to the original
+ object.
+\end_layout
+
+\begin_layout Standard
+Let's see what a 
+\emph on
+promise
+\emph default
+ object is.
+ In function calls, when R matches user input arguments to formal argument
+ names, it does not (usually) evaluate the arguments until they are needed,
+ which is called 
+\emph on
+lazy evaluation
+\emph default
+.
+ Instead the formal arguments are of a special type called a 
+\emph on
+promise
+\emph default
+.
+ Let's see lazy evaluation in action.
+ Do you think the following code will run?
+\end_layout
+
+\begin_layout Chunk
+<<lazy-eval, eval=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+What's strange about that? 
+\end_layout
+
+\begin_layout Standard
+Another example:
+\end_layout
+
+\begin_layout Chunk
+<<lazy-eval2>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Paragraph
+Where are arguments evaluated?
+\end_layout
+
+\begin_layout Standard
+User-supplied arguments are evaluated in the calling frame, while default
+ arguments are evaluated in the frame of the function:
+\end_layout
+
+\begin_layout Chunk
+<<args-eval>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+Here, when 
+\emph on
+f()
+\emph default
+ is called, 
+\emph on
+z
+\emph default
+ is evaluated in the calling frame and 
+\family typewriter
+z*5
+\family default
+ is assigned to 
+\emph on
+x
+\emph default
+ in the frame of the function, while 
+\family typewriter
+y = x*3
+\family default
+ is evaluated in the frame of the function.
+\end_layout
+
+\begin_layout Subsection
+Operators
+\end_layout
+
+\begin_layout Standard
+Operators, such as '
+\family typewriter
+\emph on
++
+\family default
+\emph default
+', '
+\emph on
+[
+\emph default
+' are just functions, but their arguments can occur both before and after
+ the function call:
+\end_layout
+
+\begin_layout Chunk
+<<operators, tidy=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+In general, you can use back-ticks to refer to the operators as operators
+ instead of characters.
+ In some cases single or double quotes also work.
+ We can look at the code of an operator as follows using back-ticks to escape
+ out of the standard R parsing, e.g., 
+\family typewriter
+`%*%`.
+\end_layout
+
+\begin_layout Standard
+Finally, since an operator is just a function, you can use it as an argument
+ in various places:
+\end_layout
+
+\begin_layout Chunk
+<<pass-operator>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+You can define your own 
+\emph on
+binary
+\emph default
+ operator (an operator taking two arguments) using a string inside 
+\emph on
+%
+\emph default
+ symbols:
+\end_layout
+
+\begin_layout Chunk
+<<define-operator>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+Since operators are just functions, there are cases in which there are optional
+ arguments that we might not expect.
+ Here's how to pass a sometimes useful argument to the bracket operator
+ (in this case avoiding conversion from a matrix to a vector, which can
+ mess up subsequent code).
+\end_layout
+
+\begin_layout Chunk
+<<operator-args>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Subsection
+Unexpected functions and replacement functions
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Unexpected-functions-and"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+All code in R can be viewed as a function call.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+The subset assignment operator is '[<-'.
+ 
+\end_layout
+
+\begin_layout Plain Layout
+> animals <- c("cow", "chicken", "pig", "tuba")
+\end_layout
+
+\begin_layout Plain Layout
+> '[<-'(animals, 4, 
+\begin_inset Quotes eld
+\end_inset
+
+duck
+\begin_inset Quotes erd
+\end_inset
+
+)
+\begin_inset Newline newline
+\end_inset
+
+So animals[4] <- 
+\begin_inset Quotes eld
+\end_inset
+
+duck
+\begin_inset Quotes erd
+\end_inset
+
+ is actually parsed by R to run the code above.
+ We'll talk about expression parsing a bit later.
+ Note that the parser has to be clever enough to realize that the animals
+ argument comes before the operator syntax and the '4' argument is in the
+ middle of it.
+ 
+\end_layout
+
+\begin_layout Plain Layout
+Challenge: How could you write R code that itself parses an R statement
+ such as animals[4] <- 
+\begin_inset Quotes eld
+\end_inset
+
+duck
+\begin_inset Quotes erd
+\end_inset
+
+?
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+What do you think is the functional version of the following code? What
+ are the arguments?
+\end_layout
+
+\begin_layout Chunk
+<<all-is-fun, eval = FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+Assignments that involve functions or operators on the left-hand side (LHS)
+ are called 
+\emph on
+replacement expressions
+\emph default
+ or 
+\emph on
+replacement functions.
+ 
+\emph default
+These can be quite handy.
+ Here are a few examples:
+\end_layout
+
+\begin_layout Chunk
+<<replace-funs, eval = FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+Replacement expressions are actually function calls.
+ The R interpreter calls the replacement function (which often creates a
+ new object that includes the replacement) and then assigns the result to
+ the name of the original object.
+\end_layout
+
+\begin_layout Chunk
+<<replace-funs2>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+The old version of 
+\emph on
+mat
+\emph default
+ still exists until R's memory management cleans it up, but it's no longer
+ referred to by the symbol '
+\emph on
+mat
+\emph default
+'.
+ Occasionally this sort of thing might cause memory usage to increase (for
+ example it's possible if you're doing replacements on large objects within
+ a loop), but in general things should be fine.
+\end_layout
+
+\begin_layout Standard
+You can define your own replacement functions like this, with the requirements
+ that the last argument be named '
+\emph on
+value
+\emph default
+' and that the function return the entire object:
+\end_layout
+
+\begin_layout Chunk
+<<create-replace>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Subsection
+Variable scope
+\end_layout
+
+\begin_layout Standard
+In this section, we seek to understand what happens in the following circumstanc
+e.
+ Namely, where does R get the value for the object 'x'? 
+\end_layout
+
+\begin_layout Chunk
+<<scope-example>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+To consider variable scope, we need to define the terms 
+\emph on
+environment
+\emph default
+ and 
+\emph on
+frame
+\emph default
+.
+ Environments and frames are closely related.
+ 
+\end_layout
+
+\begin_layout Itemize
+A 
+\emph on
+frame
+\emph default
+ is a collection of named objects.
+\end_layout
+
+\begin_layout Itemize
+An 
+\emph on
+environment
+\emph default
+ is a frame, with a pointer to the 'enclosing environment', i.e., the next
+ environment to look for something in.
+ (Be careful as this is different than the parent frame of a function.)
+\end_layout
+
+\begin_layout Standard
+Variables in the enclosing environment (the environment in which a function
+ is defined, also called the parent environment) are available within a
+ function.
+ This is the analog of 
+\emph on
+global variables
+\emph default
+ in other languages.
+ Note that the enclosing/parent environment is NOT the environment from
+ which the function was called.
+ R's use of enclosing environments as the approach to looking for variables
+ is called 
+\emph on
+lexical scoping
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Be careful when using variables from the enclosing environment as the value
+ of that variable in the enclosing environment may well not be what you
+ expect it to be.
+ In general it's bad practice to use variables that are taken from environments
+ outside that of a function, but it some cases it can be useful.
+ 
+\end_layout
+
+\begin_layout Chunk
+<<enclosing, eval=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+Here are some examples to illustrate scope:
+\end_layout
+
+\begin_layout Chunk
+<<scope, eval=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+Here's a somewhat tricky example:
+\end_layout
+
+\begin_layout Chunk
+<<scope-tricky>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+Let's work through this:
+\end_layout
+
+\begin_layout Enumerate
+What is the enclosing environment of the function 
+\emph on
+g()
+\emph default
+?
+\end_layout
+
+\begin_layout Enumerate
+What does 
+\emph on
+g()
+\emph default
+ use for 
+\emph on
+y
+\emph default
+?
+\end_layout
+
+\begin_layout Enumerate
+When 
+\emph on
+f()
+\emph default
+ finishes, does its environment disappear? What would happen if it did?
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+g would not have an enclosing env't!
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+What is the enclosing environment of 
+\emph on
+h()
+\emph default
+?
+\end_layout
+
+\begin_layout Standard
+This code helps explain things, but it's a bit confusing because 
+\emph on
+environment()
+\emph default
+ gives back different results depending on whether it is given a function
+ as its argument.
+ If given a function, it returns the enclosing environment for that function.
+ If given no argument, it returns the current execution environment.
+\end_layout
+
+\begin_layout Chunk
+<<scope-envts>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Paragraph
+Comprehension problem
+\end_layout
+
+\begin_layout Standard
+Here's a case where something I tried failed and I had to think more carefully
+ about scoping to understand why.
+\end_layout
+
+\begin_layout Chunk
+<<scope-problem>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+Question: what was I hoping that code to do, and why didn't it work? 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+[.Random.seed is read into tmp() but rnorm() is getting it from the search
+ path for rnorm() which has nothing to do with tmp()]
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Environments and the search path
+\end_layout
+
+\begin_layout Standard
+So far we've seen lexical scoping in action primarily in terms of finding
+ variables in a single enclosing environment.
+ But what if the variable is not found in either the frame/environment of
+ the function or the enclosing environment? When R goes looking for an object
+ (in the form of a symbol), it starts in the current environment (e.g., the
+ frame/environment of a function) and then runs up through the enclosing
+ environments, until it reaches the global environment, which is where R
+ starts when you open R (it actually continues further up; see below).
+ In general, as we've seen, these environments are not the environments
+ of the calling function(s) - i.e., they are 
+\emph on
+not
+\emph default
+ the frames on the stack (see the next Section).
+ 
+\end_layout
+
+\begin_layout Standard
+By default objects are created in the global environment, 
+\emph on
+.GlobalEnv
+\emph default
+.
+ As we've seen, the environment within a function call has as its enclosing
+ environment the environment where the function was defined (not the environment
+ from which it was called), and based on lexical scoping this is next place
+ that is searched if an object can't be found in the frame of the function
+ call.
+ As an example, if an object couldn't be found within the environment of
+ an 
+\emph on
+lm()
+\emph default
+ function call, R would first look in the environment (i.e., the 
+\emph on
+namespace
+\emph default
+) of the stats package (since this is the environment where 
+\emph on
+lm()
+\emph default
+ is defined and is therefore the enclosing environment for 
+\emph on
+lm()
+\emph default
+), then in packages imported by the stats package, then the base package,
+ and then the global environment.
+\end_layout
+
+\begin_layout Standard
+If R can't find the object when reaching the global environment, it runs
+ through the search path, which you can see with 
+\emph on
+search()
+\emph default
+.
+ The search path is a set of additional environments.
+ Generally packages are created with namespaces, i.e., each has its own environmen
+t, as we see based on 
+\emph on
+search()
+\emph default
+.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Data frames or list that you attach using 
+\emph on
+attach()
+\emph default
+ generally are placed just after the global environment.
+ [BAD practice so don't mention, but do try to remember when it is ok to
+ use attach - Martin Maechler's 2014 useR talk?]
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Chunk
+<<search>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+We can also see the nestedness of environments using the following code,
+ using 
+\emph on
+environmentName()
+\emph default
+, which prints out a nice-looking version of the environment name.
+\end_layout
+
+\begin_layout Chunk
+<<nested-env>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+Note that eventually the global environment and the environments of the
+ packages are nested within the base environment (of the base package) and
+ the empty environment.
+ Note that here 
+\emph on
+parent
+\emph default
+ 
+\series bold
+is
+\series default
+ referring to the enclosing environment, even though it is best to talk
+ about 
+\emph on
+enclosing environment
+\emph default
+ rather than parent environment.
+\end_layout
+
+\begin_layout Standard
+Here's a full example of the nested environments for a function in a package,
+ such as 
+\emph on
+lm()
+\emph default
+ in the 
+\emph on
+stats
+\emph default
+ package:
+\end_layout
+
+\begin_layout Chunk
+<<package-nested>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+We can retrieve and assign objects in a particular environment and/or namespace
+ as follows:
+\end_layout
+
+\begin_layout Chunk
+<<get>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+Note that our (bogus) 
+\emph on
+lm()
+\emph default
+ function masks but does not overwrite the default function.
+ If we remove ours, then the default one is still there.
+\end_layout
+
+\begin_layout Subsection
+Frames and the call stack
+\end_layout
+
+\begin_layout Standard
+R keeps track of the call stack, which is the set of nested calls to functions.
+ The stack operates like a stack of cafeteria trays - when a function is
+ called, it is added to the stack (pushed) and when it finishes, it is removed
+ (popped).
+ There are a bunch of functions that let us query what frames are on the
+ stack and access objects in particular frames of interest.
+ This gives us the ability to work with objects in the environment(s) from
+ which a function was called.
+\end_layout
+
+\begin_layout Standard
+
+\emph on
+sys.nframe()
+\emph default
+ returns the number of the current frame and 
+\emph on
+sys.parent()
+\emph default
+ the number of the parent, while 
+\emph on
+parent.frame()
+\emph default
+ gives the name of the environment of the parent frame.
+ Careful: here, 
+\emph on
+parent
+\emph default
+ refers to the parent in terms of the call stack and has nothing to do with
+ enclosing environments.
+ 
+\emph on
+sys.frame()
+\emph default
+ gives the name of the environment for a given frame number (for non-negative
+ numbers).
+ For negative numbers, it goes back that many frames in the call stack and
+ returns the name of the associated environment.
+ I won't print the results here because 
+\emph on
+knitr
+\emph default
+ messes up the frame counting somehow.
+\end_layout
+
+\begin_layout Chunk
+<<frames, eval=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+Now let's look at some code that gets more information about the call stack
+ and the frames involved using 
+\emph on
+sys.status()
+\emph default
+, 
+\emph on
+sys.calls()
+\emph default
+, 
+\emph on
+sys.parents()
+\emph default
+ and 
+\emph on
+sys.frames()
+\emph default
+.
+ 
+\end_layout
+
+\begin_layout Chunk
+<<frames2, eval=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+Challenge: why did I not do 
+\family typewriter
+print(sys.status())
+\family default
+ directly?
+\end_layout
+
+\begin_layout Standard
+If you're interested in parsing a somewhat complicated example of frames
+ in action, Adler provides a user-defined timing function that evaluates
+ statements in the calling frame.
+\end_layout
+
+\begin_layout Subsection
+Alternatives to pass by value in R
+\end_layout
+
+\begin_layout Standard
+There are occasions we do not want to pass by value.
+ In addition to avoiding copies and the attendant computation and memory
+ use, another reason is when we want a function to modify a complicated
+ object without having to return it and re-assign it in the parent environment.
+ There are several work-arounds:
+\end_layout
+
+\begin_layout Enumerate
+We can use Reference Class (or R6) objects.
+ 
+\end_layout
+
+\begin_layout Enumerate
+We can access the object in the enclosing environment as a 'global variable',
+ as we've seen when discussing scoping.
+ More generally we can access the object using 
+\emph on
+get()
+\emph default
+, specifying the environment from which we want to obtain the variable.
+ To specify the location of an object when using 
+\emph on
+get()
+\emph default
+, we can generally specify (1) a position in the search path, (2) an explicit
+ environment, or (3) a location in the call stack by using 
+\emph on
+sys.frame()
+\emph default
+.
+ However we cannot change the value of the object in the parent environment
+ without some additional tools:
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+We can use the '<<-' operator to assign into an object in the parent environment
+ (provided an object of that name exists in the parent environment).
+ 
+\end_layout
+
+\begin_layout Enumerate
+We can also use 
+\emph on
+assign()
+\emph default
+, specifying the environment in which we want the assignment to occur.
+\end_layout
+
+\begin_layout Standard
+While these techniques are possible and ok for exploratory coding, they're
+ bad practice for more formal code development.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+We can use replacement functions (Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Unexpected-functions-and"
+
+\end_inset
+
+), which hide the reassignment in the parent environment from the user.
+ Note that a second copy is generally created in this case, but the original
+ copy is quickly removed.
+\end_layout
+
+\begin_layout Enumerate
+We can use a 
+\emph on
+closure
+\emph default
+, which is a function with associated data.
+ This involves creating one or more functions within a function call and
+ returning the function(s) as the output.
+ When one executes the original function, the new functions are created
+ and returned as a list and one can call the functions in that list.
+ Those functions then can access objects in the enclosing environment (the
+ environment of the original function) and can use `<<-` to assign into
+ the enclosing environment, to which all the functions have access.
+ Chambers provides an example of this in Sec.
+ 5.4.
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+[[[perhaps see http://www.r-bloggers.com/function-closures-and-s4-methods/?utm_sou
+rce=feedburner&utm_medium=email&utm_campaign=Feed%3A+RBloggers+%28R+bloggers%29
+ for S4 and closures ]]]
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Chunk
+
+\end_layout
+
+\begin_layout Chunk
+<<closures>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+Here's a fun example.
+ You might do this with an 
+\emph on
+apply()
+\emph default
+ variant, in particular 
+\emph on
+replicate()
+\emph default
+, but this is slick:
+\end_layout
+
+\begin_layout Chunk
+<<closure-boot>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Itemize
+A related approach is to wrap data with a function using 
+\emph on
+with()
+\emph default
+.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+This approach appeared in Problem Set 2.
+ (Fall2012)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Chunk
+<<with>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Question
+\series default
+: When would it be useful to have an object carried along with a function
+ as done here?
+\end_layout
+
+\begin_layout Subsection
+Creating and working in an environment
+\end_layout
+
+\begin_layout Standard
+We've already talked extensively about the environments that R creates.
+ Occasionally you may want to create an environment in which to store objects.
+ 
+\end_layout
+
+\begin_layout Chunk
+<<new.env>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+Before the existence of Reference Classes, using an environment was one
+ way to pass objects by reference, avoiding having to re-assign the output.
+ Here's an example where we iteratively update a random walk.
+\end_layout
+
+\begin_layout Chunk
+<<envt-container>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+We can use 
+\emph on
+eval()
+\emph default
+ to evaluate some code within a specified environment.
+ By default, it evaluates in the result of 
+\emph on
+parent.frame()
+\emph default
+, which amounts to evaluating in the frame from which 
+\emph on
+eval()
+\emph default
+ was called.
+ 
+\emph on
+evalq()
+\emph default
+ avoids having to use 
+\emph on
+quote()
+\emph default
+.
+ Here we override the default and evaluate in the 
+\emph on
+myWalk
+\emph default
+ environment we created:
+\end_layout
+
+\begin_layout Chunk
+<<eval-in-env>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Subsection
+Summing up
+\end_layout
+
+\begin_layout Standard
+What happens when an R function is evaluated? The user-provided function
+ arguments are evaluated in the calling environment and the results are
+ matched to the argument names in the function definition.
+ A new environment with its own frame is created, with the frame on the
+ call stack.
+ Assignment to the argument names is done in the environment, including
+ any default arguments.
+ The body of the function is evaluated in the environment.
+ Any look-up of variables not found in the environment is done using R's
+ lexical scoping rules to look in the series of enclosing environments.
+ When the function finishes, the return value is passed back to the calling
+ frame and the frame is taken off the stack.
+ The environment is removed, unless the environment serves as the enclosing
+ environment of another environment.
+\end_layout
+
+\begin_layout Section
+Efficiency
+\end_layout
+
+\begin_layout Standard
+In part because R is an interpreted language and in part because R is very
+ dynamic (objects can be modified essentially arbitrarily after being created),
+ R can be slow.
+ Hadley Wickham's Advanced R book has a section on Performance that discusses
+ this in detail.
+ However, there are a variety of ways that one can write efficient R code.
+\end_layout
+
+\begin_layout Standard
+In general, make use of R's built-in functions, as these tend to be implemented
+ internally (i.e., via compiled code in C or Fortran).
+ In particular, if R is linked to optimized BLAS and Lapack code (e.g.
+ Intel's 
+\emph on
+MKL
+\emph default
+, 
+\emph on
+OpenBLAS
+\emph default
+ [on BCE and the SCF Linux servers], AMD's 
+\emph on
+ACML
+\emph default
+ [on the SCF Linux cluster, 
+\emph on
+vecLib
+\emph default
+ for Macs [on the SCF Macs]), you should have good performance (potentially
+ comparable to Matlab and to coding in C).
+ Sometimes you can figure out a trick to take your problem and transform
+ it to make use of the built-in functions.
+\end_layout
+
+\begin_layout Standard
+Note that I run a lot of MCMCs so I pay attention to making sure my calculations
+ are fast as they are done repeatedly.
+ Similarly, one would want to pay attention to speed when doing large simulation
+s and bootstrapping, and in some cases for optimization.
+ And if you're distributing code, it's good to have it be efficient.
+ But in other contexts, it may not be worth your time.
+ Also, it's good practice to code it transparently first to reduce bugs
+ and then to use tricks to speed it up and make sure the fast version works
+ correctly.
+ 
+\end_layout
+
+\begin_layout Standard
+Results can vary with with your system setup and version of R, so the best
+ thing to do is figure out where the bottlenecks are in your code (e.g., with
+ 
+\emph on
+Rprof()
+\emph default
+ or just some basic use of 
+\emph on
+system.time()
+\emph default
+ and 
+\emph on
+benchmark()
+\emph default
+), and then play around with alternative specifications.
+ And as you gain more experience, you'll get some intuition for what approaches
+ might improve speed, but even with experience I find myself often surprised
+ by what matters and what doesn't.
+ It's often worth trying out a bunch of different ideas; 
+\emph on
+system.time()
+\emph default
+ and 
+\emph on
+benchmark()
+\emph default
+ are your workhorse tools in this context.
+\end_layout
+
+\begin_layout Standard
+First, let's see some tools for assessing the speed of your code.
+\end_layout
+
+\begin_layout Subsection
+Tools for assessing efficiency
+\end_layout
+
+\begin_layout Subsubsection
+Benchmarking
+\end_layout
+
+\begin_layout Standard
+
+\emph on
+system.time()
+\emph default
+ is very handy for comparing the speed of different implementations.
+ 
+\end_layout
+
+\begin_layout Chunk
+<<chunk001>>=
+\end_layout
+
+\begin_layout Chunk
+n <- 1000
+\end_layout
+
+\begin_layout Chunk
+x <- matrix(rnorm(n^2), n)
+\end_layout
+
+\begin_layout Chunk
+system.time({mns <- rep(NA, n); for(i in 1:n) mns[i] <- mean(x[i , ])})
+\end_layout
+
+\begin_layout Chunk
+system.time(rowMeans(x))
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+For timing code that runs very quickly, you may want to use the microbenchmark
+ package.
+\end_layout
+
+\begin_layout Chunk
+<<chunk001a>>=
+\end_layout
+
+\begin_layout Chunk
+library(microbenchmark)
+\end_layout
+
+\begin_layout Chunk
+df <- data.frame(vals = 1:3, labs = c('a','b','c'))
+\end_layout
+
+\begin_layout Chunk
+microbenchmark(
+\end_layout
+
+\begin_layout Chunk
+  df[2,1],
+\end_layout
+
+\begin_layout Chunk
+  df$vals[2],
+\end_layout
+
+\begin_layout Chunk
+  df[2, 'vals']
+\end_layout
+
+\begin_layout Chunk
+)
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+The 
+\emph on
+rbenchmark
+\emph default
+ package provides a nice wrapper function, 
+\emph on
+benchmark()
+\emph default
+, that automates speed assessments.
+ 
+\end_layout
+
+\begin_layout Chunk
+<<chunk002>>=
+\end_layout
+
+\begin_layout Chunk
+library(rbenchmark)
+\end_layout
+
+\begin_layout Chunk
+# speed of one calculation
+\end_layout
+
+\begin_layout Chunk
+n <- 1000
+\end_layout
+
+\begin_layout Chunk
+x <- matrix(rnorm(n^2), n)
+\end_layout
+
+\begin_layout Chunk
+benchmark(crossprod(x), replications = 10, columns=c('test', 'elapsed',
+ 'replications'))
+\end_layout
+
+\begin_layout Chunk
+# comparing different approaches to a task
+\end_layout
+
+\begin_layout Chunk
+benchmark(
+\end_layout
+
+\begin_layout Chunk
+{mns <- rep(NA, n); for(i in 1:n) mns[i] <- mean(x[i , ])},
+\end_layout
+
+\begin_layout Chunk
+rowMeans(x), 
+\end_layout
+
+\begin_layout Chunk
+replications = 10, columns=c('test', 'elapsed', 'replications'))
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Subsubsection
+Profiling
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Enumerate
+Rprof (see rw1.r on DTL)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The 
+\emph on
+Rprof()
+\emph default
+ function will show you how much time is spent in different functions, which
+ can help you pinpoint bottlenecks in your code.
+ 
+\end_layout
+
+\begin_layout Standard
+Here's a function that works with a correlation matrix such as one might
+ have for time series data.
+\end_layout
+
+\begin_layout Chunk
+<<chunk003a, eval=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+makeTS <- function(param, len){
+\end_layout
+
+\begin_layout Chunk
+	times <- seq(0, 1, length = len)
+\end_layout
+
+\begin_layout Chunk
+	dd <- rdist(times)
+\end_layout
+
+\begin_layout Chunk
+	C <- exp(-dd/param)
+\end_layout
+
+\begin_layout Chunk
+	U <- chol(C)
+\end_layout
+
+\begin_layout Chunk
+	white <- rnorm(len)
+\end_layout
+
+\begin_layout Chunk
+	return(crossprod(U, white))
+\end_layout
+
+\begin_layout Chunk
+}
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Chunk
+<<chunk003, eval=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+library(fields)
+\end_layout
+
+\begin_layout Chunk
+Rprof("makeTS.prof")
+\end_layout
+
+\begin_layout Chunk
+out <- makeTS(0.1, 1000)
+\end_layout
+
+\begin_layout Chunk
+Rprof(NULL)
+\end_layout
+
+\begin_layout Chunk
+summaryRprof("makeTS.prof")
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+Here's the result for the 
+\emph on
+makeTS()
+\emph default
+ function from the demo code file:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{verbatim}
+\end_layout
+
+\begin_layout Plain Layout
+
+$by.self   self.time self.pct total.time total.pct 
+\end_layout
+
+\begin_layout Plain Layout
+
+".Call"         0.38    48.72       0.38     48.72 
+\end_layout
+
+\begin_layout Plain Layout
+
+".Fortran"      0.22    28.21       0.22     28.21 
+\end_layout
+
+\begin_layout Plain Layout
+
+"matrix"        0.08    10.26       0.30     38.46 
+\end_layout
+
+\begin_layout Plain Layout
+
+"exp"           0.08    10.26       0.08     10.26 
+\end_layout
+
+\begin_layout Plain Layout
+
+"/"             0.02     2.56       0.02      2.56
+\end_layout
+
+\begin_layout Plain Layout
+
+$by.total         total.time total.pct self.time self.pct 
+\end_layout
+
+\begin_layout Plain Layout
+
+"makeTS"                0.78    100.00      0.00     0.00 
+\end_layout
+
+\begin_layout Plain Layout
+
+".Call"                 0.38     48.72      0.38    48.72 
+\end_layout
+
+\begin_layout Plain Layout
+
+"chol.default"          0.38     48.72      0.00     0.00 
+\end_layout
+
+\begin_layout Plain Layout
+
+"chol"                  0.38     48.72      0.00     0.00 
+\end_layout
+
+\begin_layout Plain Layout
+
+"standardGeneric"       0.38     48.72      0.00     0.00 
+\end_layout
+
+\begin_layout Plain Layout
+
+"matrix"                0.30     38.46      0.08    10.26 
+\end_layout
+
+\begin_layout Plain Layout
+
+"rdist"                 0.30     38.46      0.00     0.00 
+\end_layout
+
+\begin_layout Plain Layout
+
+".Fortran"              0.22     28.21      0.22    28.21 
+\end_layout
+
+\begin_layout Plain Layout
+
+"exp"                   0.08     10.26      0.08    10.26 
+\end_layout
+
+\begin_layout Plain Layout
+
+"/"                     0.02      2.56      0.02     2.56
+\end_layout
+
+\begin_layout Plain Layout
+
+$sample.interval [1] 0.02
+\end_layout
+
+\begin_layout Plain Layout
+
+$sampling.time [1] 0.78
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{verbatim}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\emph on
+Rprof()
+\emph default
+ tells how much time was spent in each function alone (the 
+\emph on
+
+\begin_inset Quotes eld
+\end_inset
+
+self
+\begin_inset Quotes erd
+\end_inset
+
+
+\emph default
+ columns) and aggregating the time spent in a function and all of the functions
+ that it calls (the 
+\emph on
+
+\begin_inset Quotes eld
+\end_inset
+
+total
+\begin_inset Quotes erd
+\end_inset
+
+
+\emph default
+ columns).
+ Usually the former is going to be more useful, but in some cases we need
+ to decipher what is going on based on the latter.
+\end_layout
+
+\begin_layout Standard
+Let's figure out what is going on here.
+ The self time tells us that 
+\emph on
+.Call
+\emph default
+ (a call to C code), 
+\emph on
+.Fortran
+\emph default
+ (a call to Fortran code) and 
+\emph on
+matrix()
+\emph default
+ take up most of the time.
+ Looking at the total time and seeing in 
+\emph on
+chol.default()
+\emph default
+ that 
+\emph on
+.Call
+\emph default
+ is used (you would have to go in and look at the 
+\emph on
+La_chol()
+\emph default
+ function to figure this out) and in 
+\emph on
+rdist()
+\emph default
+ that 
+\emph on
+.Fortran()
+\emph default
+ and 
+\emph on
+matrix()
+\emph default
+ are used we can infer that about 49% of the time is being spent in the
+ Cholesky and 38% in the 
+\emph on
+rdist()
+\emph default
+ calculation, with 10% in 
+\emph on
+exp()
+\emph default
+.
+ As we increase the number of time points, the time taken up by the Cholesky
+ would increase since that calculation is order of 
+\begin_inset Formula $n^{3}$
+\end_inset
+
+ while the others are order 
+\begin_inset Formula $n^{2}$
+\end_inset
+
+ (more in the linear algebra unit).
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+As another example you can try out 
+\emph on
+Rprof()
+\emph default
+ on different implementations of the random walk from PS3.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Apparently there is a memory profiler in R, 
+\emph on
+Rprofmem()
+\emph default
+, but it needs to be enabled when R is compiled (i.e., installed on the machine),
+ because it slows R down even when not used.
+ So I've never gotten to the point of playing around with it.
+\end_layout
+
+\begin_layout Standard
+You might also check out some packages that help with profiling: 
+\emph on
+proftools
+\emph default
+, 
+\emph on
+profr
+\emph default
+, and 
+\emph on
+lineprof
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Warning
+\series default
+: 
+\emph on
+Rprof()
+\emph default
+ conflicts with threaded linear algebra, so you will need to set OMP_NUM_THREADS
+ to 1 to disable threaded linear algebra if you profile code that involves
+ linear algebra.
+ More about this in the unit on parallel processing.
+\end_layout
+
+\begin_layout Subsection
+Strategies for improving efficiency
+\end_layout
+
+\begin_layout Subsubsection
+Pre-allocate memory
+\end_layout
+
+\begin_layout Standard
+It is very inefficient to iteratively add elements to a vector, matrix,
+ data frame, array or list (e.g., iteratively using 
+\emph on
+c()
+\emph default
+, 
+\emph on
+cbind()
+\emph default
+, 
+\emph on
+rbind()
+\emph default
+, etc.).
+ Instead, create the full object in advance (this is equivalent to variable
+ initialization in compiled languages) and then fill in the appropriate
+ elements.
+ The reason is that when R appends to an existing object, it creates a new
+ copy and as the object gets big, this gets slow when one does it a lot
+ of times.
+ Here's an illustrative example, but of course we would not fill a vector
+ like this because we would in practice use vectorized calculations.
+\end_layout
+
+\begin_layout Chunk
+<<chunk1>>=
+\end_layout
+
+\begin_layout Chunk
+n <- 1000
+\end_layout
+
+\begin_layout Chunk
+fun1 <- function(n) {
+\end_layout
+
+\begin_layout Chunk
+   x <- 1
+\end_layout
+
+\begin_layout Chunk
+   for(i in 2:n) x <- c(x, i)
+\end_layout
+
+\begin_layout Chunk
+   return(x)
+\end_layout
+
+\begin_layout Chunk
+}
+\end_layout
+
+\begin_layout Chunk
+fun2 <- function(n) {
+\end_layout
+
+\begin_layout Chunk
+   x <- rep(as.numeric(NA), n)
+\end_layout
+
+\begin_layout Chunk
+   for(i in 1:n) x[i] <- i
+\end_layout
+
+\begin_layout Chunk
+}
+\end_layout
+
+\begin_layout Chunk
+benchmark(fun1(n), fun2(n),
+\end_layout
+
+\begin_layout Chunk
+replications = 10, columns=c('test', 'elapsed', 'replications'))
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+It's not necessary to use 
+\emph on
+as.numeric()
+\emph default
+ above though it saves a bit of time.
+ 
+\series bold
+Challenge
+\series default
+: figure out why I have 
+\family typewriter
+as.numeric(NA)
+\family default
+ and not just 
+\family typewriter
+NA
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+We can actually speed up the initialization (though in most practical circumstan
+ces, the second approach here would be overkill):
+\end_layout
+
+\begin_layout Chunk
+<<chunk2>>=
+\end_layout
+
+\begin_layout Chunk
+n <- 1000000
+\end_layout
+
+\begin_layout Chunk
+benchmark(x <- rep(as.numeric(NA), n),
+\end_layout
+
+\begin_layout Chunk
+{x <- as.numeric(NA); length(x) <- n},
+\end_layout
+
+\begin_layout Chunk
+replications = 10, columns=c('test', 'elapsed', 'replications'))
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+For matrices, start with the right length vector and then change the dimensions
+\end_layout
+
+\begin_layout Chunk
+<<chunk3>>=
+\end_layout
+
+\begin_layout Chunk
+nr <- nc <- 2000
+\end_layout
+
+\begin_layout Chunk
+benchmark(x <- matrix(as.numeric(NA), nr, nc),
+\end_layout
+
+\begin_layout Chunk
+{x <- as.numeric(NA); length(x) <- nr * nc; dim(x) <- c(nr, nc)},
+\end_layout
+
+\begin_layout Chunk
+replications = 10, columns=c('test', 'elapsed', 'replications'))
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+For lists, we can do this
+\end_layout
+
+\begin_layout Chunk
+<<chunk3a>>=
+\end_layout
+
+\begin_layout Chunk
+myList <- vector("list", length = n)
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Chunk
+
+\end_layout
+
+\begin_layout Subsubsection
+Vectorized calculations
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+see Grolemund book "Hands-on programming with R" final chapter to see various
+ versinos of vectorized code - didn't seem all that useful here 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+One key way to write efficient R code is to take advantage of R's vectorized
+ operations.
+\end_layout
+
+\begin_layout Chunk
+<<chunk4>>=
+\end_layout
+
+\begin_layout Chunk
+n <- 1e6
+\end_layout
+
+\begin_layout Chunk
+x <- rnorm(n)
+\end_layout
+
+\begin_layout Chunk
+system.time(x2 <- x^2)
+\end_layout
+
+\begin_layout Chunk
+x2 <- as.numeric(NA)
+\end_layout
+
+\begin_layout Chunk
+system.time({length(x2) <- n; for(i in 1:n){ x2[i] <- x[i]^2}}) # how many
+ orders of magnitude slower?
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+So what is different in how R handles the calculations above that explains
+ the disparity? The vectorized calculation is being done natively in C in
+ a for loop.
+ The for loop above involves executing the for loop in R (involving a bunch
+ of overhead because R is an interpreted language) with repeated calls to
+ C code at each iteration.
+ You can usually get a sense for how quickly an R call will pass things
+ along to C by looking at the body of the relevant function(s) being called
+ and looking for 
+\emph on
+.Primitive
+\emph default
+, 
+\emph on
+.Internal
+\emph default
+, 
+\emph on
+.C,
+\emph default
+ 
+\emph on
+.Call
+\emph default
+, or 
+\emph on
+.Fortran
+\emph default
+.
+ Let's take a look at the code for `
+\emph on
++
+\emph default
+`, 
+\emph on
+mean.default()
+\emph default
+, and 
+\emph on
+chol.default()
+\emph default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Many R functions allow you to pass in vectors, and operate on those vectors
+ in vectorized fashion.
+ So before writing a for loop, look at the help information on the relevant
+ function(s) to see if they operate in a vectorized fashion.
+\end_layout
+
+\begin_layout Chunk
+<<chunk5>>=
+\end_layout
+
+\begin_layout Chunk
+line <- c("Four score and 7 years ago, this nation")
+\end_layout
+
+\begin_layout Chunk
+startIndices = seq(1, by = 3, length = nchar(line)/3)
+\end_layout
+
+\begin_layout Chunk
+substring(line, startIndices, startIndices + 1)
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Challenge
+\series default
+: Consider the chi-squared statistic involved in a test of independence
+ in a contingency table:
+\begin_inset Formula 
+\[
+\chi^{2}=\sum_{i}\sum_{j}\frac{(y_{ij}-e_{ij})^{2}}{e_{ij}},\,\,\,\, e_{ij}=\frac{y_{i\cdot}y_{\cdot j}}{y_{\cdot\cdot}}
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $f_{i\cdot}=\sum_{j}f_{ij}$
+\end_inset
+
+.
+ Write this in a vectorized way without any loops.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+[chisquare.q]
+\end_layout
+
+\end_inset
+
+ Note that 'vectorized' calculations also work with matrices and arrays.
+\end_layout
+
+\begin_layout Standard
+Vectorized operations can also be faster than built-in functions, and clever
+ vectorized calculations even better, though sometimes the code is uglier:
+\end_layout
+
+\begin_layout Chunk
+<<chunk6, cache=TRUE>>=
+\end_layout
+
+\begin_layout Chunk
+x <- rnorm(1000000)
+\end_layout
+
+\begin_layout Chunk
+benchmark(truncx <- ifelse(x > 0, x, 0),
+\end_layout
+
+\begin_layout Chunk
+{truncx <- x; truncx[x < 0] <- 0},
+\end_layout
+
+\begin_layout Chunk
+truncx <- x * (x > 0),
+\end_layout
+
+\begin_layout Chunk
+replications = 10, columns=c('test', 'elapsed', 'replications'))
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+The demo code (see also Section 4.2 of Unit 4) has a surprising example where
+ combining vectorized calculations with a 
+\emph on
+for
+\emph default
+ loop is actually faster than using 
+\emph on
+apply()
+\emph default
+.
+ The goal is to remove rows of a large matrix that have any NAs in them.
+ 
+\end_layout
+
+\begin_layout Standard
+Additional tips:
+\end_layout
+
+\begin_layout Itemize
+If you do need to loop over dimensions of a matrix or array, if possible
+ loop over the smallest dimension and use the vectorized calculation on
+ the larger dimension(s).
+ 
+\end_layout
+
+\begin_layout Itemize
+Looping over columns is likely to be faster than looping over rows given
+ column-major ordering.
+\end_layout
+
+\begin_layout Itemize
+You can use direct arithmetic operations to add/subtract/multiply/divide
+ a vector by each column of a matrix, e.g.
+ 
+\family typewriter
+A*b
+\family default
+, multiplies each column of 
+\emph on
+A
+\emph default
+ times a vector 
+\emph on
+b
+\emph default
+.
+ If you need to operate by row, you can do it by transposing the matrix.
+ 
+\end_layout
+
+\begin_layout Standard
+Caution: relying on R's recycling rule in the context of vectorized operations,
+ such as is done when direct-multiplying a matrix by a vector to scale the
+ rows, can be dangerous as the code is not transparent and poses greater
+ dangers of bugs.
+ If it's needed to speed up a calculation, the best approach is to (1) first
+ write the code transparently and then compare the efficient code to make
+ sure the results are the same and (2) comment your code.
+\end_layout
+
+\begin_layout Standard
+Question: What do the points above imply about how to choose to store values
+ in a matrix? How would you choose what should be the row dimension and
+ what should be the column dimension? 
+\end_layout
+
+\begin_layout Subsubsection
+Using 
+\emph on
+apply()
+\emph default
+ and specialized functions
+\end_layout
+
+\begin_layout Standard
+Another core efficiency strategy is to use the 
+\emph on
+apply()
+\emph default
+ functionality.
+ Even better than 
+\emph on
+apply()
+\emph default
+ for calculating sums or means of columns or rows (it also can be used for
+ arrays) is 
+\emph on
+{row,col}{Sums,Means}
+\emph default
+:
+\end_layout
+
+\begin_layout Chunk
+<<chunk7>>=
+\end_layout
+
+\begin_layout Chunk
+n <- 3000; x <- matrix(rnorm(n * n), nr = n)
+\end_layout
+
+\begin_layout Chunk
+system.time(out <- apply(x, 1, mean))
+\end_layout
+
+\begin_layout Chunk
+system.time(out <- rowMeans(x))
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+We can '
+\emph on
+sweep
+\emph default
+' out a summary statistic, such as subtracting off a mean from each column,
+ using 
+\emph on
+sweep()
+\end_layout
+
+\begin_layout Chunk
+<<chunk8>>=
+\end_layout
+
+\begin_layout Chunk
+system.time(out <- sweep(x, 2, STATS = colMeans(x), FUN = "-"))
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+Here's a trick for doing it based on vectorized calculations, remembering
+ that if we subtract a vector from a matrix, it subtracts each element of
+ the vector from all the elements in the corresponding ROW.
+\end_layout
+
+\begin_layout Chunk
+<<chunk9>>=
+\end_layout
+
+\begin_layout Chunk
+system.time(out2 <- t(t(x) - colMeans(x)))
+\end_layout
+
+\begin_layout Chunk
+identical(out, out2)
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+Using versions of 
+\emph on
+apply()
+\emph default
+ with lists may or may not be faster than looping but generally produces
+ cleaner code.
+ Whether looping is slower will depend on whether a substantial part of
+ the work is in the overhead of the looping or in the time required by the
+ function evaluation on each of the elements.
+ If you're worried about speed, it's a good idea to benchmark the 
+\emph on
+apply()
+\emph default
+ variant against looping.
+\end_layout
+
+\begin_layout Standard
+Here's an example where 
+\emph on
+apply()
+\emph default
+ is not faster than a loop.
+\end_layout
+
+\begin_layout Chunk
+<<chunk38, cache=TRUE>>=
+\end_layout
+
+\begin_layout Chunk
+n <- 500000; nr <- 10000; nCalcs <- n/nr
+\end_layout
+
+\begin_layout Chunk
+mat <- matrix(rnorm(n), nrow = nr)
+\end_layout
+
+\begin_layout Chunk
+times <- 1:nr
+\end_layout
+
+\begin_layout Chunk
+system.time(out1 <- apply(mat, 2, function(vec) {mod = lm(vec ~ times); return(mo
+d$coef[2])})) 
+\end_layout
+
+\begin_layout Chunk
+system.time({out2 = rep(NA, nCalcs); for(i in 1:nCalcs){out2[i] = lm(mat[
+ , i] ~ times)$coef[2]}}) 
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Subsubsection
+Matrix algebra efficiency
+\end_layout
+
+\begin_layout Standard
+Often calculations that are not explictly linear algebra calculations can
+ be done as matrix algebra.
+ The following can be done faster with 
+\emph on
+rowSums()
+\emph default
+, so it's not a great example, but this sort of trick does come in handy
+ in surprising places.
+\end_layout
+
+\begin_layout Chunk
+<<chunk10>>=
+\end_layout
+
+\begin_layout Chunk
+mat <- matrix(rnorm(500*500), 500)
+\end_layout
+
+\begin_layout Chunk
+benchmark(apply(mat, 1, sum),
+\end_layout
+
+\begin_layout Chunk
+	mat %*% rep(1, ncol(mat)),
+\end_layout
+
+\begin_layout Chunk
+	rowSums(mat),
+\end_layout
+
+\begin_layout Chunk
+	replications = 10, columns=c('test', 'elapsed', 'replications'))
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+On the other hand, big matrix operations can be slow.
+ Suppose you want a new matrix that computes the differences between successive
+ columns of a matrix of arbitrary size.
+ How would you do this as matrix algebra operations? [see demo code] Here
+ it turns out that the 
+\emph on
+for
+\emph default
+ loop is much faster than matrix multiplication.
+ However, there is a way to do it faster as matrix direct subtraction.
+ Comment: the demo code also contains some exploration of different ways
+ of creating patterned matrices.
+ Note that this level of optimization is only worth it if you're doing something
+ over and over again, or writing code that you will distribute.
+\end_layout
+
+\begin_layout Standard
+When doing matrix algebra, the order in which you do operations can be critical
+ for efficiency.
+ How should I order the following calculation?
+\end_layout
+
+\begin_layout Chunk
+<<chunk11, cache=TRUE>>=
+\end_layout
+
+\begin_layout Chunk
+n <- 5000
+\end_layout
+
+\begin_layout Chunk
+A <- matrix(rnorm(5000 * 5000), 5000)
+\end_layout
+
+\begin_layout Chunk
+B <- matrix(rnorm(5000 * 5000), 5000)
+\end_layout
+
+\begin_layout Chunk
+x <- rnorm(5000)
+\end_layout
+
+\begin_layout Chunk
+res <- A %*% B %*% x
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+We can use the matrix direct product (i.e., 
+\family typewriter
+A*B
+\family default
+) to do some manipulations much more quickly than using matrix multiplication.
+ 
+\series bold
+Challenge
+\series default
+: How can I use the direct product to find the trace of a matrix, 
+\begin_inset Formula $XY$
+\end_inset
+
+? 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+sum(X*t(Y))
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+You can generally get much faster results by being smart when using diagonal
+ matrices.
+ The following operations : 
+\begin_inset Formula $X+D$
+\end_inset
+
+, 
+\begin_inset Formula $DX$
+\end_inset
+
+, 
+\begin_inset Formula $XD$
+\end_inset
+
+ are mathematically the sum of two matrices and products of two matrices.
+ But we can do the computation without doing using two full matrices.
+ 
+\series bold
+Challenge
+\series default
+: How?
+\end_layout
+
+\begin_layout Chunk
+<<chunk12>>=
+\end_layout
+
+\begin_layout Chunk
+n <- 1000
+\end_layout
+
+\begin_layout Chunk
+X <- matrix(rnorm(n^2), n) 
+\end_layout
+
+\begin_layout Chunk
+diagvals <- rnorm(n)
+\end_layout
+
+\begin_layout Chunk
+D = diag(diagvals)
+\end_layout
+
+\begin_layout Chunk
+# there are much faster ways than this
+\end_layout
+
+\begin_layout Chunk
+summedMat <- X + D
+\end_layout
+
+\begin_layout Chunk
+prodMat1 <- D %*% X
+\end_layout
+
+\begin_layout Chunk
+prodMat2 <- X %*% D
+\end_layout
+
+\begin_layout Chunk
+# How can we do each of those operations much more quickly?
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+More generally, sparse matrices and structured matrices (such as block diagonal
+ matrices) can generally be worked with MUCH more efficiently than treating
+ them as arbitrary matrices.
+ The 
+\emph on
+spam
+\emph default
+ (for arbitrary sparse matrices), 
+\emph on
+bdsmatrix
+\emph default
+ (for block-diagonal matrices), and 
+\emph on
+Matrix
+\emph default
+ (for a variety of sparse matrix types) packages in R can help, as can specializ
+ed code available in other languages, such as C and Fortran packages.
+\end_layout
+
+\begin_layout Subsubsection
+Fast mapping/lookup tables
+\end_layout
+
+\begin_layout Standard
+Sometimes you need to map between two vectors.
+ E.g., 
+\begin_inset Formula $y_{ij}\sim\mathcal{N}(\mu_{j},\sigma^{2})$
+\end_inset
+
+ is a basic ANOVA type structure.
+ Here are some efficient ways to aggregate to the cluster level and disaggregate
+ to the observation level.
+\end_layout
+
+\begin_layout Standard
+Disaggregate: Create a vector, 
+\emph on
+idVec
+\emph default
+, that gives a numeric mapping of the observations to their cluster.
+ Then you can access the 
+\begin_inset Formula $\mu$
+\end_inset
+
+ value relevant for each observation as:
+\family typewriter
+\series bold
+ 
+\series default
+mus[idVec]
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+Aggregate: To find the sample means by cluster
+\family typewriter
+: sapply(split(dat$obs, idVec), mean)
+\end_layout
+
+\begin_layout Standard
+As we've seen R allows you to look up elements of vector by name.
+ For example:
+\end_layout
+
+\begin_layout Chunk
+<<chunk13>>=
+\end_layout
+
+\begin_layout Chunk
+vals <- rnorm(10)
+\end_layout
+
+\begin_layout Chunk
+names(vals) <- letters[1:10]
+\end_layout
+
+\begin_layout Chunk
+select <- c("h", "h", "a", "c")
+\end_layout
+
+\begin_layout Chunk
+vals[select]
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+You can do similar things in terms of looking up by name with dimension
+ names of matrices/arrays, row and column names of dataframes, and named
+ lists.
+\end_layout
+
+\begin_layout Standard
+However, looking things up by name can be slow relative to looking up by
+ index.
+\end_layout
+
+\begin_layout Chunk
+<<chunk13a>>=
+\end_layout
+
+\begin_layout Chunk
+n=1000000
+\end_layout
+
+\begin_layout Chunk
+x <- 1:n
+\end_layout
+
+\begin_layout Chunk
+xL <- as.list(x)
+\end_layout
+
+\begin_layout Chunk
+nms <- as.character(x)
+\end_layout
+
+\begin_layout Chunk
+names(x) <- nms
+\end_layout
+
+\begin_layout Chunk
+names(xL) <- nms
+\end_layout
+
+\begin_layout Chunk
+benchmark(x[500000], x["500000"], xL[[500000]], xL[["500000"]], replications
+ = 10)
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Chunk
+
+\end_layout
+
+\begin_layout Standard
+Why do you think it is slow to look things up by name?
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+ lack of ordering - R need to scan through each name and check if it's the
+ one
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+TRY THIS?
+\end_layout
+
+\begin_layout Standard
+grades <- c(1, 2, 2, 3, 1)
+\end_layout
+
+\begin_layout Standard
+info <- data.frame( grade = 3:1, desc = c("Excellent", "Good", "Poor"), fail
+ = c(F, F, T) )
+\end_layout
+
+\begin_layout Standard
+id <- match(grades, info$grade) 
+\end_layout
+
+\begin_layout Standard
+info[id, ]
+\end_layout
+
+\begin_layout Paragraph
+Hashing
+\end_layout
+
+\begin_layout Standard
+A hash function is a function that takes as input some data and maps it
+ to a fixed-length output that can be used as a shortened reference to the
+ data.
+ We've seen this in the context of git commits where each commit was labeled
+ with a long base-16 number.
+ This also comes up when verifying files on the Internet.
+ You can compute the hash value on the file you get and check that it is
+ the same as the hash value associated with the legitimate copy of the file.
+\end_layout
+
+\begin_layout Standard
+For our purposes here, hashing can allow one to look up values by their
+ name via a hash table.
+ The idea is that you have a set of key-value pairs (sometimes called a
+ dictionary) where the key is the name associated with the value and the
+ value is some arbitrary object.
+ Hashing allows one to quickly determine an index associated with the key
+ and therefore quickly find the relevant value based on the index.
+ For example, one approach is to compute the hash as a function of the key
+ and then take the remainder when dividing by the number of key-value pairs
+ to get the index.
+ Here's the procedure in pseudocode:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{verbatim}
+\end_layout
+
+\begin_layout Plain Layout
+
+hash = hashfunc(key) 
+\end_layout
+
+\begin_layout Plain Layout
+
+index = hash %% array_size # %% is modulo operator - it gives the remainder
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{verbatim}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In general, there will be collisions, with multiple keys assigned to the
+ same index, but usually there will be a small number of keys associated
+ with a given index or slot, and determining the correct value within a
+ given index/slot (also called a bucket) is fast.
+ Put another way, the hash function distributes the keys amongst an array
+ of buckets and allows one to look up the appropriate bucket quickly based
+ on the computed index value.
+ When the hash table is properly set up, the cost of looking up a value
+ does not depend on the number of key-value pairs stored.
+\end_layout
+
+\begin_layout Standard
+As can be inferred from 
+\family typewriter
+?environment
+\family default
+ and according to Adler, looking up objects by name (i.e., looking up symbols)
+ within an R environment is implemented using hashing, so it can be very
+ fast (in the example here, it is only slightly slower than looking up by
+ index, with some overhead associated with computing the hash value).
+\end_layout
+
+\begin_layout Chunk
+<<chunk13b, cache=TRUE>>=
+\end_layout
+
+\begin_layout Chunk
+xEnv <- as.environment(xL)  # convert from a named list
+\end_layout
+
+\begin_layout Chunk
+xEnv$"500000"  
+\end_layout
+
+\begin_layout Chunk
+# I need quotes above because numeric; otherwise xEnv$nameOfObject is fine
+\end_layout
+
+\begin_layout Chunk
+xEnv[["500000"]]
+\end_layout
+
+\begin_layout Chunk
+benchmark(x[500000], xL[[500000]], xEnv[["500000"]], xEnv$"500000", replications
+ = 10000) 
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Subsubsection
+pqR and other R engines
+\end_layout
+
+\begin_layout Standard
+Radford Neal, a prominent statistician/computer scientist has been working
+ on a project called 
+\emph on
+pqR
+\emph default
+ (pretty quick R) to rewrite some aspects of R to make them faster.
+ There are also a few other projects that aim to reimplement the 
+\begin_inset Quotes eld
+\end_inset
+
+R engine
+\begin_inset Quotes erd
+\end_inset
+
+ such that one could run one's R code with different back ends.
+\end_layout
+
+\begin_layout Standard
+Here are some of the highlights of 
+\emph on
+pqR
+\emph default
+ in terms of efficiency, as discussed at 
+\begin_inset CommandInset href
+LatexCommand href
+target "http://radfordneal.github.io/pqR/"
+
+\end_inset
+
+:
+\end_layout
+
+\begin_layout Enumerate
+When R runs code such as just below, it actually creates a vector 1,2,....,n,
+ (which can be computationally and memory intensive for large n) and then
+ iterates over the values in the vector.
+ pqR avoids this vector creation.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+
+\family typewriter
+for(i in 1:n) { }
+\begin_inset Newline newline
+\end_inset
+
+vec[1:n]
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+As we'll see in Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Lazy-evaluation,-delayed"
+
+\end_inset
+
+, R often avoids making copies of objects when it is not necessary.
+ However, the scheme used to do this can be improved so that even fewer
+ copies are made.
+\end_layout
+
+\begin_layout Enumerate
+pqR automatically uses multiple cores for some calculations.
+\end_layout
+
+\begin_layout Enumerate
+pqR avoid some checks for NA and NaN and the like in matrix calculations
+ in which such checking would be slow and it doesn't make sense to check
+ for them anyway.
+\end_layout
+
+\begin_layout Subsubsection
+Byte compiling
+\end_layout
+
+\begin_layout Standard
+R now allows you to compile R code, which goes by the name of byte compiling.
+ Byte-compiled code is a special representation that can be executed more
+ efficiently because it is in the form of compact codes that encode the
+ results of parsing and semantic analysis of scoping and other complexities
+ of the R source code.
+ This byte code can be executed faster than the original R code because
+ it skips the stage of having to be interpreted by the R interpreter.
+\end_layout
+
+\begin_layout Standard
+The functions in the 
+\emph on
+base
+\emph default
+ and 
+\emph on
+stats
+\emph default
+ packages are now byte-compiled by default.
+ (If you print out a function that is byte-compiled, you'll see something
+ like 
+\emph on
+<bytecode: 0x243a368>
+\emph default
+ at the bottom.
+\end_layout
+
+\begin_layout Standard
+We can byte compile our own functions using 
+\emph on
+cmpfun()
+\emph default
+.
+ Here's an example (silly since we we actually do this calculation using
+ vectorized operations):
+\end_layout
+
+\begin_layout Chunk
+<<chunk14, cache=TRUE>>=
+\end_layout
+
+\begin_layout Chunk
+library(compiler); library(rbenchmark)
+\end_layout
+
+\begin_layout Chunk
+f <- function(x){
+\end_layout
+
+\begin_layout Chunk
+	for(i in 1:length(x)) x[i] <- x[i] + 1
+\end_layout
+
+\begin_layout Chunk
+	return(x)
+\end_layout
+
+\begin_layout Chunk
+}
+\end_layout
+
+\begin_layout Chunk
+fc <- cmpfun(f)
+\end_layout
+
+\begin_layout Chunk
+fc # notice the indication that the function is byte compiled.
+\end_layout
+
+\begin_layout Chunk
+x <- rnorm(100000)
+\end_layout
+
+\begin_layout Chunk
+benchmark(f(x), fc(x), x <- x + 1, replications = 5)
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+You can compile an entire source file with 
+\emph on
+cmpfile()
+\emph default
+, which produces a 
+\emph on
+.Rc
+\emph default
+ file.
+ You then need to use 
+\emph on
+loadcmp()
+\emph default
+ to load in the 
+\emph on
+.Rc
+\emph default
+ file, which runs the code.
+\end_layout
+
+\begin_layout Standard
+Unfortunately, in my experience, byte compiling doesn't usually speed things
+ up much.
+ As experienced R programmers we would never write the unvectorized code
+ above.
+\end_layout
+
+\begin_layout Subsection
+Challenges
+\end_layout
+
+\begin_layout Standard
+One or more of these challenges may appear on a problem set.
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Challenge 1
+\series default
+: Here's a calculation of the sort needed in mixture component modeling.
+ I have a vector of 
+\begin_inset Formula $n$
+\end_inset
+
+ observations.
+ I need to find the likelihood of each observation under each of 
+\begin_inset Formula $p$
+\end_inset
+
+ mixture components (i.e., what's the likelihood if it came from each of the
+ components).
+ So I should produce a matrix of 
+\begin_inset Formula $n$
+\end_inset
+
+ rows and 
+\begin_inset Formula $p$
+\end_inset
+
+ columns where the value in the 
+\begin_inset Formula $i$
+\end_inset
+
+th row, 
+\begin_inset Formula $j$
+\end_inset
+
+th column is the likelihood of the 
+\begin_inset Formula $i$
+\end_inset
+
+th observation under the 
+\begin_inset Formula $j$
+\end_inset
+
+th mixture component.
+ The idea is that the likelihoods for a given observation are used in assigning
+ observations to clusters.
+ A naive implementation is:
+\end_layout
+
+\begin_layout Chunk
+<<chunk14aa, eval=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+lik <- matrix(NA, nr = n, nc = p)
+\end_layout
+
+\begin_layout Chunk
+for(j in 1:p) lik[ , j] <- dnorm(y, mns[j], sds[j])
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+Note that 
+\emph on
+dnorm()
+\emph default
+ can handle matrices and vectors as the observations 
+\series bold
+and
+\series default
+ as the means and sds, so there are multiple ways to do this.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+[mixtureExample.q]
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Challenge 2
+\series default
+: Here's a calculation of the sort needed in a mixed membership model, where
+ each observation is associated with some number of components.
+ Suppose you have 
+\begin_inset Formula $y_{i}\sim\mathcal{N}(\sum_{k=1}^{m_{i}}w_{i,k}\mu_{ID[i,k]},\sigma^{2})$
+\end_inset
+
+ for a large number of observations, 
+\begin_inset Formula $n$
+\end_inset
+
+.
+ I give you a vector of 
+\begin_inset Formula $\mu$
+\end_inset
+
+ values and a ragged list of weights and a ragged list of IDs identifying
+ the cluster corresponding to each weight (note 
+\begin_inset Formula $m_{i}$
+\end_inset
+
+ varies by observation).
+ Figure out how to calculate the vector of means, 
+\begin_inset Formula $\sum_{k}w_{i,k}\mu_{ID[i,k]}$
+\end_inset
+
+ as fast as possible.
+ Suppose that 
+\begin_inset Formula $m_{i}$
+\end_inset
+
+ never gets too big (but 
+\begin_inset Formula $\mu$
+\end_inset
+
+ might have many elements) - could this help you? Part of thinking this
+ through involves thinking about how you want to store the information so
+ that the calculations can be done quickly.
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Challenge 3
+\series default
+: Write code that simulates a random walk in two dimensions for 
+\begin_inset Formula $n$
+\end_inset
+
+ steps.
+ First write out a straightforward implementation that involves looping.
+ Then try to speed it up.
+ The 
+\emph on
+cumsum()
+\emph default
+ function may be helpful.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Extra: simulate an excited random walk.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Challenge 4:
+\series default
+ Determine if it's faster to subset based on vector of indices or a vector
+ of logicals.
+ Determine if it matters how big the original object is and how large the
+ subset is, as well as whether the vector of indices is ordered.
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Challenge 5:
+\series default
+ Figure out how to efficiency improvements in the following code chunk,
+ which is part of a likelihood calculation for a student's PhD research.
+\end_layout
+
+\begin_layout Chunk
+<<chunk14a, eval=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+for (i in 1:n) {        
+\end_layout
+
+\begin_layout Chunk
+  for (j in 1:n) {
+\end_layout
+
+\begin_layout Chunk
+    for (z in 1:K) { 
+\end_layout
+
+\begin_layout Chunk
+       if (theta.old[i, z]*theta.old[j, z] == 0){ 
+\end_layout
+
+\begin_layout Chunk
+          q[i, j, z] <- 0 
+\end_layout
+
+\begin_layout Chunk
+       } else { 
+\end_layout
+
+\begin_layout Chunk
+          q[i, j, z] <- theta.old[i, z]*theta.old[j, z] /
+\end_layout
+
+\begin_layout Chunk
+               Theta.old[i, j] 
+\end_layout
+
+\begin_layout Chunk
+       } 
+\end_layout
+
+\begin_layout Chunk
+    } 
+\end_layout
+
+\begin_layout Chunk
+  }
+\end_layout
+
+\begin_layout Chunk
+}
+\end_layout
+
+\begin_layout Chunk
+theta.new <- theta.old 
+\end_layout
+
+\begin_layout Chunk
+for (z in 1:K) { 
+\end_layout
+
+\begin_layout Chunk
+   theta.new[,z] <- rowSums(A*q[,,z])/sqrt(sum(A*q[,,z])) 
+\end_layout
+
+\begin_layout Chunk
+} 
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Challenge 6:
+\series default
+ The following problem comes from another student's PhD research and involves
+ matching genomic sequences.
+ I won't go into the scientific details but will simply lay out the core
+ computational task.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+add Sean's matching reads problem
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Sometimes we can avoid dealing with indexing by using vectorized mathematical
+ operations.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Have them look at Duncan's random walk example.
+ Or perhaps do as part of profiling section.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Evaluating memory use
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Evaluating-memory-use"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The main things to remember when thinking about memory use are: (1) numeric
+ vectors take 8 bytes per element and (2) we need to keep track of when
+ large objects are created, including in the frames of functions.
+\end_layout
+
+\begin_layout Standard
+In some of our work here we'll use functions from the 
+\emph on
+pryr
+\emph default
+ package, which provides functions to help understand what is going on under
+ the hood in R.
+\end_layout
+
+\begin_layout Standard
+In general, don't try to run this code within RStudio, as some of how RStudio
+ works affects memory use.
+\end_layout
+
+\begin_layout Subsection
+Allocating and freeing memory
+\end_layout
+
+\begin_layout Standard
+Unlike compiled languages like C, in R we do not need to explicitly allocate
+ storage for objects.
+ However, we have seen that there are times that we do want to allocate
+ storage in advance, rather than successively concatenating onto a larger
+ object.
+ 
+\end_layout
+
+\begin_layout Standard
+R automatically manages memory, releasing memory back to the operating system
+ when it's not needed via garbage collection.
+ Very occasionally you may want to remove large objects as soon as they
+ are not needed.
+ 
+\emph on
+rm()
+\emph default
+ does not actually free up memory, it just disassociates the name from the
+ memory used to store the object.
+ In general R will clean up such objects without a reference (i.e., a name)
+ but you may need to call 
+\emph on
+gc()
+\emph default
+ to force the garbage collection.
+ This uses some computation so it's generally not recommended.
+\end_layout
+
+\begin_layout Standard
+In a language like C in which the user allocates and frees up memory, memory
+ leaks are a major cause of bugs.
+ Basically if you are looping and you allocate memory at each iteration
+ and forget to free it, the memory use builds up inexorably and eventually
+ the machine runs out of memory.
+ In R, with automatic garbage collection, this is generally not an issue,
+ but occasionally memory leaks do occur.
+ 
+\end_layout
+
+\begin_layout Subsection
+Monitoring overall memory use
+\end_layout
+
+\begin_layout Standard
+There are a number of ways to see how much memory is being used.
+ When R is actively executing statements, you can use 
+\emph on
+top
+\emph default
+ from the UNIX shell.
+ In R, 
+\emph on
+gc()
+\emph default
+ reports memory use and free memory as 
+\emph on
+Ncells
+\emph default
+ and 
+\emph on
+Vcells
+\emph default
+.
+ As far as I know, 
+\emph on
+Ncells
+\emph default
+ concerns the overhead of running R and 
+\emph on
+Vcells
+\emph default
+ relates to objects created by the user, so you'll want to focus on 
+\emph on
+Vcells
+\emph default
+.
+ You can see the number of Mb currently used (the 
+\begin_inset Quotes eld
+\end_inset
+
+
+\emph on
+used
+\emph default
+
+\begin_inset Quotes erd
+\end_inset
+
+ column of the output) and the maximum used in the session (the 
+\begin_inset Quotes eld
+\end_inset
+
+
+\emph on
+max used
+\emph default
+
+\begin_inset Quotes erd
+\end_inset
+
+ column)
+\begin_inset Quotes erd
+\end_inset
+
+.
+ A newer alternative is 
+\emph on
+mem_change()
+\emph default
+ in the 
+\emph on
+pryr
+\emph default
+ package.
+\end_layout
+
+\begin_layout Chunk
+<<gc>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+You can reset the value given for max used, with 
+\family typewriter
+gc(reset = TRUE)
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+In Windows only, 
+\emph on
+memory.size()
+\emph default
+ tells how much memory is being used.
+ 
+\end_layout
+
+\begin_layout Standard
+You can check the amount of memory used by individual objects with 
+\emph on
+object.size()
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Here is a useful function, 
+\emph on
+ls.sizes()
+\emph default
+, that wraps 
+\emph on
+object.size()
+\emph default
+ to report the largest 
+\begin_inset Formula $n$
+\end_inset
+
+ objects in a given environment:
+\end_layout
+
+\begin_layout Chunk
+<<ls-sizes>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+Unfortunately with environments, ReferenceClasses, and other such 
+\begin_inset Quotes eld
+\end_inset
+
+containers
+\begin_inset Quotes erd
+\end_inset
+
+, it can be hard to see how much memory the object is using, including all
+ the components of the object.
+ Here's a trick where we serialize the object, as if to export it, and then
+ see how long the binary representation is.
+\end_layout
+
+\begin_layout Chunk
+<<serialize>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+[not needed for Fall2012 as it was a PS2 problem]
+\end_layout
+
+\end_inset
+
+One frustration with memory management is that if your code bumps up against
+ the memory limits of the machine, it can be very slow to respond even when
+ you're trying to cancel the statement with 
+\emph on
+Ctrl-C
+\emph default
+.
+ You can impose memory limits in Linux by starting R (from the UNIX prompt)
+ in a fashion such as this
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+> R --max-vsize=1000M
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Then if you try to create an object that will push you over that limit or
+ execute code that involves going over the limit, it will simply fail with
+ the message 
+\begin_inset Quotes eld
+\end_inset
+
+
+\emph on
+Error: vector memory exhausted (limit reached?)
+\emph default
+
+\begin_inset Quotes erd
+\end_inset
+
+.
+ So this approach may be a nice way to avoid paging/swapping by setting
+ the maximum in relation to the physical memory of the machine.
+ It might also help in debugging memory leaks because the program would
+ fail at the point that memory use was increasing.
+ I haven't played around with this much, so offer this with a note of caution.
+\end_layout
+
+\begin_layout Standard
+We can use an internal function called 
+\emph on
+inspect()
+\emph default
+ to see where in memory an object is stored.
+ We'll see that this can be a handy tool for seeing where copies are made
+ and where they are not.
+\end_layout
+
+\begin_layout Chunk
+<<inspect>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+The 
+\emph on
+pryr
+\emph default
+ package provides 
+\emph on
+address()
+\emph default
+ or 
+\emph on
+inspect()
+\emph default
+ as an alternative to 
+\emph on
+.Internal(inspect())
+\emph default
+.
+ Note that you should make sure you have the most recent version of pryr
+ as there was a bug in 
+\emph on
+address()
+\emph default
+ in older versions that give the wrong info for the example below.
+ 
+\end_layout
+
+\begin_layout Chunk
+<<pryr-address>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Subsection
+Hidden uses of memory
+\end_layout
+
+\begin_layout Itemize
+Replacement functions can hide the use of additional memory.
+ How much memory is used here?
+\end_layout
+
+\begin_layout Chunk
+<<hidden1, eval=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Itemize
+Not all replacement functions actually involve creating a new object and
+ replacing the original object.
+ (However for some reason if I run the code via knitr in creating this PDF
+ a copy IS made.) Here `[<-` is a primitive function, so the modification
+ of the vector can be done without a copy.
+\end_layout
+
+\begin_layout Chunk
+<<hidden2, eval=TRUE>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Chunk
+
+\end_layout
+
+\begin_layout Itemize
+Indexing large subsets can involve a lot of memory use.
+\end_layout
+
+\begin_layout Chunk
+<<hidden3, eval=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+Why was more memory used than just for 
+\emph on
+x
+\emph default
+ and 
+\emph on
+y
+\emph default
+? Note that this is a limitation of R.
+ Note that R could be designed to avoid this problem (see our discussion
+ of 
+\emph on
+pqR
+\emph default
+ earlier in this Unit).
+\end_layout
+
+\begin_layout Subsection
+Passing objects to compiled code
+\end_layout
+
+\begin_layout Standard
+As we've already discussed, when R objects are passed to compiled code (e.g.,
+ C or C++), they are passed as pointers and the compiled code uses the memory
+ allocated by R (though it could also allocate additional memory if allocation
+ is part of the code).
+ However, a copy of the object is made, so when calling a C function from
+ R there is some memory overhead.
+\end_layout
+
+\begin_layout Standard
+Furthermore, we need to be aware of any casting that occurs, because the
+ compiled code requires that the R object types match those that the function
+ in the compiled code is expecting.
+ 
+\end_layout
+
+\begin_layout Standard
+Here's an example of calling compiled code:
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+res <- .C("fastcount", PACKAGE="GCcorrect", tablex = as.integer(tablex),
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+tabley = as.integer(tabley), as.integer(xvar), as.integer(yvar),
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+as.integer(useline), as.integer(length(xvar)))
+\end_layout
+
+\begin_layout Standard
+Let's consider when copies are made in casts:
+\end_layout
+
+\begin_layout Chunk
+<<casts, eval=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+Next we'll see that C calls do involve a copy, even though it looks like
+ we are just using the same object allocated by R.
+ We'll use the 
+\emph on
+inline
+\emph default
+ package to work directly with C code in R and the .C functionality for interfaci
+ng with C.
+\end_layout
+
+\begin_layout Chunk
+<<pass-to-C>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Subsection
+Delayed copying (copy-on-change) 
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Lazy-evaluation,-delayed"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Next we'll see that something like lazy evaluation occurs outside of functions
+ as well with some functionality called 
+\emph on
+delayed copying
+\emph default
+ or 
+\emph on
+copy-on-change
+\emph default
+.
+ When we discussed R as being call-by-value in Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Approaches-to-passing"
+
+\end_inset
+
+, copy-on-change was one of the reasons that copies of arguments are not
+ always made.
+\end_layout
+
+\begin_layout Standard
+Let's see what goes on within a function in terms of memory use in different
+ situations.
+ Ignore the 
+\emph on
+gc()
+\emph default
+ results in the pdf, as we'll start R fresh to get a clean view of memory
+ use during the class demo.
+\end_layout
+
+\begin_layout Chunk
+<<copy-on-change-fun, eval=TRUE>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+In fact, this occurs outside function calls as well.
+ Copies of objects are not made until one of the objects is actually modified.
+ Initially, the copy points to the same memory location as the original
+ object.
+ 
+\end_layout
+
+\begin_layout Chunk
+<<copy-on-change, eval=TRUE>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+Or we can see this using 
+\emph on
+mem_change()
+\emph default
+.
+ 
+\end_layout
+
+\begin_layout Chunk
+<<copy-mem-change>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+As discussed by Radford Neal, who is working to improve the efficiency of
+ R in a project called pqR, 
+\emph on
+
+\begin_inset Quotes eld
+\end_inset
+
+So R doesn’t copy all the time.
+ Instead, it maintains a count, called NAMED, of how many “names” refer
+ to an object, and copies only when an object that needs to be modified
+ is also referred to by another name.
+ Unfortunately, however, this scheme works rather poorly.
+ Many unnecessary copies are still made, while many bugs have arisen in
+ which copies aren’t made when necessary.
+\emph default
+
+\begin_inset Quotes erd
+\end_inset
+
+ I believe some improvements have been made in recent versions of R in this
+ regard.
+\end_layout
+
+\begin_layout Standard
+Here are examples of how the NAMED count can be fooled into making a copy
+ unnecessarily.
+ Why do I say these copies are unnecessary and why is NAMED fooled?
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+X in frist case points to Y
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Chunk
+<<named>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Chunk
+
+\end_layout
+
+\begin_layout Standard
+We can use the 
+\emph on
+tracemem()
+\emph default
+ function to assess what is going on without all those 
+\emph on
+inspect()
+\emph default
+ calls.
+ Anything surprising in what you see?
+\end_layout
+
+\begin_layout Chunk
+<<tracemem>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+Given our understanding of copy-on-change, explain what happens here:
+\end_layout
+
+\begin_layout Chunk
+<<copy-on-change-question, eval=TRUE>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Challenge
+\series default
+: How much memory is used in the following calculation?
+\end_layout
+
+\begin_layout Chunk
+<<memuse1>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+How about here? What is going on?
+\end_layout
+
+\begin_layout Chunk
+<<memuse2>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+This makes sense if we look at 
+\emph on
+mean.default()
+\emph default
+.
+ Consider where additional memory is used.
+ 
+\end_layout
+
+\begin_layout Subsection
+Deep copies and lists
+\end_layout
+
+\begin_layout Standard
+Prior to R 3.1.0, modifying an element of a list caused the entire list to
+ be copied, basically what is called a 
+\emph on
+deep copy
+\emph default
+.
+ In more recent versions of R, only the components that need to get copied
+ are copied.
+ 
+\end_layout
+
+\begin_layout Standard
+You can explore this using 
+\emph on
+.Internal(inspect())
+\emph default
+ on a list.
+\end_layout
+
+\begin_layout Subsection
+Strategies for saving memory
+\end_layout
+
+\begin_layout Standard
+A couple basic strategies for saving memory include:
+\end_layout
+
+\begin_layout Itemize
+Avoiding unnecessary copies.
+\end_layout
+
+\begin_layout Itemize
+Removing objects that are not being used and, if necessary (not generally
+ needed), do a 
+\emph on
+gc()
+\emph default
+ call.
+\end_layout
+
+\begin_layout Standard
+If you're really trying to optimize memory use, you may also consider:
+\end_layout
+
+\begin_layout Itemize
+Using reference classes and similar strategies to pass by reference.
+\end_layout
+
+\begin_layout Itemize
+Substituting integer and logical vectors for numeric vectors when possible.
+\end_layout
+
+\begin_layout Subsection
+Example
+\end_layout
+
+\begin_layout Standard
+Let's work through a real example where we keep a running tally of current
+ memory in use and maximum memory used in a function call.
+ We'll want to consider hidden uses of memory, passing objects to compiled
+ code, and lazy evaluation.
+ This code is courtesy of Yuval Benjamini.
+ For our purposes here, let's assume that 
+\emph on
+xvar
+\emph default
+ and 
+\emph on
+yvar
+\emph default
+ are very long vectors using a lot of memory.
+\end_layout
+
+\begin_layout Chunk
+<<memuse-real, eval = FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Section
+Computing on the language
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Computing-on-the"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+The R interpreter
+\end_layout
+
+\begin_layout Paragraph
+Parsing
+\end_layout
+
+\begin_layout Standard
+When you run R, the R interpreter takes the code you type or the lines of
+ code that are read in a batch session and parses each statement, translating
+ the text into functional form.
+ It substitutes objects for the symbols (names) that represent those objects
+ and evaluates the statement, returning the resulting object.
+ For complicated R code, this may be recursive.
+\end_layout
+
+\begin_layout Standard
+Since everything in R is an object, the result of parsing is an object that
+ we'll be able to investigate, and the result of evaluating the parsed statement
+ is an object.
+\end_layout
+
+\begin_layout Standard
+We'll see more on parsing in the next section.
+\end_layout
+
+\begin_layout Paragraph
+
+\emph on
+.Primitive()
+\emph default
+ and 
+\emph on
+.Internal()
+\emph default
+ (and 
+\emph on
+.External
+\emph default
+())
+\end_layout
+
+\begin_layout Standard
+Some functionality is implemented internally within the C implementation
+ that lies at the heart of R.
+ If you see 
+\emph on
+.Internal()
+\emph default
+ or 
+\emph on
+.Primitive()
+\emph default
+ or 
+\emph on
+.External()
+\emph default
+, in the code of a function, you know it's implemented internally (and therefore
+ generally very quickly).
+ Unfortunately, it also means that you don't get to see R code that implements
+ the functionality, though Chambers p.
+ 465 describes how you can look into the C source code.
+ Basically you need to download the source code for the relevant package
+ off of CRAN.
+\end_layout
+
+\begin_layout Chunk
+<<internal-funs>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Subsection
+Parsing code and understanding language objects
+\end_layout
+
+\begin_layout Standard
+R code can be manipulated in text form and we can actually write R code
+ that will create or manipulate R code.
+ We can then evaluate that R code using 
+\emph on
+eval()
+\emph default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+
+\emph on
+quote()
+\emph default
+ will parse R code, but not evaluate it.
+ This allows you to work with the code rather than the results of evaluating
+ that code.
+ The 
+\emph on
+print()
+\emph default
+ method for language objects is not very helpful! But we can see the parsed
+ code by treating the result as a list.
+\end_layout
+
+\begin_layout Chunk
+<<quote, tidy=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+Recall that to access symbols that involve special syntax (such as special
+ characters), you use backquotes.
+\end_layout
+
+\begin_layout Standard
+Officially, the name that you assign to an object (including functions)
+ is a 
+\emph on
+symbol
+\emph default
+.
+ 
+\end_layout
+
+\begin_layout Chunk
+<<type-quote>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+We can create an 
+\emph on
+expression
+\emph default
+ object that contains R code as
+\end_layout
+
+\begin_layout Chunk
+<<expr>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+The difference between 
+\emph on
+quote()
+\emph default
+ and 
+\emph on
+expression()
+\emph default
+ is basically that 
+\emph on
+quote()
+\emph default
+ works with a single statement (including multiple statements inside {...}),
+ while 
+\emph on
+expression()
+\emph default
+ can deal with multiple statements, returning a list-like object of parsed
+ statements.
+ Both of them parse R code.
+\end_layout
+
+\begin_layout Chunk
+<<parsing>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+The following table shows the 
+\emph on
+language
+\emph default
+ objects in R; note that there are three classes of language objects: 
+\emph on
+expressions
+\emph default
+, 
+\emph on
+calls
+\emph default
+, and 
+\emph on
+names
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="8" columns="4">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Example syntax to create
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Class
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Type
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+object names
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+quote(x)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+name
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+symbol (language)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+expressions
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+expression(x <- 3)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+expression
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+expression (language)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+function calls
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+quote(f())
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+call
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+language
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+if statements
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+quote(if(x < 3) y=5)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+if (call)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+language
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+for statement
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+quote(for(i in 1:5) {})
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+for (call)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+language
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+assignments
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+quote(x <- 3)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+<- (call)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+language
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+operators
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+quote(3 + 7)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+call
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+language
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+Basically any standard function, operator, 
+\emph on
+if
+\emph default
+ statement, 
+\emph on
+for
+\emph default
+ statement, assignment, etc.
+ are function calls and inherit from the 
+\emph on
+call
+\emph default
+ class.
+ 
+\end_layout
+
+\begin_layout Standard
+Objects of type language are not officially lists, but they can be queried
+ as such.
+ You can convert between language objects and lists with 
+\emph on
+as.list()
+\emph default
+ and 
+\emph on
+as.call()
+\emph default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+An official expression is one or more syntactically correct R statements.
+ When we use 
+\emph on
+quote()
+\emph default
+, we're working with a single statement, while 
+\emph on
+expression()
+\emph default
+ will create a list of separate statements (essentially separate call objects).
+ I'm trying to use the term 
+\emph on
+statement
+\emph default
+ to refer colloquially to R code, rather than using the term 
+\emph on
+expression
+\emph default
+, since that has formal definition in this context.
+\end_layout
+
+\begin_layout Standard
+Let's take a look at some examples of language objects and parsing.
+\end_layout
+
+\begin_layout Chunk
+<<lang-objects, tidy=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+We can evaluate language types using 
+\emph on
+eval()
+\emph default
+:
+\end_layout
+
+\begin_layout Chunk
+<<eval-lang>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+Now let's look in more detail at the components of R expressions.
+ We'll be able to get a sense from this of how R evaluates code.
+ We see that when R evaluates a parse tree, the first element says what
+ function to use and the remaining elements are the arguments.
+ But in many cases one or more arguments will themselves be call objects,
+ so there's recursion.
+\end_layout
+
+\begin_layout Chunk
+<<expr-structure>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Subsection
+Manipulating the parse tree
+\end_layout
+
+\begin_layout Standard
+Of course since the parsed code is just an object, we can manipulate it,
+ i.e., 
+\emph on
+compute on the language
+\emph default
+:
+\end_layout
+
+\begin_layout Chunk
+<<manip-expr>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+Here's another example:
+\end_layout
+
+\begin_layout Chunk
+<<manip-expr2>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+We can also turn it back into standard R code, as a character, using 
+\emph on
+deparse()
+\emph default
+, which turns the parse tree back into R code as text.
+ 
+\emph on
+parse()
+\emph default
+ is like 
+\emph on
+quote()
+\emph default
+ but it takes the code in the form of a string rather than an actual expression:
+\end_layout
+
+\begin_layout Chunk
+<<deparse>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+Note that the quotes have been escaped since they're inside a string.
+\end_layout
+
+\begin_layout Standard
+It can be very useful to be able to convert names of objects that are in
+ the form of text to names that R interprets as symbols referring to objects:
+\end_layout
+
+\begin_layout Chunk
+<<manip-names>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Chunk
+
+\end_layout
+
+\begin_layout Subsection
+Parsing replacement expressions
+\end_layout
+
+\begin_layout Standard
+Let's consider replacement expressions.
+ 
+\end_layout
+
+\begin_layout Chunk
+<<replace-lang>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+The parse tree for 
+\emph on
+out3
+\emph default
+ is different than those for 
+\emph on
+out1
+\emph default
+ and 
+\emph on
+out2
+\emph default
+, but when 
+\emph on
+out3
+\emph default
+ is evaluated the result is the same as for 
+\emph on
+out1
+\emph default
+ and 
+\emph on
+out2
+\emph default
+:
+\end_layout
+
+\begin_layout Chunk
+<<replace-lang2>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+Why? When R evaluates a call to `<-`, if the first argument is a name, then
+ it does the assignment, but if the first argument (i.e.
+ what's on the left-hand side of the 
+\begin_inset Quotes eld
+\end_inset
+
+assignment
+\begin_inset Quotes erd
+\end_inset
+
+) is a call then it calls the appropriate replacement function.
+ The second argument (the value being assigned) is evaluated first.
+ Ultimately in all of these cases, the replacement function is used.
+\end_layout
+
+\begin_layout Subsection
+substitute()
+\end_layout
+
+\begin_layout Standard
+The substitute function acts like 
+\emph on
+quote()
+\emph default
+:
+\end_layout
+
+\begin_layout Chunk
+<<substitute>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+But if you also pass 
+\emph on
+substitute()
+\emph default
+ an environment, it will replace symbols with their object values in that
+ environment.
+\end_layout
+
+\begin_layout Chunk
+<<substitute2>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+This can do non-sensical stuff:
+\end_layout
+
+\begin_layout Chunk
+<<crazy-subst>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+Let's see a practical example of substituting for variables in statements:
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+plot(x = rnorm(5), y = rgamma(5, 1)) # how does plot get the axis label
+ names?
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+In the 
+\emph on
+plot()
+\emph default
+ function, you can see this syntax:
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+xlabel <- if(!missing(x)) deparse(substitute(x))
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+So what's going on is that within 
+\emph on
+plot.default()
+\emph default
+, it substitutes in for '
+\emph on
+x
+\emph default
+' with the statement that was passed in as the 
+\emph on
+x
+\emph default
+ argument, and then uses 
+\emph on
+deparse()
+\emph default
+ to convert to character.
+ The fact that 
+\emph on
+x
+\emph default
+ still has 
+\emph on
+rnorm(5)
+\emph default
+ associated with it rather than the five numerical values from evaluating
+ 
+\emph on
+rnorm()
+\emph default
+ has to do with lazy evaluation and promises.
+ Here's the same idea in action in a stripped down example:
+\end_layout
+
+\begin_layout Chunk
+<<subst-example>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+More generally, we can substitute into 
+\emph on
+expression
+\emph default
+ and 
+\emph on
+call
+\emph default
+ objects by providing a named list (or an environment) - the substition
+ happens within the context of this list.
+\end_layout
+
+\begin_layout Chunk
+<<subst3>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+Things can get intricate quickly:
+\end_layout
+
+\begin_layout Chunk
+<<subst4>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+The problem is that 
+\emph on
+substitute()
+\emph default
+ doesn't evaluate its first argument, 
+\begin_inset Quotes eld
+\end_inset
+
+
+\emph on
+e1
+\emph default
+
+\begin_inset Quotes erd
+\end_inset
+
+, so it can't replace the parsed elements in 
+\emph on
+e1
+\emph default
+.
+ Instead, we'd need to do the following, where we force the evaluation of
+ 
+\emph on
+e1
+\emph default
+:
+\end_layout
+
+\begin_layout Chunk
+<<double-subst>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+If this subsection is confusing, let me assure you that it has confused
+ me too.
+ The indirection going on here is very involved.
+\end_layout
+
+\begin_layout Subsection
+Final thoughts
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Challenge
+\series default
+: figure out how a 
+\emph on
+for
+\emph default
+ loop is parsed in R.
+ See how a 
+\emph on
+for
+\emph default
+ loop with one statement within the loop differs from one with two or more
+ statements.
+\end_layout
+
+\begin_layout Standard
+We'll see 
+\emph on
+expression()
+\emph default
+ again when we talk about inserting mathematical notation in plots.
+\end_layout
+
+\end_body
+\end_document
