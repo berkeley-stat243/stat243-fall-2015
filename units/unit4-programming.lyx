@@ -76,34 +76,42 @@ knitr
 \begin_body
 
 \begin_layout Chunk
+
 <<setup, include=FALSE>>=
 \end_layout
 
 \begin_layout Chunk
+
 if(exists('format.bytes')) rm(format.bytes)
 \end_layout
 
 \begin_layout Chunk
+
 library(knitr) 
 \end_layout
 
 \begin_layout Chunk
+
 library(pryr)
 \end_layout
 
 \begin_layout Chunk
+
 opts_chunk$set(fig.path = 'figure/listings-') 
 \end_layout
 
 \begin_layout Chunk
+
 options(replace.assign = TRUE, width = 55) 
 \end_layout
 
 \begin_layout Chunk
+
 read_chunk("unit4-programming.R")
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -224,10 +232,12 @@ system()
 
 \begin_deeper
 \begin_layout Chunk
+
 <<system>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -239,10 +249,12 @@ There are also a bunch of functions that will do specific queries of the
 
 \begin_deeper
 \begin_layout Chunk
+
 <<file-commands, eval=TRUE>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -254,10 +266,12 @@ There are some tools for dealing with differences between operating systems.
 
 \begin_deeper
 \begin_layout Chunk
+
 <<list-files>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -268,10 +282,12 @@ To get some info on the system you're running on:
 
 \begin_deeper
 \begin_layout Chunk
+
 <<sys-info>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -303,10 +319,12 @@ digits
 
 \begin_deeper
 \begin_layout Chunk
+
 <<options>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -355,10 +373,12 @@ Sys.info()
 
 \begin_deeper
 \begin_layout Chunk
+
 <<sessionInfo>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -441,19 +461,23 @@ If you want to pass arguments into your script, you can do so as long as
 \end_layout
 
 \begin_layout Chunk
+
 <<rscript-args, eval=FALSE>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
 \end_deeper
 \begin_layout Chunk
+
 <<rscript-run, engine='bash'>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -539,21 +563,15 @@ library()
  to either (1) make a package available (loading it), (2) get an overview
  of the package, or (3) (if called without arguments) to see all the installed
  packages.
-\begin_inset Quotes erd
-\end_inset
-
-foo
-\begin_inset Quotes erd
-\end_inset
-
-
 \end_layout
 
 \begin_layout Chunk
+
 <<library>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -591,10 +609,12 @@ searchpaths()
 \end_layout
 
 \begin_layout Chunk
+
 <<libpaths>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -632,10 +652,12 @@ lib
 \end_layout
 
 \begin_layout Chunk
+
 <<install, eval=FALSE>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -665,10 +687,12 @@ installing from source.
 \end_layout
 
 \begin_layout Chunk
+
 <<install-source, eval=FALSE>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -727,10 +751,12 @@ namespace
 \end_layout
 
 \begin_layout Chunk
+
 <<namespace>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -782,10 +808,12 @@ Recall that when characters are used for special purposes, we need to escape
 \end_layout
 
 \begin_layout Chunk
+
 <<escape>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -807,10 +835,12 @@ For more information, see
 \end_layout
 
 \begin_layout Chunk
+
 <<paste-quote>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -1127,10 +1157,12 @@ Let's look at Adler's Table 7.1 to see some other types.
 \end_layout
 
 \begin_layout Chunk
+
 <<typeof>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -1163,10 +1195,12 @@ We can create objects with our own defined class.
 \end_layout
 
 \begin_layout Chunk
+
 <<class>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -1186,10 +1220,12 @@ Attributes
 \end_layout
 
 \begin_layout Chunk
+
 <<attr1>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -1207,10 +1243,12 @@ names
 \end_layout
 
 \begin_layout Chunk
+
 <<attr2>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -1220,10 +1258,12 @@ A common use of attributes is that rows and columns may be named in matrices
 \end_layout
 
 \begin_layout Chunk
+
 <<attr3>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -1254,10 +1294,12 @@ We assign into an object using either '
 \end_layout
 
 \begin_layout Chunk
+
 <<assign>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -1267,10 +1309,12 @@ Let's look at these examples to understand the distinction between `=' and
 \end_layout
 
 \begin_layout Chunk
+
 <<assign2>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -1288,10 +1332,12 @@ One situation in which you want to use '
 \end_layout
 
 \begin_layout Chunk
+
 <<assign3>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -1301,10 +1347,12 @@ R often treats integers as numerics, but we can force R to store values
 \end_layout
 
 \begin_layout Chunk
+
 <<intL>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -1317,10 +1365,12 @@ as()
 \end_layout
 
 \begin_layout Chunk
+
 <<as>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -1340,10 +1390,12 @@ read.table()
 \end_layout
 
 \begin_layout Chunk
+
 <<coercion>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -1352,10 +1404,12 @@ Be careful of using factors as indices:
 \end_layout
 
 \begin_layout Chunk
+
 <<factor-indices>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -1378,10 +1432,12 @@ Here's an example we can work through that will help illustrate how type
 \end_layout
 
 \begin_layout Chunk
+
 <<coercion2>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -1479,10 +1535,12 @@ lm
 \end_layout
 
 \begin_layout Chunk
+
 <<inherit>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -1500,10 +1558,12 @@ We can create an object with a new class as follows:
 \end_layout
 
 \begin_layout Chunk
+
 <<s3>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -1517,10 +1577,12 @@ constructor
 \end_layout
 
 \begin_layout Chunk
+
 <<constructor>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -1530,10 +1592,12 @@ g:
 \end_layout
 
 \begin_layout Chunk
+
 <<s3weird>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -1551,10 +1615,12 @@ methods
 \end_layout
 
 \begin_layout Chunk
+
 <<s3methods, eval=FALSE>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -1589,10 +1655,12 @@ summary()
 \end_layout
 
 \begin_layout Chunk
+
 <<generic>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -1612,10 +1680,12 @@ We can define new generic methods:
 \end_layout
 
 \begin_layout Chunk
+
 <<new-generic>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -1660,10 +1730,12 @@ summarize
 \end_layout
 
 \begin_layout Chunk
+
 <<class-specific>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -1724,10 +1796,12 @@ print.summary.lm()
 \end_layout
 
 \begin_layout Chunk
+
 <<summary, eval=FALSE>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -1757,10 +1831,12 @@ grizzly_bear
 \end_layout
 
 \begin_layout Chunk
+
 <<inherit2>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -1817,10 +1893,12 @@ We can also use operators with our classes.
 \end_layout
 
 \begin_layout Chunk
+
 <<class-operators>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -1847,10 +1925,12 @@ This is again a bit silly but we could do the following.
 \end_layout
 
 \begin_layout Chunk
+
 <<replacement>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -2007,10 +2087,12 @@ indiv
 \end_layout
 
 \begin_layout Chunk
+
 <<s4>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -2020,10 +2102,12 @@ S4 methods are designed to be more structured than S3, with careful checking
 \end_layout
 
 \begin_layout Chunk
+
 <<s4structured>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -2047,10 +2131,12 @@ Here's how we create generic and class-specific methods.
 \end_layout
 
 \begin_layout Chunk
+
 <<s4methods>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -2117,10 +2203,12 @@ superclass
 \end_layout
 
 \begin_layout Chunk
+
 <<s4inherit>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -2173,10 +2261,12 @@ data.frame
 \end_layout
 
 \begin_layout Chunk
+
 <<s4tos3>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -2227,10 +2317,12 @@ Here's the initial definition of the class.
 \end_layout
 
 \begin_layout Chunk
+
 <<refclass>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -2239,10 +2331,12 @@ We can add methods after defining the class.
 \end_layout
 
 \begin_layout Chunk
+
 <<refMethod>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -2251,10 +2345,12 @@ Now let's see how we would use the class.
 \end_layout
 
 \begin_layout Chunk
+
 <<refUse, fig.width=4, eval=FALSE>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -2311,10 +2407,12 @@ g the field name as:
 \end_layout
 
 \begin_layout Chunk
+
 <<refAccess, eval=FALSE>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -2442,10 +2540,12 @@ ggplot2
 \end_layout
 
 \begin_layout Chunk
+
 <<long-wide>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -2520,10 +2620,12 @@ Everything in R is an object, including functions.
 \end_layout
 
 \begin_layout Chunk
+
 <<function-object>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -2533,10 +2635,12 @@ We can call a function based on the text name of the function.
 \end_layout
 
 \begin_layout Chunk
+
 <<eval-fun>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -2555,10 +2659,12 @@ match.fun()
 \end_layout
 
 \begin_layout Chunk
+
 <<match-fun>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -2578,10 +2684,12 @@ Function objects contain three components: an argument list, a body (a parsed
 \end_layout
 
 \begin_layout Chunk
+
 <<fun-parts>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -2620,10 +2728,12 @@ rbind()
 \end_layout
 
 \begin_layout Chunk
+
 <<do-call>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -2655,10 +2765,12 @@ More generally do.call() is a way to pass arguments to a function where the
 \end_layout
 
 \begin_layout Chunk
+
 <<do-call2>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -2683,10 +2795,12 @@ args()
 \end_layout
 
 \begin_layout Chunk
+
 <<args>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -2719,10 +2833,12 @@ plot()
 \end_layout
 
 \begin_layout Chunk
+
 <<dots>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -2768,10 +2884,12 @@ If you want to manipulate what the user passed in as the
 \end_layout
 
 \begin_layout Chunk
+
 <<dots-list>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -2804,10 +2922,12 @@ dgamma()
 \end_layout
 
 \begin_layout Chunk
+
 <<dgamma>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -2830,10 +2950,12 @@ lambda function
 \end_layout
 
 \begin_layout Chunk
+
 <<funs-as-args>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -2855,10 +2977,12 @@ formals()
 \end_layout
 
 \begin_layout Chunk
+
 <<formals>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -2880,10 +3004,12 @@ match.call()
 \end_layout
 
 \begin_layout Chunk
+
 <<match-call>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -2915,10 +3041,12 @@ return()
 \end_layout
 
 \begin_layout Chunk
+
 <<return>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -2936,10 +3064,12 @@ x
 \end_layout
 
 \begin_layout Chunk
+
 <<invisible>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -2953,10 +3083,12 @@ lm()
 \end_layout
 
 \begin_layout Chunk
+
 <<return-list>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -3031,10 +3163,12 @@ par()
 \end_layout
 
 \begin_layout Chunk
+
 <<par, eval=FALSE>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -3348,10 +3482,12 @@ promise
 \end_layout
 
 \begin_layout Chunk
+
 <<lazy-eval, eval=FALSE>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -3364,10 +3500,12 @@ Another example:
 \end_layout
 
 \begin_layout Chunk
+
 <<lazy-eval2>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -3381,10 +3519,12 @@ User-supplied arguments are evaluated in the calling frame, while default
 \end_layout
 
 \begin_layout Chunk
+
 <<args-eval>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -3432,10 +3572,12 @@ Operators, such as '
 \end_layout
 
 \begin_layout Chunk
+
 <<operators, tidy=FALSE>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -3455,10 +3597,12 @@ Finally, since an operator is just a function, you can use it as an argument
 \end_layout
 
 \begin_layout Chunk
+
 <<pass-operator>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -3475,10 +3619,12 @@ binary
 \end_layout
 
 \begin_layout Chunk
+
 <<define-operator>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -3491,10 +3637,12 @@ Since operators are just functions, there are cases in which there are optional
 \end_layout
 
 \begin_layout Chunk
+
 <<operator-args>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -3579,10 +3727,12 @@ What do you think is the functional version of the following code? What
 \end_layout
 
 \begin_layout Chunk
+
 <<all-is-fun, eval = FALSE>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -3602,10 +3752,12 @@ These can be quite handy.
 \end_layout
 
 \begin_layout Chunk
+
 <<replace-funs, eval = FALSE>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -3617,10 +3769,12 @@ Replacement expressions are actually function calls.
 \end_layout
 
 \begin_layout Chunk
+
 <<replace-funs2>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -3650,10 +3804,12 @@ value
 \end_layout
 
 \begin_layout Chunk
+
 <<create-replace>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -3668,10 +3824,12 @@ e.
 \end_layout
 
 \begin_layout Chunk
+
 <<scope-example>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -3736,10 +3894,12 @@ Be careful when using variables from the enclosing environment as the value
 \end_layout
 
 \begin_layout Chunk
+
 <<enclosing, eval=FALSE>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -3748,10 +3908,12 @@ Here are some examples to illustrate scope:
 \end_layout
 
 \begin_layout Chunk
+
 <<scope, eval=FALSE>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -3760,10 +3922,12 @@ Here's a somewhat tricky example:
 \end_layout
 
 \begin_layout Chunk
+
 <<scope-tricky>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -3829,10 +3993,12 @@ environment()
 \end_layout
 
 \begin_layout Chunk
+
 <<scope-envts>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -3846,10 +4012,12 @@ Here's a case where something I tried failed and I had to think more carefully
 \end_layout
 
 \begin_layout Chunk
+
 <<scope-problem>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -3959,10 +4127,12 @@ attach()
 \end_layout
 
 \begin_layout Chunk
+
 <<search>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -3976,10 +4146,12 @@ environmentName()
 \end_layout
 
 \begin_layout Chunk
+
 <<nested-env>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -4017,10 +4189,12 @@ stats
 \end_layout
 
 \begin_layout Chunk
+
 <<package-nested>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -4030,10 +4204,12 @@ We can retrieve and assign objects in a particular environment and/or namespace
 \end_layout
 
 \begin_layout Chunk
+
 <<get>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -4097,10 +4273,12 @@ knitr
 \end_layout
 
 \begin_layout Chunk
+
 <<frames, eval=FALSE>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -4127,10 +4305,12 @@ sys.frames()
 \end_layout
 
 \begin_layout Chunk
+
 <<frames2, eval=FALSE>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -4259,10 +4439,12 @@ rce=feedburner&utm_medium=email&utm_campaign=Feed%3A+RBloggers+%28R+bloggers%29
 \end_layout
 
 \begin_layout Chunk
+
 <<closures>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -4280,10 +4462,12 @@ replicate()
 \end_layout
 
 \begin_layout Chunk
+
 <<closure-boot>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -4308,10 +4492,12 @@ This approach appeared in Problem Set 2.
 \end_layout
 
 \begin_layout Chunk
+
 <<with>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -4335,10 +4521,12 @@ We've already talked extensively about the environments that R creates.
 \end_layout
 
 \begin_layout Chunk
+
 <<new.env>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -4349,10 +4537,12 @@ Before the existence of Reference Classes, using an environment was one
 \end_layout
 
 \begin_layout Chunk
+
 <<envt-container>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -4388,10 +4578,12 @@ myWalk
 \end_layout
 
 \begin_layout Chunk
+
 <<eval-in-env>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -4499,1493 +4691,20 @@ benchmark()
 \end_layout
 
 \begin_layout Standard
-First, let's see some tools for assessing the speed of your code.
+For material on efficient R coding, including tools for timing and profiling
+ your code to understand where the bottlenecks are, see the tutorial, 
+\emph on
+Writing efficient R code.
 \end_layout
 
 \begin_layout Subsection
-Tools for assessing efficiency
-\end_layout
-
-\begin_layout Subsubsection
-Benchmarking
+A note on hashing
 \end_layout
 
 \begin_layout Standard
-
-\emph on
-system.time()
-\emph default
- is very handy for comparing the speed of different implementations.
- 
-\end_layout
-
-\begin_layout Chunk
-<<chunk001>>=
-\end_layout
-
-\begin_layout Chunk
-n <- 1000
-\end_layout
-
-\begin_layout Chunk
-x <- matrix(rnorm(n^2), n)
-\end_layout
-
-\begin_layout Chunk
-system.time({mns <- rep(NA, n); for(i in 1:n) mns[i] <- mean(x[i , ])})
-\end_layout
-
-\begin_layout Chunk
-system.time(rowMeans(x))
-\end_layout
-
-\begin_layout Chunk
-@
-\end_layout
-
-\begin_layout Standard
-For timing code that runs very quickly, you may want to use the microbenchmark
- package.
-\end_layout
-
-\begin_layout Chunk
-<<chunk001a>>=
-\end_layout
-
-\begin_layout Chunk
-library(microbenchmark)
-\end_layout
-
-\begin_layout Chunk
-df <- data.frame(vals = 1:3, labs = c('a','b','c'))
-\end_layout
-
-\begin_layout Chunk
-microbenchmark(
-\end_layout
-
-\begin_layout Chunk
-  df[2,1],
-\end_layout
-
-\begin_layout Chunk
-  df$vals[2],
-\end_layout
-
-\begin_layout Chunk
-  df[2, 'vals']
-\end_layout
-
-\begin_layout Chunk
-)
-\end_layout
-
-\begin_layout Chunk
-@
-\end_layout
-
-\begin_layout Standard
-The 
-\emph on
-rbenchmark
-\emph default
- package provides a nice wrapper function, 
-\emph on
-benchmark()
-\emph default
-, that automates speed assessments.
- 
-\end_layout
-
-\begin_layout Chunk
-<<chunk002>>=
-\end_layout
-
-\begin_layout Chunk
-library(rbenchmark)
-\end_layout
-
-\begin_layout Chunk
-# speed of one calculation
-\end_layout
-
-\begin_layout Chunk
-n <- 1000
-\end_layout
-
-\begin_layout Chunk
-x <- matrix(rnorm(n^2), n)
-\end_layout
-
-\begin_layout Chunk
-benchmark(crossprod(x), replications = 10, columns=c('test', 'elapsed',
- 'replications'))
-\end_layout
-
-\begin_layout Chunk
-# comparing different approaches to a task
-\end_layout
-
-\begin_layout Chunk
-benchmark(
-\end_layout
-
-\begin_layout Chunk
-{mns <- rep(NA, n); for(i in 1:n) mns[i] <- mean(x[i , ])},
-\end_layout
-
-\begin_layout Chunk
-rowMeans(x), 
-\end_layout
-
-\begin_layout Chunk
-replications = 10, columns=c('test', 'elapsed', 'replications'))
-\end_layout
-
-\begin_layout Chunk
-@
-\end_layout
-
-\begin_layout Subsubsection
-Profiling
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Enumerate
-Rprof (see rw1.r on DTL)
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-The 
-\emph on
-Rprof()
-\emph default
- function will show you how much time is spent in different functions, which
- can help you pinpoint bottlenecks in your code.
- 
-\end_layout
-
-\begin_layout Standard
-Here's a function that works with a correlation matrix such as one might
- have for time series data.
-\end_layout
-
-\begin_layout Chunk
-<<chunk003a, eval=FALSE>>=
-\end_layout
-
-\begin_layout Chunk
-makeTS <- function(param, len){
-\end_layout
-
-\begin_layout Chunk
-	times <- seq(0, 1, length = len)
-\end_layout
-
-\begin_layout Chunk
-	dd <- rdist(times)
-\end_layout
-
-\begin_layout Chunk
-	C <- exp(-dd/param)
-\end_layout
-
-\begin_layout Chunk
-	U <- chol(C)
-\end_layout
-
-\begin_layout Chunk
-	white <- rnorm(len)
-\end_layout
-
-\begin_layout Chunk
-	return(crossprod(U, white))
-\end_layout
-
-\begin_layout Chunk
-}
-\end_layout
-
-\begin_layout Chunk
-@
-\end_layout
-
-\begin_layout Chunk
-<<chunk003, eval=FALSE>>=
-\end_layout
-
-\begin_layout Chunk
-library(fields)
-\end_layout
-
-\begin_layout Chunk
-Rprof("makeTS.prof")
-\end_layout
-
-\begin_layout Chunk
-out <- makeTS(0.1, 1000)
-\end_layout
-
-\begin_layout Chunk
-Rprof(NULL)
-\end_layout
-
-\begin_layout Chunk
-summaryRprof("makeTS.prof")
-\end_layout
-
-\begin_layout Chunk
-@
-\end_layout
-
-\begin_layout Standard
-Here's the result for the 
-\emph on
-makeTS()
-\emph default
- function from the demo code file:
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-begin{verbatim}
-\end_layout
-
-\begin_layout Plain Layout
-
-$by.self   self.time self.pct total.time total.pct 
-\end_layout
-
-\begin_layout Plain Layout
-
-".Call"         0.38    48.72       0.38     48.72 
-\end_layout
-
-\begin_layout Plain Layout
-
-".Fortran"      0.22    28.21       0.22     28.21 
-\end_layout
-
-\begin_layout Plain Layout
-
-"matrix"        0.08    10.26       0.30     38.46 
-\end_layout
-
-\begin_layout Plain Layout
-
-"exp"           0.08    10.26       0.08     10.26 
-\end_layout
-
-\begin_layout Plain Layout
-
-"/"             0.02     2.56       0.02      2.56
-\end_layout
-
-\begin_layout Plain Layout
-
-$by.total         total.time total.pct self.time self.pct 
-\end_layout
-
-\begin_layout Plain Layout
-
-"makeTS"                0.78    100.00      0.00     0.00 
-\end_layout
-
-\begin_layout Plain Layout
-
-".Call"                 0.38     48.72      0.38    48.72 
-\end_layout
-
-\begin_layout Plain Layout
-
-"chol.default"          0.38     48.72      0.00     0.00 
-\end_layout
-
-\begin_layout Plain Layout
-
-"chol"                  0.38     48.72      0.00     0.00 
-\end_layout
-
-\begin_layout Plain Layout
-
-"standardGeneric"       0.38     48.72      0.00     0.00 
-\end_layout
-
-\begin_layout Plain Layout
-
-"matrix"                0.30     38.46      0.08    10.26 
-\end_layout
-
-\begin_layout Plain Layout
-
-"rdist"                 0.30     38.46      0.00     0.00 
-\end_layout
-
-\begin_layout Plain Layout
-
-".Fortran"              0.22     28.21      0.22    28.21 
-\end_layout
-
-\begin_layout Plain Layout
-
-"exp"                   0.08     10.26      0.08    10.26 
-\end_layout
-
-\begin_layout Plain Layout
-
-"/"                     0.02      2.56      0.02     2.56
-\end_layout
-
-\begin_layout Plain Layout
-
-$sample.interval [1] 0.02
-\end_layout
-
-\begin_layout Plain Layout
-
-$sampling.time [1] 0.78
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-end{verbatim}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-
-\emph on
-Rprof()
-\emph default
- tells how much time was spent in each function alone (the 
-\emph on
-
-\begin_inset Quotes eld
-\end_inset
-
-self
-\begin_inset Quotes erd
-\end_inset
-
-
-\emph default
- columns) and aggregating the time spent in a function and all of the functions
- that it calls (the 
-\emph on
-
-\begin_inset Quotes eld
-\end_inset
-
-total
-\begin_inset Quotes erd
-\end_inset
-
-
-\emph default
- columns).
- Usually the former is going to be more useful, but in some cases we need
- to decipher what is going on based on the latter.
-\end_layout
-
-\begin_layout Standard
-Let's figure out what is going on here.
- The self time tells us that 
-\emph on
-.Call
-\emph default
- (a call to C code), 
-\emph on
-.Fortran
-\emph default
- (a call to Fortran code) and 
-\emph on
-matrix()
-\emph default
- take up most of the time.
- Looking at the total time and seeing in 
-\emph on
-chol.default()
-\emph default
- that 
-\emph on
-.Call
-\emph default
- is used (you would have to go in and look at the 
-\emph on
-La_chol()
-\emph default
- function to figure this out) and in 
-\emph on
-rdist()
-\emph default
- that 
-\emph on
-.Fortran()
-\emph default
- and 
-\emph on
-matrix()
-\emph default
- are used we can infer that about 49% of the time is being spent in the
- Cholesky and 38% in the 
-\emph on
-rdist()
-\emph default
- calculation, with 10% in 
-\emph on
-exp()
-\emph default
-.
- As we increase the number of time points, the time taken up by the Cholesky
- would increase since that calculation is order of 
-\begin_inset Formula $n^{3}$
-\end_inset
-
- while the others are order 
-\begin_inset Formula $n^{2}$
-\end_inset
-
- (more in the linear algebra unit).
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-As another example you can try out 
-\emph on
-Rprof()
-\emph default
- on different implementations of the random walk from PS3.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Apparently there is a memory profiler in R, 
-\emph on
-Rprofmem()
-\emph default
-, but it needs to be enabled when R is compiled (i.e., installed on the machine),
- because it slows R down even when not used.
- So I've never gotten to the point of playing around with it.
-\end_layout
-
-\begin_layout Standard
-You might also check out some packages that help with profiling: 
-\emph on
-proftools
-\emph default
-, 
-\emph on
-profr
-\emph default
-, and 
-\emph on
-lineprof
-\emph default
-.
-\end_layout
-
-\begin_layout Standard
-
-\series bold
-Warning
-\series default
-: 
-\emph on
-Rprof()
-\emph default
- conflicts with threaded linear algebra, so you will need to set OMP_NUM_THREADS
- to 1 to disable threaded linear algebra if you profile code that involves
- linear algebra.
- More about this in the unit on parallel processing.
-\end_layout
-
-\begin_layout Subsection
-Strategies for improving efficiency
-\end_layout
-
-\begin_layout Subsubsection
-Pre-allocate memory
-\end_layout
-
-\begin_layout Standard
-It is very inefficient to iteratively add elements to a vector, matrix,
- data frame, array or list (e.g., iteratively using 
-\emph on
-c()
-\emph default
-, 
-\emph on
-cbind()
-\emph default
-, 
-\emph on
-rbind()
-\emph default
-, etc.).
- Instead, create the full object in advance (this is equivalent to variable
- initialization in compiled languages) and then fill in the appropriate
- elements.
- The reason is that when R appends to an existing object, it creates a new
- copy and as the object gets big, this gets slow when one does it a lot
- of times.
- Here's an illustrative example, but of course we would not fill a vector
- like this because we would in practice use vectorized calculations.
-\end_layout
-
-\begin_layout Chunk
-<<chunk1>>=
-\end_layout
-
-\begin_layout Chunk
-n <- 1000
-\end_layout
-
-\begin_layout Chunk
-fun1 <- function(n) {
-\end_layout
-
-\begin_layout Chunk
-   x <- 1
-\end_layout
-
-\begin_layout Chunk
-   for(i in 2:n) x <- c(x, i)
-\end_layout
-
-\begin_layout Chunk
-   return(x)
-\end_layout
-
-\begin_layout Chunk
-}
-\end_layout
-
-\begin_layout Chunk
-fun2 <- function(n) {
-\end_layout
-
-\begin_layout Chunk
-   x <- rep(as.numeric(NA), n)
-\end_layout
-
-\begin_layout Chunk
-   for(i in 1:n) x[i] <- i
-\end_layout
-
-\begin_layout Chunk
-}
-\end_layout
-
-\begin_layout Chunk
-benchmark(fun1(n), fun2(n),
-\end_layout
-
-\begin_layout Chunk
-replications = 10, columns=c('test', 'elapsed', 'replications'))
-\end_layout
-
-\begin_layout Chunk
-@
-\end_layout
-
-\begin_layout Standard
-It's not necessary to use 
-\emph on
-as.numeric()
-\emph default
- above though it saves a bit of time.
- 
-\series bold
-Challenge
-\series default
-: figure out why I have 
-\family typewriter
-as.numeric(NA)
-\family default
- and not just 
-\family typewriter
-NA
-\family default
-.
-\end_layout
-
-\begin_layout Standard
-We can actually speed up the initialization (though in most practical circumstan
-ces, the second approach here would be overkill):
-\end_layout
-
-\begin_layout Chunk
-<<chunk2>>=
-\end_layout
-
-\begin_layout Chunk
-n <- 1000000
-\end_layout
-
-\begin_layout Chunk
-benchmark(x <- rep(as.numeric(NA), n),
-\end_layout
-
-\begin_layout Chunk
-{x <- as.numeric(NA); length(x) <- n},
-\end_layout
-
-\begin_layout Chunk
-replications = 10, columns=c('test', 'elapsed', 'replications'))
-\end_layout
-
-\begin_layout Chunk
-@
-\end_layout
-
-\begin_layout Standard
-For matrices, start with the right length vector and then change the dimensions
-\end_layout
-
-\begin_layout Chunk
-<<chunk3>>=
-\end_layout
-
-\begin_layout Chunk
-nr <- nc <- 2000
-\end_layout
-
-\begin_layout Chunk
-benchmark(x <- matrix(as.numeric(NA), nr, nc),
-\end_layout
-
-\begin_layout Chunk
-{x <- as.numeric(NA); length(x) <- nr * nc; dim(x) <- c(nr, nc)},
-\end_layout
-
-\begin_layout Chunk
-replications = 10, columns=c('test', 'elapsed', 'replications'))
-\end_layout
-
-\begin_layout Chunk
-@
-\end_layout
-
-\begin_layout Standard
-For lists, we can do this
-\end_layout
-
-\begin_layout Chunk
-<<chunk3a>>=
-\end_layout
-
-\begin_layout Chunk
-myList <- vector("list", length = n)
-\end_layout
-
-\begin_layout Chunk
-@
-\end_layout
-
-\begin_layout Chunk
-
-\end_layout
-
-\begin_layout Subsubsection
-Vectorized calculations
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-see Grolemund book "Hands-on programming with R" final chapter to see various
- versinos of vectorized code - didn't seem all that useful here 
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-One key way to write efficient R code is to take advantage of R's vectorized
- operations.
-\end_layout
-
-\begin_layout Chunk
-<<chunk4>>=
-\end_layout
-
-\begin_layout Chunk
-n <- 1e6
-\end_layout
-
-\begin_layout Chunk
-x <- rnorm(n)
-\end_layout
-
-\begin_layout Chunk
-system.time(x2 <- x^2)
-\end_layout
-
-\begin_layout Chunk
-x2 <- as.numeric(NA)
-\end_layout
-
-\begin_layout Chunk
-system.time({length(x2) <- n; for(i in 1:n){ x2[i] <- x[i]^2}}) # how many
- orders of magnitude slower?
-\end_layout
-
-\begin_layout Chunk
-@
-\end_layout
-
-\begin_layout Standard
-So what is different in how R handles the calculations above that explains
- the disparity? The vectorized calculation is being done natively in C in
- a for loop.
- The for loop above involves executing the for loop in R (involving a bunch
- of overhead because R is an interpreted language) with repeated calls to
- C code at each iteration.
- You can usually get a sense for how quickly an R call will pass things
- along to C by looking at the body of the relevant function(s) being called
- and looking for 
-\emph on
-.Primitive
-\emph default
-, 
-\emph on
-.Internal
-\emph default
-, 
-\emph on
-.C,
-\emph default
- 
-\emph on
-.Call
-\emph default
-, or 
-\emph on
-.Fortran
-\emph default
-.
- Let's take a look at the code for `
-\emph on
-+
-\emph default
-`, 
-\emph on
-mean.default()
-\emph default
-, and 
-\emph on
-chol.default()
-\emph default
-.
- 
-\end_layout
-
-\begin_layout Standard
-Many R functions allow you to pass in vectors, and operate on those vectors
- in vectorized fashion.
- So before writing a for loop, look at the help information on the relevant
- function(s) to see if they operate in a vectorized fashion.
-\end_layout
-
-\begin_layout Chunk
-<<chunk5>>=
-\end_layout
-
-\begin_layout Chunk
-line <- c("Four score and 7 years ago, this nation")
-\end_layout
-
-\begin_layout Chunk
-startIndices = seq(1, by = 3, length = nchar(line)/3)
-\end_layout
-
-\begin_layout Chunk
-substring(line, startIndices, startIndices + 1)
-\end_layout
-
-\begin_layout Chunk
-@
-\end_layout
-
-\begin_layout Standard
-
-\series bold
-Challenge
-\series default
-: Consider the chi-squared statistic involved in a test of independence
- in a contingency table:
-\begin_inset Formula 
-\[
-\chi^{2}=\sum_{i}\sum_{j}\frac{(y_{ij}-e_{ij})^{2}}{e_{ij}},\,\,\,\, e_{ij}=\frac{y_{i\cdot}y_{\cdot j}}{y_{\cdot\cdot}}
-\]
-
-\end_inset
-
-where 
-\begin_inset Formula $f_{i\cdot}=\sum_{j}f_{ij}$
-\end_inset
-
-.
- Write this in a vectorized way without any loops.
- 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-[chisquare.q]
-\end_layout
-
-\end_inset
-
- Note that 'vectorized' calculations also work with matrices and arrays.
-\end_layout
-
-\begin_layout Standard
-Vectorized operations can also be faster than built-in functions, and clever
- vectorized calculations even better, though sometimes the code is uglier:
-\end_layout
-
-\begin_layout Chunk
-<<chunk6, cache=TRUE>>=
-\end_layout
-
-\begin_layout Chunk
-x <- rnorm(1000000)
-\end_layout
-
-\begin_layout Chunk
-benchmark(truncx <- ifelse(x > 0, x, 0),
-\end_layout
-
-\begin_layout Chunk
-{truncx <- x; truncx[x < 0] <- 0},
-\end_layout
-
-\begin_layout Chunk
-truncx <- x * (x > 0),
-\end_layout
-
-\begin_layout Chunk
-replications = 10, columns=c('test', 'elapsed', 'replications'))
-\end_layout
-
-\begin_layout Chunk
-@
-\end_layout
-
-\begin_layout Standard
-The demo code (see also Section 4.2 of Unit 4) has a surprising example where
- combining vectorized calculations with a 
-\emph on
-for
-\emph default
- loop is actually faster than using 
-\emph on
-apply()
-\emph default
-.
- The goal is to remove rows of a large matrix that have any NAs in them.
- 
-\end_layout
-
-\begin_layout Standard
-Additional tips:
-\end_layout
-
-\begin_layout Itemize
-If you do need to loop over dimensions of a matrix or array, if possible
- loop over the smallest dimension and use the vectorized calculation on
- the larger dimension(s).
- 
-\end_layout
-
-\begin_layout Itemize
-Looping over columns is likely to be faster than looping over rows given
- column-major ordering.
-\end_layout
-
-\begin_layout Itemize
-You can use direct arithmetic operations to add/subtract/multiply/divide
- a vector by each column of a matrix, e.g.
- 
-\family typewriter
-A*b
-\family default
-, multiplies each column of 
-\emph on
-A
-\emph default
- times a vector 
-\emph on
-b
-\emph default
-.
- If you need to operate by row, you can do it by transposing the matrix.
- 
-\end_layout
-
-\begin_layout Standard
-Caution: relying on R's recycling rule in the context of vectorized operations,
- such as is done when direct-multiplying a matrix by a vector to scale the
- rows, can be dangerous as the code is not transparent and poses greater
- dangers of bugs.
- If it's needed to speed up a calculation, the best approach is to (1) first
- write the code transparently and then compare the efficient code to make
- sure the results are the same and (2) comment your code.
-\end_layout
-
-\begin_layout Standard
-Question: What do the points above imply about how to choose to store values
- in a matrix? How would you choose what should be the row dimension and
- what should be the column dimension? 
-\end_layout
-
-\begin_layout Subsubsection
-Using 
-\emph on
-apply()
-\emph default
- and specialized functions
-\end_layout
-
-\begin_layout Standard
-Another core efficiency strategy is to use the 
-\emph on
-apply()
-\emph default
- functionality.
- Even better than 
-\emph on
-apply()
-\emph default
- for calculating sums or means of columns or rows (it also can be used for
- arrays) is 
-\emph on
-{row,col}{Sums,Means}
-\emph default
-:
-\end_layout
-
-\begin_layout Chunk
-<<chunk7>>=
-\end_layout
-
-\begin_layout Chunk
-n <- 3000; x <- matrix(rnorm(n * n), nr = n)
-\end_layout
-
-\begin_layout Chunk
-system.time(out <- apply(x, 1, mean))
-\end_layout
-
-\begin_layout Chunk
-system.time(out <- rowMeans(x))
-\end_layout
-
-\begin_layout Chunk
-@
-\end_layout
-
-\begin_layout Standard
-We can '
-\emph on
-sweep
-\emph default
-' out a summary statistic, such as subtracting off a mean from each column,
- using 
-\emph on
-sweep()
-\end_layout
-
-\begin_layout Chunk
-<<chunk8>>=
-\end_layout
-
-\begin_layout Chunk
-system.time(out <- sweep(x, 2, STATS = colMeans(x), FUN = "-"))
-\end_layout
-
-\begin_layout Chunk
-@
-\end_layout
-
-\begin_layout Standard
-Here's a trick for doing it based on vectorized calculations, remembering
- that if we subtract a vector from a matrix, it subtracts each element of
- the vector from all the elements in the corresponding ROW.
-\end_layout
-
-\begin_layout Chunk
-<<chunk9>>=
-\end_layout
-
-\begin_layout Chunk
-system.time(out2 <- t(t(x) - colMeans(x)))
-\end_layout
-
-\begin_layout Chunk
-identical(out, out2)
-\end_layout
-
-\begin_layout Chunk
-@
-\end_layout
-
-\begin_layout Standard
-Using versions of 
-\emph on
-apply()
-\emph default
- with lists may or may not be faster than looping but generally produces
- cleaner code.
- Whether looping is slower will depend on whether a substantial part of
- the work is in the overhead of the looping or in the time required by the
- function evaluation on each of the elements.
- If you're worried about speed, it's a good idea to benchmark the 
-\emph on
-apply()
-\emph default
- variant against looping.
-\end_layout
-
-\begin_layout Standard
-Here's an example where 
-\emph on
-apply()
-\emph default
- is not faster than a loop.
-\end_layout
-
-\begin_layout Chunk
-<<chunk38, cache=TRUE>>=
-\end_layout
-
-\begin_layout Chunk
-n <- 500000; nr <- 10000; nCalcs <- n/nr
-\end_layout
-
-\begin_layout Chunk
-mat <- matrix(rnorm(n), nrow = nr)
-\end_layout
-
-\begin_layout Chunk
-times <- 1:nr
-\end_layout
-
-\begin_layout Chunk
-system.time(out1 <- apply(mat, 2, function(vec) {mod = lm(vec ~ times); return(mo
-d$coef[2])})) 
-\end_layout
-
-\begin_layout Chunk
-system.time({out2 = rep(NA, nCalcs); for(i in 1:nCalcs){out2[i] = lm(mat[
- , i] ~ times)$coef[2]}}) 
-\end_layout
-
-\begin_layout Chunk
-@
-\end_layout
-
-\begin_layout Subsubsection
-Matrix algebra efficiency
-\end_layout
-
-\begin_layout Standard
-Often calculations that are not explictly linear algebra calculations can
- be done as matrix algebra.
- The following can be done faster with 
-\emph on
-rowSums()
-\emph default
-, so it's not a great example, but this sort of trick does come in handy
- in surprising places.
-\end_layout
-
-\begin_layout Chunk
-<<chunk10>>=
-\end_layout
-
-\begin_layout Chunk
-mat <- matrix(rnorm(500*500), 500)
-\end_layout
-
-\begin_layout Chunk
-benchmark(apply(mat, 1, sum),
-\end_layout
-
-\begin_layout Chunk
-	mat %*% rep(1, ncol(mat)),
-\end_layout
-
-\begin_layout Chunk
-	rowSums(mat),
-\end_layout
-
-\begin_layout Chunk
-	replications = 10, columns=c('test', 'elapsed', 'replications'))
-\end_layout
-
-\begin_layout Chunk
-@
-\end_layout
-
-\begin_layout Standard
-On the other hand, big matrix operations can be slow.
- Suppose you want a new matrix that computes the differences between successive
- columns of a matrix of arbitrary size.
- How would you do this as matrix algebra operations? [see demo code] Here
- it turns out that the 
-\emph on
-for
-\emph default
- loop is much faster than matrix multiplication.
- However, there is a way to do it faster as matrix direct subtraction.
- Comment: the demo code also contains some exploration of different ways
- of creating patterned matrices.
- Note that this level of optimization is only worth it if you're doing something
- over and over again, or writing code that you will distribute.
-\end_layout
-
-\begin_layout Standard
-When doing matrix algebra, the order in which you do operations can be critical
- for efficiency.
- How should I order the following calculation?
-\end_layout
-
-\begin_layout Chunk
-<<chunk11, cache=TRUE>>=
-\end_layout
-
-\begin_layout Chunk
-n <- 5000
-\end_layout
-
-\begin_layout Chunk
-A <- matrix(rnorm(5000 * 5000), 5000)
-\end_layout
-
-\begin_layout Chunk
-B <- matrix(rnorm(5000 * 5000), 5000)
-\end_layout
-
-\begin_layout Chunk
-x <- rnorm(5000)
-\end_layout
-
-\begin_layout Chunk
-res <- A %*% B %*% x
-\end_layout
-
-\begin_layout Chunk
-@
-\end_layout
-
-\begin_layout Standard
-We can use the matrix direct product (i.e., 
-\family typewriter
-A*B
-\family default
-) to do some manipulations much more quickly than using matrix multiplication.
- 
-\series bold
-Challenge
-\series default
-: How can I use the direct product to find the trace of a matrix, 
-\begin_inset Formula $XY$
-\end_inset
-
-? 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-sum(X*t(Y))
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-You can generally get much faster results by being smart when using diagonal
- matrices.
- The following operations : 
-\begin_inset Formula $X+D$
-\end_inset
-
-, 
-\begin_inset Formula $DX$
-\end_inset
-
-, 
-\begin_inset Formula $XD$
-\end_inset
-
- are mathematically the sum of two matrices and products of two matrices.
- But we can do the computation without doing using two full matrices.
- 
-\series bold
-Challenge
-\series default
-: How?
-\end_layout
-
-\begin_layout Chunk
-<<chunk12>>=
-\end_layout
-
-\begin_layout Chunk
-n <- 1000
-\end_layout
-
-\begin_layout Chunk
-X <- matrix(rnorm(n^2), n) 
-\end_layout
-
-\begin_layout Chunk
-diagvals <- rnorm(n)
-\end_layout
-
-\begin_layout Chunk
-D = diag(diagvals)
-\end_layout
-
-\begin_layout Chunk
-# there are much faster ways than this
-\end_layout
-
-\begin_layout Chunk
-summedMat <- X + D
-\end_layout
-
-\begin_layout Chunk
-prodMat1 <- D %*% X
-\end_layout
-
-\begin_layout Chunk
-prodMat2 <- X %*% D
-\end_layout
-
-\begin_layout Chunk
-# How can we do each of those operations much more quickly?
-\end_layout
-
-\begin_layout Chunk
-@
-\end_layout
-
-\begin_layout Standard
-More generally, sparse matrices and structured matrices (such as block diagonal
- matrices) can generally be worked with MUCH more efficiently than treating
- them as arbitrary matrices.
- The 
-\emph on
-spam
-\emph default
- (for arbitrary sparse matrices), 
-\emph on
-bdsmatrix
-\emph default
- (for block-diagonal matrices), and 
-\emph on
-Matrix
-\emph default
- (for a variety of sparse matrix types) packages in R can help, as can specializ
-ed code available in other languages, such as C and Fortran packages.
-\end_layout
-
-\begin_layout Subsubsection
-Fast mapping/lookup tables
-\end_layout
-
-\begin_layout Standard
-Sometimes you need to map between two vectors.
- E.g., 
-\begin_inset Formula $y_{ij}\sim\mathcal{N}(\mu_{j},\sigma^{2})$
-\end_inset
-
- is a basic ANOVA type structure.
- Here are some efficient ways to aggregate to the cluster level and disaggregate
- to the observation level.
-\end_layout
-
-\begin_layout Standard
-Disaggregate: Create a vector, 
-\emph on
-idVec
-\emph default
-, that gives a numeric mapping of the observations to their cluster.
- Then you can access the 
-\begin_inset Formula $\mu$
-\end_inset
-
- value relevant for each observation as:
-\family typewriter
-\series bold
- 
-\series default
-mus[idVec]
-\family default
-.
-\end_layout
-
-\begin_layout Standard
-Aggregate: To find the sample means by cluster
-\family typewriter
-: sapply(split(dat$obs, idVec), mean)
-\end_layout
-
-\begin_layout Standard
-As we've seen R allows you to look up elements of vector by name.
- For example:
-\end_layout
-
-\begin_layout Chunk
-<<chunk13>>=
-\end_layout
-
-\begin_layout Chunk
-vals <- rnorm(10)
-\end_layout
-
-\begin_layout Chunk
-names(vals) <- letters[1:10]
-\end_layout
-
-\begin_layout Chunk
-select <- c("h", "h", "a", "c")
-\end_layout
-
-\begin_layout Chunk
-vals[select]
-\end_layout
-
-\begin_layout Chunk
-@
-\end_layout
-
-\begin_layout Standard
-You can do similar things in terms of looking up by name with dimension
- names of matrices/arrays, row and column names of dataframes, and named
- lists.
-\end_layout
-
-\begin_layout Standard
-However, looking things up by name can be slow relative to looking up by
- index.
-\end_layout
-
-\begin_layout Chunk
-<<chunk13a>>=
-\end_layout
-
-\begin_layout Chunk
-n=1000000
-\end_layout
-
-\begin_layout Chunk
-x <- 1:n
-\end_layout
-
-\begin_layout Chunk
-xL <- as.list(x)
-\end_layout
-
-\begin_layout Chunk
-nms <- as.character(x)
-\end_layout
-
-\begin_layout Chunk
-names(x) <- nms
-\end_layout
-
-\begin_layout Chunk
-names(xL) <- nms
-\end_layout
-
-\begin_layout Chunk
-benchmark(x[500000], x["500000"], xL[[500000]], xL[["500000"]], replications
- = 10)
-\end_layout
-
-\begin_layout Chunk
-@
-\end_layout
-
-\begin_layout Chunk
-
-\end_layout
-
-\begin_layout Standard
-Why do you think it is slow to look things up by name?
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
- lack of ordering - R need to scan through each name and check if it's the
- one
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-TRY THIS?
-\end_layout
-
-\begin_layout Standard
-grades <- c(1, 2, 2, 3, 1)
-\end_layout
-
-\begin_layout Standard
-info <- data.frame( grade = 3:1, desc = c("Excellent", "Good", "Poor"), fail
- = c(F, F, T) )
-\end_layout
-
-\begin_layout Standard
-id <- match(grades, info$grade) 
-\end_layout
-
-\begin_layout Standard
-info[id, ]
-\end_layout
-
-\begin_layout Paragraph
-Hashing
+In the tutorial on efficient R coding, I mention that looking up objects
+ by name in an R environment occurs via hashing, so it can be very fast.
+ I'll briefly describe what hashing is here.
 \end_layout
 
 \begin_layout Standard
@@ -6058,44 +4777,8 @@ In general, there will be collisions, with multiple keys assigned to the
  does not depend on the number of key-value pairs stored.
 \end_layout
 
-\begin_layout Standard
-As can be inferred from 
-\family typewriter
-?environment
-\family default
- and according to Adler, looking up objects by name (i.e., looking up symbols)
- within an R environment is implemented using hashing, so it can be very
- fast (in the example here, it is only slightly slower than looking up by
- index, with some overhead associated with computing the hash value).
-\end_layout
-
-\begin_layout Chunk
-<<chunk13b, cache=TRUE>>=
-\end_layout
-
-\begin_layout Chunk
-xEnv <- as.environment(xL)  # convert from a named list
-\end_layout
-
-\begin_layout Chunk
-xEnv$"500000"  
-\end_layout
-
-\begin_layout Chunk
-# I need quotes above because numeric; otherwise xEnv$nameOfObject is fine
-\end_layout
-
-\begin_layout Chunk
-xEnv[["500000"]]
-\end_layout
-
-\begin_layout Chunk
-benchmark(x[500000], xL[[500000]], xEnv[["500000"]], xEnv$"500000", replications
- = 10000) 
-\end_layout
-
-\begin_layout Chunk
-@
+\begin_layout Subsection
+Other approaches to speeding up R
 \end_layout
 
 \begin_layout Subsubsection
@@ -6126,6 +4809,21 @@ Here are some of the highlights of
 pqR
 \emph default
  in terms of efficiency, as discussed at 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+
+\backslash
+
+\end_layout
+
+\end_inset
+
+
 \begin_inset CommandInset href
 LatexCommand href
 target "http://radfordneal.github.io/pqR/"
@@ -6220,46 +4918,57 @@ cmpfun()
 \end_layout
 
 \begin_layout Chunk
+
 <<chunk14, cache=TRUE>>=
 \end_layout
 
 \begin_layout Chunk
+
 library(compiler); library(rbenchmark)
 \end_layout
 
 \begin_layout Chunk
+
 f <- function(x){
 \end_layout
 
 \begin_layout Chunk
+
 	for(i in 1:length(x)) x[i] <- x[i] + 1
 \end_layout
 
 \begin_layout Chunk
+
 	return(x)
 \end_layout
 
 \begin_layout Chunk
+
 }
 \end_layout
 
 \begin_layout Chunk
+
 fc <- cmpfun(f)
 \end_layout
 
 \begin_layout Chunk
+
 fc # notice the indication that the function is byte compiled.
 \end_layout
 
 \begin_layout Chunk
+
 x <- rnorm(100000)
 \end_layout
 
 \begin_layout Chunk
+
 benchmark(f(x), fc(x), x <- x + 1, replications = 5)
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -6289,319 +4998,6 @@ Unfortunately, in my experience, byte compiling doesn't usually speed things
  up much.
  As experienced R programmers we would never write the unvectorized code
  above.
-\end_layout
-
-\begin_layout Subsection
-Challenges
-\end_layout
-
-\begin_layout Standard
-One or more of these challenges may appear on a problem set.
-\end_layout
-
-\begin_layout Standard
-
-\series bold
-Challenge 1
-\series default
-: Here's a calculation of the sort needed in mixture component modeling.
- I have a vector of 
-\begin_inset Formula $n$
-\end_inset
-
- observations.
- I need to find the likelihood of each observation under each of 
-\begin_inset Formula $p$
-\end_inset
-
- mixture components (i.e., what's the likelihood if it came from each of the
- components).
- So I should produce a matrix of 
-\begin_inset Formula $n$
-\end_inset
-
- rows and 
-\begin_inset Formula $p$
-\end_inset
-
- columns where the value in the 
-\begin_inset Formula $i$
-\end_inset
-
-th row, 
-\begin_inset Formula $j$
-\end_inset
-
-th column is the likelihood of the 
-\begin_inset Formula $i$
-\end_inset
-
-th observation under the 
-\begin_inset Formula $j$
-\end_inset
-
-th mixture component.
- The idea is that the likelihoods for a given observation are used in assigning
- observations to clusters.
- A naive implementation is:
-\end_layout
-
-\begin_layout Chunk
-<<chunk14aa, eval=FALSE>>=
-\end_layout
-
-\begin_layout Chunk
-lik <- matrix(NA, nr = n, nc = p)
-\end_layout
-
-\begin_layout Chunk
-for(j in 1:p) lik[ , j] <- dnorm(y, mns[j], sds[j])
-\end_layout
-
-\begin_layout Chunk
-@
-\end_layout
-
-\begin_layout Standard
-Note that 
-\emph on
-dnorm()
-\emph default
- can handle matrices and vectors as the observations 
-\series bold
-and
-\series default
- as the means and sds, so there are multiple ways to do this.
- 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-[mixtureExample.q]
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-
-\series bold
-Challenge 2
-\series default
-: Here's a calculation of the sort needed in a mixed membership model, where
- each observation is associated with some number of components.
- Suppose you have 
-\begin_inset Formula $y_{i}\sim\mathcal{N}(\sum_{k=1}^{m_{i}}w_{i,k}\mu_{ID[i,k]},\sigma^{2})$
-\end_inset
-
- for a large number of observations, 
-\begin_inset Formula $n$
-\end_inset
-
-.
- I give you a vector of 
-\begin_inset Formula $\mu$
-\end_inset
-
- values and a ragged list of weights and a ragged list of IDs identifying
- the cluster corresponding to each weight (note 
-\begin_inset Formula $m_{i}$
-\end_inset
-
- varies by observation).
- Figure out how to calculate the vector of means, 
-\begin_inset Formula $\sum_{k}w_{i,k}\mu_{ID[i,k]}$
-\end_inset
-
- as fast as possible.
- Suppose that 
-\begin_inset Formula $m_{i}$
-\end_inset
-
- never gets too big (but 
-\begin_inset Formula $\mu$
-\end_inset
-
- might have many elements) - could this help you? Part of thinking this
- through involves thinking about how you want to store the information so
- that the calculations can be done quickly.
-\end_layout
-
-\begin_layout Standard
-
-\series bold
-Challenge 3
-\series default
-: Write code that simulates a random walk in two dimensions for 
-\begin_inset Formula $n$
-\end_inset
-
- steps.
- First write out a straightforward implementation that involves looping.
- Then try to speed it up.
- The 
-\emph on
-cumsum()
-\emph default
- function may be helpful.
- 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Extra: simulate an excited random walk.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-
-\series bold
-Challenge 4:
-\series default
- Determine if it's faster to subset based on vector of indices or a vector
- of logicals.
- Determine if it matters how big the original object is and how large the
- subset is, as well as whether the vector of indices is ordered.
-\end_layout
-
-\begin_layout Standard
-
-\series bold
-Challenge 5:
-\series default
- Figure out how to efficiency improvements in the following code chunk,
- which is part of a likelihood calculation for a student's PhD research.
-\end_layout
-
-\begin_layout Chunk
-<<chunk14a, eval=FALSE>>=
-\end_layout
-
-\begin_layout Chunk
-for (i in 1:n) {        
-\end_layout
-
-\begin_layout Chunk
-  for (j in 1:n) {
-\end_layout
-
-\begin_layout Chunk
-    for (z in 1:K) { 
-\end_layout
-
-\begin_layout Chunk
-       if (theta.old[i, z]*theta.old[j, z] == 0){ 
-\end_layout
-
-\begin_layout Chunk
-          q[i, j, z] <- 0 
-\end_layout
-
-\begin_layout Chunk
-       } else { 
-\end_layout
-
-\begin_layout Chunk
-          q[i, j, z] <- theta.old[i, z]*theta.old[j, z] /
-\end_layout
-
-\begin_layout Chunk
-               Theta.old[i, j] 
-\end_layout
-
-\begin_layout Chunk
-       } 
-\end_layout
-
-\begin_layout Chunk
-    } 
-\end_layout
-
-\begin_layout Chunk
-  }
-\end_layout
-
-\begin_layout Chunk
-}
-\end_layout
-
-\begin_layout Chunk
-theta.new <- theta.old 
-\end_layout
-
-\begin_layout Chunk
-for (z in 1:K) { 
-\end_layout
-
-\begin_layout Chunk
-   theta.new[,z] <- rowSums(A*q[,,z])/sqrt(sum(A*q[,,z])) 
-\end_layout
-
-\begin_layout Chunk
-} 
-\end_layout
-
-\begin_layout Chunk
-@
-\end_layout
-
-\begin_layout Standard
-
-\series bold
-Challenge 6:
-\series default
- The following problem comes from another student's PhD research and involves
- matching genomic sequences.
- I won't go into the scientific details but will simply lay out the core
- computational task.
- 
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-add Sean's matching reads problem
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Sometimes we can avoid dealing with indexing by using vectorized mathematical
- operations.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Have them look at Duncan's random walk example.
- Or perhaps do as part of profiling section.
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Section
@@ -6757,10 +5153,12 @@ pryr
 \end_layout
 
 \begin_layout Chunk
+
 <<gc>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -6806,10 +5204,12 @@ object.size()
 \end_layout
 
 \begin_layout Chunk
+
 <<ls-sizes>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -6829,10 +5229,12 @@ containers
 \end_layout
 
 \begin_layout Chunk
+
 <<serialize>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -6899,10 +5301,12 @@ inspect()
 \end_layout
 
 \begin_layout Chunk
+
 <<inspect>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -6934,10 +5338,12 @@ address()
 \end_layout
 
 \begin_layout Chunk
+
 <<pryr-address>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -6951,10 +5357,12 @@ Replacement functions can hide the use of additional memory.
 \end_layout
 
 \begin_layout Chunk
+
 <<hidden1, eval=FALSE>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -6967,10 +5375,12 @@ Not all replacement functions actually involve creating a new object and
 \end_layout
 
 \begin_layout Chunk
+
 <<hidden2, eval=TRUE>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -6983,10 +5393,12 @@ Indexing large subsets can involve a lot of memory use.
 \end_layout
 
 \begin_layout Chunk
+
 <<hidden3, eval=FALSE>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -7107,10 +5519,12 @@ Let's consider when copies are made in casts:
 \end_layout
 
 \begin_layout Chunk
+
 <<casts, eval=FALSE>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -7126,10 +5540,12 @@ ng with C.
 \end_layout
 
 \begin_layout Chunk
+
 <<pass-to-C>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -7178,10 +5594,12 @@ gc()
 \end_layout
 
 \begin_layout Chunk
+
 <<copy-on-change-fun, eval=TRUE>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -7194,10 +5612,12 @@ In fact, this occurs outside function calls as well.
 \end_layout
 
 \begin_layout Chunk
+
 <<copy-on-change, eval=TRUE>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -7211,10 +5631,12 @@ mem_change()
 \end_layout
 
 \begin_layout Chunk
+
 <<copy-mem-change>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -7259,10 +5681,12 @@ X in frist case points to Y
 \end_layout
 
 \begin_layout Chunk
+
 <<named>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -7284,10 +5708,12 @@ inspect()
 \end_layout
 
 \begin_layout Chunk
+
 <<tracemem>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -7296,10 +5722,12 @@ Given our understanding of copy-on-change, explain what happens here:
 \end_layout
 
 \begin_layout Chunk
+
 <<copy-on-change-question, eval=TRUE>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -7312,10 +5740,12 @@ Challenge
 \end_layout
 
 \begin_layout Chunk
+
 <<memuse1>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -7324,10 +5754,12 @@ How about here? What is going on?
 \end_layout
 
 \begin_layout Chunk
+
 <<memuse2>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -7420,10 +5852,12 @@ yvar
 \end_layout
 
 \begin_layout Chunk
+
 <<memuse-real, eval = FALSE>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -7506,10 +5940,12 @@ Some functionality is implemented internally within the C implementation
 \end_layout
 
 \begin_layout Chunk
+
 <<internal-funs>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -7545,10 +5981,12 @@ print()
 \end_layout
 
 \begin_layout Chunk
+
 <<quote, tidy=FALSE>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -7568,10 +6006,12 @@ symbol
 \end_layout
 
 \begin_layout Chunk
+
 <<type-quote>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -7584,10 +6024,12 @@ expression
 \end_layout
 
 \begin_layout Chunk
+
 <<expr>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -7615,10 +6057,12 @@ expression()
 \end_layout
 
 \begin_layout Chunk
+
 <<parsing>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -8021,10 +6465,12 @@ Let's take a look at some examples of language objects and parsing.
 \end_layout
 
 \begin_layout Chunk
+
 <<lang-objects, tidy=FALSE>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -8037,10 +6483,12 @@ eval()
 \end_layout
 
 \begin_layout Chunk
+
 <<eval-lang>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -8054,10 +6502,12 @@ Now let's look in more detail at the components of R expressions.
 \end_layout
 
 \begin_layout Chunk
+
 <<expr-structure>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -8075,10 +6525,12 @@ compute on the language
 \end_layout
 
 \begin_layout Chunk
+
 <<manip-expr>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -8087,10 +6539,12 @@ Here's another example:
 \end_layout
 
 \begin_layout Chunk
+
 <<manip-expr2>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -8112,10 +6566,12 @@ quote()
 \end_layout
 
 \begin_layout Chunk
+
 <<deparse>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -8129,10 +6585,12 @@ It can be very useful to be able to convert names of objects that are in
 \end_layout
 
 \begin_layout Chunk
+
 <<manip-names>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -8150,10 +6608,12 @@ Let's consider replacement expressions.
 \end_layout
 
 \begin_layout Chunk
+
 <<replace-lang>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -8186,10 +6646,12 @@ out2
 \end_layout
 
 \begin_layout Chunk
+
 <<replace-lang2>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -8222,10 +6684,12 @@ quote()
 \end_layout
 
 \begin_layout Chunk
+
 <<substitute>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -8239,10 +6703,12 @@ substitute()
 \end_layout
 
 \begin_layout Chunk
+
 <<substitute2>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -8251,10 +6717,12 @@ This can do non-sensical stuff:
 \end_layout
 
 \begin_layout Chunk
+
 <<crazy-subst>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -8323,10 +6791,12 @@ rnorm()
 \end_layout
 
 \begin_layout Chunk
+
 <<subst-example>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -8344,10 +6814,12 @@ call
 \end_layout
 
 \begin_layout Chunk
+
 <<subst3>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -8356,10 +6828,12 @@ Things can get intricate quickly:
 \end_layout
 
 \begin_layout Chunk
+
 <<subst4>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -8394,10 +6868,12 @@ e1
 \end_layout
 
 \begin_layout Chunk
+
 <<double-subst>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
