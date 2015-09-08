@@ -220,7 +220,7 @@ print(paste('My value is ', val, '.', sep = ''))
 # input
 x <- 7
 n <- 5
-display powers
+# display powers
 cat("Powers of", x, "\n")
 cat("exponent   result\n\n")
 result <- 1
