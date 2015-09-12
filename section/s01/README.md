@@ -15,6 +15,27 @@ git clone https://github.com/berkeley-scf/tutorial-git-basics
 We will not cover the entire tutorial, only the basics. Please complete it on
 your own time.
 
+### Better logging
+
+My personal favorite:
+
+```
+git config --global alias.lg "log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%C(bold blue)<%an>%Creset' --abbrev-commit"
+```
+
+This will add:
+
+```
+[alias]
+	lg = log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%C(bold blue)<%an>%Creset' --abbrev-commit
+```
+
+to your `~/.gitconfig`. You can now type:
+
+```
+git lg
+```
+
 ### Code organization
 
 You might find the
