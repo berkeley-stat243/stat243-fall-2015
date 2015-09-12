@@ -792,7 +792,8 @@ Using the bash shell
  Finally, to test out regular expression syntax see 
 \begin_inset CommandInset href
 LatexCommand href
-target "this online tool"
+name "this online tool"
+target "https://regex101.com/"
 
 \end_inset
 
@@ -5000,6 +5001,316 @@ Unfortunately, in my experience, byte compiling doesn't usually speed things
  above.
 \end_layout
 
+\begin_layout Subsection
+Challenges [UNDER CONSTRUCTION]
+\end_layout
+
+\begin_layout Standard
+One or more of these challenges may appear on a problem set.
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Challenge 1
+\series default
+: Here's a calculation of the sort needed in mixture component modeling.
+ I have a vector of 
+\begin_inset Formula $n$
+\end_inset
+
+ observations.
+ I need to find the likelihood of each observation under each of 
+\begin_inset Formula $p$
+\end_inset
+
+ mixture components (i.e., what's the likelihood if it came from each of the
+ components).
+ So I should produce a matrix of 
+\begin_inset Formula $n$
+\end_inset
+
+ rows and 
+\begin_inset Formula $p$
+\end_inset
+
+ columns where the value in the 
+\begin_inset Formula $i$
+\end_inset
+
+th row, 
+\begin_inset Formula $j$
+\end_inset
+
+th column is the likelihood of the 
+\begin_inset Formula $i$
+\end_inset
+
+th observation under the 
+\begin_inset Formula $j$
+\end_inset
+
+th mixture component.
+ The idea is that the likelihoods for a given observation are used in assigning
+ observations to clusters.
+ A naive implementation is:
+\end_layout
+
+\begin_layout Chunk
+
+<<chunk14aa, eval=FALSE>>
+\end_layout
+
+\begin_layout Chunk
+
+lik <- matrix(NA, nr = n, nc = p)
+\end_layout
+
+\begin_layout Chunk
+
+for(j in 1:p) lik[ , j] <- dnorm(y, mns[j], sds[j])
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+Note that 
+\emph on
+dnorm()
+\emph default
+ can handle matrices and vectors as the observations 
+\series bold
+and
+\series default
+ as the means and sds, so there are multiple ways to do this.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+[mixtureExample.q]
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Challenge 2
+\series default
+: Here's a calculation of the sort needed in a mixed membership model, where
+ each observation is associated with some number of components.
+ Suppose you have 
+\begin_inset Formula $y_{i}\sim\mathcal{N}(\sum_{k=1}^{m_{i}}w_{i,k}\mu_{ID[i,k]},\sigma^{2})$
+\end_inset
+
+ for a large number of observations, 
+\begin_inset Formula $n$
+\end_inset
+
+.
+ I give you a vector of 
+\begin_inset Formula $\mu$
+\end_inset
+
+ values and a ragged list of weights and a ragged list of IDs identifying
+ the cluster corresponding to each weight (note 
+\begin_inset Formula $m_{i}$
+\end_inset
+
+ varies by observation).
+ Figure out how to calculate the vector of means, 
+\begin_inset Formula $\sum_{k}w_{i,k}\mu_{ID[i,k]}$
+\end_inset
+
+ as fast as possible.
+ Suppose that 
+\begin_inset Formula $m_{i}$
+\end_inset
+
+ never gets too big (but 
+\begin_inset Formula $\mu$
+\end_inset
+
+ might have many elements) - could this help you? Part of thinking this
+ through involves thinking about how you want to store the information so
+ that the calculations can be done quickly.
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Challenge 3
+\series default
+: Write code that simulates a random walk in two dimensions for 
+\begin_inset Formula $n$
+\end_inset
+
+ steps.
+ First write out a straightforward implementation that involves looping.
+ Then try to speed it up.
+ The 
+\emph on
+cumsum()
+\emph default
+ function may be helpful.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Extra: simulate an excited random walk.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Challenge 4:
+\series default
+ Determine if it's faster to subset based on vector of indices or a vector
+ of logicals.
+ Determine if it matters how big the original object is and how large the
+ subset is, as well as whether the vector of indices is ordered.
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Challenge 5:
+\series default
+ Figure out how to efficiency improvements in the following code chunk,
+ which is part of a likelihood calculation for a student's PhD research.
+\end_layout
+
+\begin_layout Chunk
+
+<<chunk14a, eval=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+
+for (i in 1:n) {        
+\end_layout
+
+\begin_layout Chunk
+
+  for (j in 1:n) {
+\end_layout
+
+\begin_layout Chunk
+
+    for (z in 1:K) { 
+\end_layout
+
+\begin_layout Chunk
+
+       if (theta.old[i, z]*theta.old[j, z] == 0){ 
+\end_layout
+
+\begin_layout Chunk
+
+          q[i, j, z] <- 0 
+\end_layout
+
+\begin_layout Chunk
+
+       } else { 
+\end_layout
+
+\begin_layout Chunk
+
+          q[i, j, z] <- theta.old[i, z]*theta.old[j, z] /
+\end_layout
+
+\begin_layout Chunk
+
+               Theta.old[i, j] 
+\end_layout
+
+\begin_layout Chunk
+
+       } 
+\end_layout
+
+\begin_layout Chunk
+
+    } 
+\end_layout
+
+\begin_layout Chunk
+
+  }
+\end_layout
+
+\begin_layout Chunk
+
+}
+\end_layout
+
+\begin_layout Chunk
+
+theta.new <- theta.old 
+\end_layout
+
+\begin_layout Chunk
+
+for (z in 1:K) { 
+\end_layout
+
+\begin_layout Chunk
+
+   theta.new[,z] <- rowSums(A*q[,,z])/sqrt(sum(A*q[,,z])) 
+\end_layout
+
+\begin_layout Chunk
+
+} 
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Sometimes we can avoid dealing with indexing by using vectorized mathematical
+ operations.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Have them look at Duncan's random walk example.
+ Or perhaps do as part of profiling section.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Section
 Evaluating memory use
 \begin_inset CommandInset label
@@ -5345,6 +5656,18 @@ address()
 \begin_layout Chunk
 
 @
+\end_layout
+
+\begin_layout Standard
+
+Apparently there is a memory profiler in R, 
+\emph on
+Rprofmem
+\emph default
+, but it needs to be enabled when R is compiled (i.e., installed on the machine),
+ because it slows R down even when not used.
+ So I've never gotten to the point of playing around with it.
+ 
 \end_layout
 
 \begin_layout Subsection
