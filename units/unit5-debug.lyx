@@ -1,0 +1,937 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\begin_preamble
+\usepackage[unicode=true]{hyperref}
+\usepackage{/accounts/gen/vis/paciorek/latex/paciorek-asa,times,graphics}
+\input{/accounts/gen/vis/paciorek/latex/paciorekMacros}
+%\renewcommand{\baselinestretch}{1.5}
+\hypersetup{unicode=true, pdfusetitle,bookmarks=true,bookmarksnumbered=false,bookmarksopen=false,breaklinks=false,pdfborder={0 0 1},backref=false,colorlinks=true,}
+\end_preamble
+\use_default_options false
+\begin_modules
+knitr
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 12
+\spacing onehalf
+\use_hyperref false
+\papersize letterpaper
+\use_geometry true
+\use_amsmath 1
+\use_esint 0
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 1in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Debugging and Good Practices
+\end_layout
+
+\begin_layout Chunk
+
+<<setup, include=FALSE, cache=TRUE>>= 
+\end_layout
+
+\begin_layout Chunk
+
+options(replace.assign = TRUE, width = 55) 
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+have students critique the ARS code from 2013 perhaps hand out for group
+ critiques and then have discussion 
+\end_layout
+
+\begin_layout Plain Layout
+http://www.r-bloggers.com/r-and-my-divorce-from-word/?utm_source=feedburner&utm_me
+dium=email&utm_campaign=Feed%3A+RBloggers+%28R+bloggers%29 for reproducible
+ research tools stuff and project managmeent software 
+\end_layout
+
+\begin_layout Plain Layout
+RStudio debugging tools?
+\end_layout
+
+\begin_layout Plain Layout
+see if I can make unit5 more coherent and distinguish analysis from software
+ dvpt 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+DTL orderBy document from 242
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Sources:
+\end_layout
+
+\begin_layout Itemize
+Chambers
+\end_layout
+
+\begin_layout Itemize
+Roger Peng's 
+\begin_inset CommandInset href
+LatexCommand href
+name "notes"
+target "http://www.biostat.jhsph.edu/~bcaffo/statcomp/files/R-debug-tools.pdf"
+
+\end_inset
+
+ on debugging in R
+\end_layout
+
+\begin_layout Itemize
+Murrell, Introduction to Data Technologies, Ch.
+ 2
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Journal of Statistical Software vol. 42: 19 Ways of Looking at Statistical Software"
+target "http://www.jstatsoft.org/v42/i02"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Wilson et at., Best practices for scientific computing, ArXiv:1210:0530"
+target "http://arxiv.org/abs/1210.0530"
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Gentzkow and Shapiro tutorial for social scientists"
+target "http://faculty.chicagobooth.edu/jesse.shapiro/research/CodeAndData.pdf"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+target "https://github.com/berkeley-stat243/stat243-fall-2014/blob/master/section/millman-perez.pdf"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+perhaps post Roger's debugging pdf?
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This unit covers debugging (and practices for avoiding bugs), good coding/softwa
+re development practices, and doing reproducible research.
+ As in later units of the course, the material is generally not in any fundament
+al way specific to R, but some details and the examples are in R.
+\end_layout
+
+\begin_layout Section
+Debugging and recommendations for avoiding bugs
+\end_layout
+
+\begin_layout Standard
+Please see the 
+\emph on
+R debugging
+\emph default
+ tutorial for information on
+\end_layout
+
+\begin_layout Itemize
+basic debugging strategies,
+\end_layout
+
+\begin_layout Itemize
+using R's interactive debugging tools,
+\end_layout
+
+\begin_layout Itemize
+common causes of bugs,
+\end_layout
+
+\begin_layout Itemize
+tips and tools for avoiding bugs and catching errors, and
+\end_layout
+
+\begin_layout Itemize
+information on how to get help online.
+\end_layout
+
+\begin_layout Section
+Good coding practices
+\end_layout
+
+\begin_layout Standard
+Some of these tips apply more to software development and some more to analyses
+ done for specific projects; hopefully it will be clear in most cases.
+\end_layout
+
+\begin_layout Subsection
+Editors
+\end_layout
+
+\begin_layout Standard
+Use an editor that supports the language you are using (e.g., 
+\emph on
+Emacs
+\emph default
+/
+\emph on
+Aquamacs
+\emph default
+, 
+\emph on
+vim, TextMate, WinEdt
+\emph default
+, 
+\emph on
+Tinn-R
+\emph default
+, or the built-in editors in 
+\emph on
+RStudio
+\emph default
+ or the Mac R GUI).
+ Some advantages of this can include: (1) helpful color coding of different
+ types of syntax and of strings, (2) automatic indentation and spacing,
+ (3) code can often be run or compiled from within the editor, (4) parenthesis
+ matching, (5) line numbering (good for finding bugs).
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+[show them an example by passing stat-mac22 emacs into Mac]
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Coding syntax
+\end_layout
+
+\begin_layout Standard
+The files 
+\emph on
+goodCode.R
+\emph default
+ and 
+\emph on
+badCode.R
+\emph default
+ in the class repository provide examples of code written such that it does
+ and does not conform to the suggestions listed in this section.
+\end_layout
+
+\begin_layout Standard
+Here are some style guides:
+\end_layout
+
+\begin_layout Itemize
+Adler has style tips.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Hadley Wickham's style guide"
+target "http://adv-r.had.co.nz/Style.html "
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+A 
+\begin_inset CommandInset href
+LatexCommand href
+name "empirical style guide"
+target "http://cran.r-project.org/web/packages/rockchalk/vignettes/Rstyle.pdf "
+
+\end_inset
+
+ based on the code of R Core and key package developers.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Google's R style guide"
+target "http://google-styleguide.googlecode.com/svn/trunk/Rguide.xml"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+This 
+\begin_inset CommandInset href
+LatexCommand href
+name "R journal article"
+target "http://journal.r-project.org/archive/2012-2/RJournal_2012-2_Baaaath.pdf"
+
+\end_inset
+
+ summarizes the state of naming styles on CRAN.
+ 
+\end_layout
+
+\begin_layout Standard
+And here's a summary of my own thoughts:
+\end_layout
+
+\begin_layout Itemize
+Header information: put metainfo on the code into the first few lines of
+ the file as comments.
+ Include who, when, what, how the code fits within a larger program (if
+ appropriate), possibly the versions of R and key packages that you wrote
+ this for
+\end_layout
+
+\begin_layout Itemize
+Indentation: do this systematically (your editor can help here).
+ This helps you and others to read and understand the code and can help
+ in detecting errors in your code because it can expose lack of symmetry.
+\end_layout
+
+\begin_layout Itemize
+Whitespace: use a lot of it.
+ Some places where it is good to have it are (1) around operators (assignment
+ and arithmetic), (2) between function arguments and list elements, (3)
+ between matrix/array indices, in particular for missing indices.
+ 
+\end_layout
+
+\begin_layout Itemize
+Use blank lines to separate blocks of code and comments to say what the
+ block does
+\end_layout
+
+\begin_layout Itemize
+Split long lines at meaningful places.
+\end_layout
+
+\begin_layout Itemize
+Use parentheses for clarity even if not needed for order of operations.
+ For example, 
+\family typewriter
+a/y*x
+\family default
+ will work but is not easy to read and you can easily induce a bug if you
+ forget the order of ops.
+\end_layout
+
+\begin_layout Itemize
+Documentation - add lots of comments (but don't belabor the obvious).
+ Remember that in a few months, you may not follow your own code any better
+ than a stranger.
+ Some key things to document: (1) summarizing a block of code, (2) explaining
+ a very complicated piece of code - recall our complicated regular expressions,
+ (3) explaining arbitrary constant values.
+\end_layout
+
+\begin_layout Itemize
+For software development, break code into separate files (<2000-3000 lines
+ per file) with meaningful file names and related functions grouped within
+ a file.
+\end_layout
+
+\begin_layout Itemize
+Choose a consistent naming style for objects and functions: e.g.
+ 
+\emph on
+nIts
+\emph default
+ vs.
+ 
+\emph on
+n.its
+\emph default
+ vs 
+\emph on
+numberOfIts
+\emph default
+ vs.
+ 
+\emph on
+n_its
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+This 
+\begin_inset CommandInset href
+LatexCommand href
+name "R journal article"
+target "http://journal.r-project.org/archive/2012-2/RJournal_2012-2_Baaaath.pdf"
+
+\end_inset
+
+ summarizes the state of naming styles on CRAN.
+ 
+\end_layout
+
+\begin_layout Itemize
+Adler and 
+\begin_inset CommandInset href
+LatexCommand href
+name "Google's R style guide"
+target "http://google-styleguide.googlecode.com/svn/trunk/Rguide.xml"
+
+\end_inset
+
+ recommend naming objects with lowercase words, separated by periods, while
+ naming functions by capitalizing the name of each word that is joined together,
+ with no periods.
+ 
+\end_layout
+
+\begin_layout Itemize
+On the other hand, programmers who use other languages dislike R code with
+ periods in it except in the context of object-oriented programming (OOP).
+ E.g., 
+\emph on
+summary.lm
+\emph default
+ is clear in that the period distinguishes the method from the class.
+ Naming a method something like 
+\emph on
+special.summary.lm
+\emph default
+ or an object 
+\emph on
+my.summary
+\emph default
+ then confuses things.
+ Personally, I suggest avoiding periods except for OOP.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Try to have the names be informative without being overly long.
+\end_layout
+
+\begin_layout Itemize
+Don't overwrite names of objects/functions that already exist in R.
+ E.g., don't use 'lm'.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+
+\family typewriter
+> exists('lm')
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Use active names for functions (e.g., 
+\emph on
+calcLogLik
+\emph default
+, 
+\emph on
+calc_logLik
+\emph default
+)
+\end_layout
+
+\begin_layout Itemize
+Learn from others' code
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+[show my api2.R code]
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This semester, someone will be reading your code - Harold and me when we
+ look at your assignments.
+ So to help us in understanding your code and develop good habits, put these
+ ideas into practice in your assignments.
+\end_layout
+
+\begin_layout Subsection
+Coding style
+\end_layout
+
+\begin_layout Standard
+This is particularly focused on software development, but some of the ideas
+ are useful for data analysis as well.
+\end_layout
+
+\begin_layout Itemize
+Break down tasks into core units
+\end_layout
+
+\begin_layout Itemize
+Write reusable code for core functionality and keep a single copy of the
+ code (w/ backups of course or ideally version control) so you only need
+ to make changes to a piece of code in one place
+\end_layout
+
+\begin_layout Itemize
+Smaller functions are easier to debug, easier to understand, and can be
+ combined in a modular fashion (like the UNIX utilities)
+\end_layout
+
+\begin_layout Itemize
+Write functions that take data as an argument and not lines of code that
+ operate on specific data objects.
+ Why? Functions allow us to reuse blocks of code easily for later use and
+ for recreating an analysis (reproducible research).
+ It's more transparent than sourcing a file of code because the inputs and
+ outputs are specified formally, so you don't have to read through the code
+ to figure out what it does.
+\end_layout
+
+\begin_layout Itemize
+Functions should: 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+be modular (having a single task); 
+\end_layout
+
+\begin_layout Itemize
+have meaningful name; and
+\end_layout
+
+\begin_layout Itemize
+have a comment describing their purpose, inputs and outputs (see the help
+ file for an R function for how this is done in that context).
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Object orientation is a nice way to go
+\end_layout
+
+\begin_layout Itemize
+Don't hard code numbers - use variables (e.g., number of iterations, parameter
+ values in simulations), even if you don't expect to change the value, as
+ this makes the code more readable: 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+
+\family typewriter
+> speedOfLight <- 3e8
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Use R lists to keep disparate parts of related data together
+\end_layout
+
+\begin_layout Itemize
+Practice defensive programming
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+check function inputs and warn users if the code will do something they
+ might not expect or makes particular choices;
+\end_layout
+
+\begin_layout Itemize
+check inputs to 
+\emph on
+if
+\emph default
+ and the ranges in 
+\emph on
+for
+\emph default
+ loops;
+\end_layout
+
+\begin_layout Itemize
+provide reasonable default arguments;
+\end_layout
+
+\begin_layout Itemize
+document the range of valid inputs;
+\end_layout
+
+\begin_layout Itemize
+check that the output produced is valid; and
+\end_layout
+
+\begin_layout Itemize
+stop execution based on checks and give an informative error message.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Try to avoid system-dependent code that only runs on a specific version
+ of an OS or specific OS
+\end_layout
+
+\begin_layout Itemize
+Learn from others' code
+\end_layout
+
+\begin_layout Itemize
+Consider rewriting your code once you know all the settings and conditions;
+ often analyses and projects meander as we do our work and the initial plan
+ for the code no longer makes sense and the code is no longer designed specifica
+lly for the job being done.
+\end_layout
+
+\begin_layout Subsection
+Version control
+\end_layout
+
+\begin_layout Itemize
+Use it! Even for projects that only you are working on.
+ 
+\end_layout
+
+\begin_layout Itemize
+Use an issues tracker, or at least a simple to-do file, noting changes you'd
+ like to make in the future.
+\end_layout
+
+\begin_layout Itemize
+In addition to good commit messages, it's a good idea to keep good notes
+ documenting your projects.
+ 
+\end_layout
+
+\begin_layout Standard
+We've already seen Git in a lot of detail, so not too much more to say here.
+\end_layout
+
+\begin_layout Section
+Tips for running analyses
+\end_layout
+
+\begin_layout Standard
+Save your output at intermediate steps (including the random seed state)
+ so you can restart if an error occurs or a computer fails.
+ Using 
+\emph on
+save()
+\emph default
+ and 
+\emph on
+save.image()
+\emph default
+ to write to 
+\emph on
+.RData
+\emph default
+ files work well for this.
+\end_layout
+
+\begin_layout Standard
+Run your code on a small subset of the problem before setting off a job
+ that runs for hours or days.
+ Make sure that the code works on the small subset and saves what you need
+ properly at the end.
+ 
+\end_layout
+
+\begin_layout Section
+Reproducible research
+\end_layout
+
+\begin_layout Standard
+The idea of 
+\begin_inset Quotes eld
+\end_inset
+
+reproducible research
+\begin_inset Quotes erd
+\end_inset
+
+ has gained a lot of attention in recent years because of the increasing
+ complexity of research projects, lack of details in the published literature,
+ failures in being able to replicate or reproduce others' work, fraudulent
+ research, and for other reasons.
+\end_layout
+
+\begin_layout Standard
+We've seen a number of tools that can help with doing reproducible research,
+ including version control systems such as git, the use of scripting such
+ as bash and R scripts, and literate programming tools such as knitr, Sweave
+ and R Markdown.
+ 
+\end_layout
+
+\begin_layout Standard
+
+\emph on
+Provenance
+\emph default
+ is becoming increasingly important in science.
+ It basically means being able to trace the steps of an analysis back to
+ its origins.
+ 
+\emph on
+Replicability
+\emph default
+ is a related concept - the idea is that you or someone else could replicate
+ the analysis that you've done.
+ This can be surprisingly hard as time passes even if you're the one attempting
+ the replication.
+ 
+\end_layout
+
+\begin_layout Standard
+Open question: What is required for something to be replicable? What are
+ the challenges in doing so?
+\end_layout
+
+\begin_layout Subsection
+Some basic strategies
+\end_layout
+
+\begin_layout Itemize
+Have a directory for each project with meaningful subdirectories: e.g., 
+\emph on
+code
+\emph default
+, 
+\emph on
+data
+\emph default
+, 
+\emph on
+paper
+\end_layout
+
+\begin_layout Itemize
+Keep a document describing your running analysis with dates in a text file
+ (i.e., a lab book)
+\end_layout
+
+\begin_layout Itemize
+Note where data were obtained (and when, which can be helpful when publishing)
+ and pre-processing steps in the lab book.
+ Have data version numbers with a file describing the changes and dates
+ (or in lab book).
+\end_layout
+
+\begin_layout Itemize
+Have a file of code for pre-processing, one or more for analysis, and one
+ for figure/table preparation.
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+The pre-processing may involve time-consuming steps.
+ Save the output of the pre-processing as a file that can be read in to
+ the analysis script.
+ 
+\end_layout
+
+\begin_layout Itemize
+You may want to name your files something like this, so there is an obvious
+ ordering: 
+\begin_inset Quotes eld
+\end_inset
+
+1-prep.R
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+2-anal.R
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+3-figs.R
+\begin_inset Quotes erd
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Itemize
+Have the code file for the figures produce the EXACT manuscript figures,
+ operating on an RData file that contains all the objects necessary to run
+ the figure-producing code; the code producing the RData file should be
+ in your analysis code file (or somewhere else sensible).
+\end_layout
+
+\begin_layout Itemize
+Alternatively, use 
+\emph on
+knitr
+\emph default
+ (or 
+\emph on
+Sweave
+\emph default
+ or 
+\emph on
+R Markdown
+\emph default
+ or 
+\emph on
+IPython
+\emph default
+) for your document preparation.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Note what code files do what in the lab book.
+\end_layout
+
+\begin_layout Subsection
+More formal tools
+\end_layout
+
+\begin_layout Enumerate
+In some cases you may be able to carry out your complete workflow in a knitr/Swe
+ave/R Markdown document.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Or in Python, you may be able to use the iPython Notebook, now known as
+ Jupyter, which supports code chunks in dozens of languages.
+\end_layout
+
+\begin_layout Enumerate
+You might consider using the UNIX utility 
+\emph on
+make
+\emph default
+, which is generally used for compiling code, as a tool for reproducible
+ research: see the tutorial on 
+\emph on
+Using make for workflows
+\emph default
+ for more details.
+\end_layout
+
+\end_body
+\end_document
