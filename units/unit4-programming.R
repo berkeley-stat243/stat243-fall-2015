@@ -1005,6 +1005,55 @@ evalq(pos <- pos + sample(c(-1, 1), 1), envir = myWalk)
 
 
 ## @knitr
+
+#####################################################
+# 7: Efficiency
+#####################################################
+
+### 7.2 Other approaches to speeding up R                  
+
+### 7.2.2 Byte compiling
+
+## @knitr byte
+library(compiler); library(rbenchmark)
+f <- function(x){
+	for(i in 1:length(x)) x[i] <- x[i] + 1
+	return(x)
+}
+fc <- cmpfun(f)
+fc # notice the indication that the function is byte compiled.
+x <- rnorm(100000)
+benchmark(f(x), fc(x), x <- x + 1, replications = 5)
+
+## @knitr
+
+### 7.3 Challenges                  
+                  
+## @knitr mixture-example
+lik <- matrix(NA, nr = n, nc = p)
+for(j in 1:p) lik[ , j] <- dnorm(y, mns[j], sds[j])
+                  
+## @knitr challenge5
+for (i in 1:n) {        
+  for (j in 1:n) {
+    for (z in 1:K) { 
+       if (theta.old[i, z]*theta.old[j, z] == 0){ 
+          q[i, j, z] <- 0 
+       } else { 
+          q[i, j, z] <- theta.old[i, z]*theta.old[j, z] /
+               Theta.old[i, j] 
+       } 
+    } 
+  }
+}
+theta.new <- theta.old 
+for (z in 1:K) { 
+   theta.new[,z] <- rowSums(A*q[,,z])/sqrt(sum(A*q[,,z])) 
+} 
+
+
+                  
+## @knitr                  
                                            
 #####################################################
 # 8: Evaluating memory use
