@@ -76,34 +76,42 @@ knitr
 \begin_body
 
 \begin_layout Chunk
+
 <<setup, include=FALSE>>=
 \end_layout
 
 \begin_layout Chunk
+
 if(exists('format.bytes')) rm(format.bytes)
 \end_layout
 
 \begin_layout Chunk
+
 library(knitr) 
 \end_layout
 
 \begin_layout Chunk
+
 library(pryr)
 \end_layout
 
 \begin_layout Chunk
+
 opts_chunk$set(fig.path = 'figure/listings-') 
 \end_layout
 
 \begin_layout Chunk
+
 options(replace.assign = TRUE, width = 55) 
 \end_layout
 
 \begin_layout Chunk
+
 read_chunk("unit4-programming.R")
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -224,10 +232,12 @@ system()
 
 \begin_deeper
 \begin_layout Chunk
+
 <<system>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -239,10 +249,12 @@ There are also a bunch of functions that will do specific queries of the
 
 \begin_deeper
 \begin_layout Chunk
+
 <<file-commands, eval=TRUE>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -254,10 +266,12 @@ There are some tools for dealing with differences between operating systems.
 
 \begin_deeper
 \begin_layout Chunk
+
 <<list-files>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -268,10 +282,12 @@ To get some info on the system you're running on:
 
 \begin_deeper
 \begin_layout Chunk
+
 <<sys-info>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -303,10 +319,12 @@ digits
 
 \begin_deeper
 \begin_layout Chunk
+
 <<options>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -355,10 +373,12 @@ Sys.info()
 
 \begin_deeper
 \begin_layout Chunk
+
 <<sessionInfo>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -441,19 +461,23 @@ If you want to pass arguments into your script, you can do so as long as
 \end_layout
 
 \begin_layout Chunk
+
 <<rscript-args, eval=FALSE>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
 \end_deeper
 \begin_layout Chunk
+
 <<rscript-run, engine='bash'>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -542,10 +566,12 @@ library()
 \end_layout
 
 \begin_layout Chunk
+
 <<library>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -583,10 +609,12 @@ searchpaths()
 \end_layout
 
 \begin_layout Chunk
+
 <<libpaths>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -624,10 +652,12 @@ lib
 \end_layout
 
 \begin_layout Chunk
+
 <<install, eval=FALSE>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -657,10 +687,12 @@ installing from source.
 \end_layout
 
 \begin_layout Chunk
+
 <<install-source, eval=FALSE>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -719,10 +751,12 @@ namespace
 \end_layout
 
 \begin_layout Chunk
+
 <<namespace>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -775,10 +809,12 @@ Recall that when characters are used for special purposes, we need to escape
 \end_layout
 
 \begin_layout Chunk
+
 <<escape>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -800,10 +836,12 @@ For more information, see
 \end_layout
 
 \begin_layout Chunk
+
 <<paste-quote>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -1120,10 +1158,12 @@ Let's look at Adler's Table 7.1 to see some other types.
 \end_layout
 
 \begin_layout Chunk
+
 <<typeof>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -1156,10 +1196,12 @@ We can create objects with our own defined class.
 \end_layout
 
 \begin_layout Chunk
+
 <<class>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -1179,10 +1221,12 @@ Attributes
 \end_layout
 
 \begin_layout Chunk
+
 <<attr1>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -1200,10 +1244,12 @@ names
 \end_layout
 
 \begin_layout Chunk
+
 <<attr2>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -1213,10 +1259,12 @@ A common use of attributes is that rows and columns may be named in matrices
 \end_layout
 
 \begin_layout Chunk
+
 <<attr3>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -1247,10 +1295,12 @@ We assign into an object using either '
 \end_layout
 
 \begin_layout Chunk
+
 <<assign>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -1260,10 +1310,12 @@ Let's look at these examples to understand the distinction between `=' and
 \end_layout
 
 \begin_layout Chunk
+
 <<assign2>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -1281,10 +1333,12 @@ One situation in which you want to use '
 \end_layout
 
 \begin_layout Chunk
+
 <<assign3>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -1294,10 +1348,12 @@ R often treats integers as numerics, but we can force R to store values
 \end_layout
 
 \begin_layout Chunk
+
 <<intL>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -1310,10 +1366,12 @@ as()
 \end_layout
 
 \begin_layout Chunk
+
 <<as>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -1333,10 +1391,12 @@ read.table()
 \end_layout
 
 \begin_layout Chunk
+
 <<coercion>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -1345,10 +1405,12 @@ Be careful of using factors as indices:
 \end_layout
 
 \begin_layout Chunk
+
 <<factor-indices>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -1371,10 +1433,12 @@ Here's an example we can work through that will help illustrate how type
 \end_layout
 
 \begin_layout Chunk
+
 <<coercion2>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -1472,10 +1536,12 @@ lm
 \end_layout
 
 \begin_layout Chunk
+
 <<inherit>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -1493,10 +1559,12 @@ We can create an object with a new class as follows:
 \end_layout
 
 \begin_layout Chunk
+
 <<s3>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -1510,10 +1578,12 @@ constructor
 \end_layout
 
 \begin_layout Chunk
+
 <<constructor>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -1523,10 +1593,12 @@ g:
 \end_layout
 
 \begin_layout Chunk
+
 <<s3weird>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -1544,10 +1616,12 @@ methods
 \end_layout
 
 \begin_layout Chunk
+
 <<s3methods, eval=FALSE>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -1582,10 +1656,12 @@ summary()
 \end_layout
 
 \begin_layout Chunk
+
 <<generic>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -1605,10 +1681,12 @@ We can define new generic methods:
 \end_layout
 
 \begin_layout Chunk
+
 <<new-generic>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -1653,10 +1731,12 @@ summarize
 \end_layout
 
 \begin_layout Chunk
+
 <<class-specific>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -1717,10 +1797,12 @@ print.summary.lm()
 \end_layout
 
 \begin_layout Chunk
+
 <<summary, eval=FALSE>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -1750,10 +1832,12 @@ grizzly_bear
 \end_layout
 
 \begin_layout Chunk
+
 <<inherit2>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -1810,10 +1894,12 @@ We can also use operators with our classes.
 \end_layout
 
 \begin_layout Chunk
+
 <<class-operators>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -1840,10 +1926,12 @@ This is again a bit silly but we could do the following.
 \end_layout
 
 \begin_layout Chunk
+
 <<replacement>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -2000,10 +2088,12 @@ indiv
 \end_layout
 
 \begin_layout Chunk
+
 <<s4>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -2013,10 +2103,12 @@ S4 methods are designed to be more structured than S3, with careful checking
 \end_layout
 
 \begin_layout Chunk
+
 <<s4structured>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -2040,10 +2132,12 @@ Here's how we create generic and class-specific methods.
 \end_layout
 
 \begin_layout Chunk
+
 <<s4methods>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -2110,10 +2204,12 @@ superclass
 \end_layout
 
 \begin_layout Chunk
+
 <<s4inherit>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -2166,10 +2262,12 @@ data.frame
 \end_layout
 
 \begin_layout Chunk
+
 <<s4tos3>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -2220,10 +2318,12 @@ Here's the initial definition of the class.
 \end_layout
 
 \begin_layout Chunk
+
 <<refclass>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -2232,10 +2332,12 @@ We can add methods after defining the class.
 \end_layout
 
 \begin_layout Chunk
+
 <<refMethod>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -2244,10 +2346,12 @@ Now let's see how we would use the class.
 \end_layout
 
 \begin_layout Chunk
+
 <<refUse, fig.width=4, eval=FALSE>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -2304,10 +2408,12 @@ g the field name as:
 \end_layout
 
 \begin_layout Chunk
+
 <<refAccess, eval=FALSE>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -2435,10 +2541,12 @@ ggplot2
 \end_layout
 
 \begin_layout Chunk
+
 <<long-wide>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -2513,10 +2621,12 @@ Everything in R is an object, including functions.
 \end_layout
 
 \begin_layout Chunk
+
 <<function-object>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -2526,10 +2636,12 @@ We can call a function based on the text name of the function.
 \end_layout
 
 \begin_layout Chunk
+
 <<eval-fun>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -2548,10 +2660,12 @@ match.fun()
 \end_layout
 
 \begin_layout Chunk
+
 <<match-fun>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -2571,10 +2685,12 @@ Function objects contain three components: an argument list, a body (a parsed
 \end_layout
 
 \begin_layout Chunk
+
 <<fun-parts>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -2613,10 +2729,12 @@ rbind()
 \end_layout
 
 \begin_layout Chunk
+
 <<do-call>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -2648,10 +2766,12 @@ More generally do.call() is a way to pass arguments to a function where the
 \end_layout
 
 \begin_layout Chunk
+
 <<do-call2>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -2676,10 +2796,12 @@ args()
 \end_layout
 
 \begin_layout Chunk
+
 <<args>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -2712,10 +2834,12 @@ plot()
 \end_layout
 
 \begin_layout Chunk
+
 <<dots>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -2761,10 +2885,12 @@ If you want to manipulate what the user passed in as the
 \end_layout
 
 \begin_layout Chunk
+
 <<dots-list>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -2797,10 +2923,12 @@ dgamma()
 \end_layout
 
 \begin_layout Chunk
+
 <<dgamma>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -2823,10 +2951,12 @@ lambda function
 \end_layout
 
 \begin_layout Chunk
+
 <<funs-as-args>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -2848,10 +2978,12 @@ formals()
 \end_layout
 
 \begin_layout Chunk
+
 <<formals>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -2873,10 +3005,12 @@ match.call()
 \end_layout
 
 \begin_layout Chunk
+
 <<match-call>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -2908,10 +3042,12 @@ return()
 \end_layout
 
 \begin_layout Chunk
+
 <<return>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -2929,10 +3065,12 @@ x
 \end_layout
 
 \begin_layout Chunk
+
 <<invisible>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -2946,10 +3084,12 @@ lm()
 \end_layout
 
 \begin_layout Chunk
+
 <<return-list>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -3024,10 +3164,12 @@ par()
 \end_layout
 
 \begin_layout Chunk
+
 <<par, eval=FALSE>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -3341,10 +3483,12 @@ promise
 \end_layout
 
 \begin_layout Chunk
+
 <<lazy-eval, eval=FALSE>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -3357,10 +3501,12 @@ Another example:
 \end_layout
 
 \begin_layout Chunk
+
 <<lazy-eval2>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -3374,10 +3520,12 @@ User-supplied arguments are evaluated in the calling frame, while default
 \end_layout
 
 \begin_layout Chunk
+
 <<args-eval>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -3425,10 +3573,12 @@ Operators, such as '
 \end_layout
 
 \begin_layout Chunk
+
 <<operators, tidy=FALSE>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -3448,10 +3598,12 @@ Finally, since an operator is just a function, you can use it as an argument
 \end_layout
 
 \begin_layout Chunk
+
 <<pass-operator>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -3468,10 +3620,12 @@ binary
 \end_layout
 
 \begin_layout Chunk
+
 <<define-operator>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -3484,10 +3638,12 @@ Since operators are just functions, there are cases in which there are optional
 \end_layout
 
 \begin_layout Chunk
+
 <<operator-args>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -3572,10 +3728,12 @@ What do you think is the functional version of the following code? What
 \end_layout
 
 \begin_layout Chunk
+
 <<all-is-fun, eval = FALSE>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -3595,10 +3753,12 @@ These can be quite handy.
 \end_layout
 
 \begin_layout Chunk
+
 <<replace-funs, eval = FALSE>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -3610,10 +3770,12 @@ Replacement expressions are actually function calls.
 \end_layout
 
 \begin_layout Chunk
+
 <<replace-funs2>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -3643,10 +3805,12 @@ value
 \end_layout
 
 \begin_layout Chunk
+
 <<create-replace>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -3661,10 +3825,12 @@ e.
 \end_layout
 
 \begin_layout Chunk
+
 <<scope-example>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -3729,10 +3895,12 @@ Be careful when using variables from the enclosing environment as the value
 \end_layout
 
 \begin_layout Chunk
+
 <<enclosing, eval=FALSE>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -3741,10 +3909,12 @@ Here are some examples to illustrate scope:
 \end_layout
 
 \begin_layout Chunk
+
 <<scope, eval=FALSE>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -3753,10 +3923,12 @@ Here's a somewhat tricky example:
 \end_layout
 
 \begin_layout Chunk
+
 <<scope-tricky>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -3822,10 +3994,12 @@ environment()
 \end_layout
 
 \begin_layout Chunk
+
 <<scope-envts>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -3839,10 +4013,12 @@ Here's a case where something I tried failed and I had to think more carefully
 \end_layout
 
 \begin_layout Chunk
+
 <<scope-problem>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -3952,10 +4128,12 @@ attach()
 \end_layout
 
 \begin_layout Chunk
+
 <<search>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -3969,10 +4147,12 @@ environmentName()
 \end_layout
 
 \begin_layout Chunk
+
 <<nested-env>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -4010,10 +4190,12 @@ stats
 \end_layout
 
 \begin_layout Chunk
+
 <<package-nested>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -4023,10 +4205,12 @@ We can retrieve and assign objects in a particular environment and/or namespace
 \end_layout
 
 \begin_layout Chunk
+
 <<get>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -4090,10 +4274,12 @@ knitr
 \end_layout
 
 \begin_layout Chunk
+
 <<frames, eval=FALSE>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -4120,10 +4306,12 @@ sys.frames()
 \end_layout
 
 \begin_layout Chunk
+
 <<frames2, eval=FALSE>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -4252,10 +4440,12 @@ rce=feedburner&utm_medium=email&utm_campaign=Feed%3A+RBloggers+%28R+bloggers%29
 \end_layout
 
 \begin_layout Chunk
+
 <<closures>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -4273,10 +4463,12 @@ replicate()
 \end_layout
 
 \begin_layout Chunk
+
 <<closure-boot>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -4301,10 +4493,12 @@ This approach appeared in Problem Set 2.
 \end_layout
 
 \begin_layout Chunk
+
 <<with>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -4328,10 +4522,12 @@ We've already talked extensively about the environments that R creates.
 \end_layout
 
 \begin_layout Chunk
+
 <<new.env>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -4342,10 +4538,12 @@ Before the existence of Reference Classes, using an environment was one
 \end_layout
 
 \begin_layout Chunk
+
 <<envt-container>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -4381,10 +4579,12 @@ myWalk
 \end_layout
 
 \begin_layout Chunk
+
 <<eval-in-env>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -4719,10 +4919,12 @@ cmpfun()
 \end_layout
 
 \begin_layout Chunk
+
 <<byte, cache=TRUE>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -4755,7 +4957,7 @@ Unfortunately, in my experience, byte compiling doesn't usually speed things
 \end_layout
 
 \begin_layout Subsection
-Challenges [UNDER CONSTRUCTION]
+Challenges
 \end_layout
 
 \begin_layout Standard
@@ -4810,10 +5012,12 @@ th mixture component.
 \end_layout
 
 \begin_layout Chunk
+
 <<mixture-example, eval=FALSE>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -4848,10 +5052,14 @@ Challenge 2
 : Here's a calculation of the sort needed in a mixed membership model, where
  each observation is associated with some number of components.
  Suppose you have 
-\begin_inset Formula $y_{i}\sim\mathcal{N}(\sum_{k=1}^{m_{i}}w_{i,k}\mu_{ID[i,k]},\sigma^{2})$
+\begin_inset Formula 
+\[
+y_{i}\sim\mathcal{N}(\sum_{k=1}^{m_{i}}w_{i,k}\mu_{ID[i,k]},\sigma^{2})
+\]
+
 \end_inset
 
- for a large number of observations, 
+for a large number of observations, 
 \begin_inset Formula $n$
 \end_inset
 
@@ -4860,8 +5068,9 @@ Challenge 2
 \begin_inset Formula $\mu$
 \end_inset
 
- values and a ragged list of weights and a ragged list of IDs identifying
- the cluster corresponding to each weight (note 
+ values and a ragged list of weights (i.e., the number of weights varies by
+ observation) and a ragged list of IDs identifying the cluster corresponding
+ to each weight (note 
 \begin_inset Formula $m_{i}$
 \end_inset
 
@@ -4882,6 +5091,19 @@ Challenge 2
  might have many elements) - could this help you? Part of thinking this
  through involves thinking about how you want to store the information so
  that the calculations can be done quickly.
+ The data file 
+\emph on
+mixed-member.Rda
+\emph default
+ contains example data for two scenarios: Scenario A has many 
+\begin_inset Formula $\mu$
+\end_inset
+
+ values and Scenario B has few 
+\begin_inset Formula $\mu$
+\end_inset
+
+ values.
 \end_layout
 
 \begin_layout Standard
@@ -4930,44 +5152,111 @@ Challenge 4:
 \series bold
 Challenge 5:
 \series default
- Figure out how to efficiency improvements in the following code chunk,
- which is part of a likelihood calculation for a student's PhD research.
+ Figure out how to improve the efficiency of the following code chunk, which
+ is part of a likelihood calculation for a student's PhD research.
+ Some test data is in 
+\emph on
+likLoops.Rda
+\emph default
+.
 \end_layout
 
 \begin_layout Chunk
+
 <<challenge5, eval=FALSE>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Note
-status open
 
-\begin_layout Plain Layout
-Sometimes we can avoid dealing with indexing by using vectorized mathematical
- operations.
-\end_layout
+\series bold
+Challenge 6
+\series default
+: Another problem involving a computation from a student's PhD research.
+ The following is the probability mass function for an overdispersed binomial
+ random variable:
+\begin_inset Formula 
+\begin{eqnarray*}
+P(Y & = & y)=\frac{f(y;n,p,\phi)}{\sum_{k=0}^{n}f(k;n,p,\phi)}\\
+f(k;n,p,\phi) & = & {n \choose k}\frac{k^{k}(n-k)^{n-k}}{n^{n}}\left(\frac{n^{n}}{k^{k}(n-k)^{n-k}}\right)^{\phi}p^{k\phi}(1-p)^{(n-k)\phi},
+\end{eqnarray*}
 
 \end_inset
 
+where the denominator serves as a normalizing constant to ensure this is
+ a valid probability mass function.
+ How would one efficiently code the computation of the denominator? For
+ our purposes here you can take 
+\begin_inset Formula $n=2000$
+\end_inset
 
+, 
+\begin_inset Formula $p=0.3$
+\end_inset
+
+ and 
+\begin_inset Formula $\phi=0.5$
+\end_inset
+
+ when you need to actually run your code.
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Note
-status open
 
-\begin_layout Plain Layout
-Have them look at Duncan's random walk example.
- Or perhaps do as part of profiling section.
+\series bold
+Challenge 7
+\series default
+: Yet another problem from a student's PhD research.
+ This is a very simplified version of a bioinformatics problem.
+ 
 \end_layout
 
-\end_inset
+\begin_layout Standard
+Fact 1: DNA sequencing involves chopping up the long sequence of DNA on
+ a chromosome into many short 
+\emph on
+reads
+\emph default
+, which may overlap and are of various lengths.
+ 
+\end_layout
 
+\begin_layout Standard
+Fact 2: DNA is composed of interspersed chunks of DNA that code for proteins
+ (exons) and chunks that do not code for proteins (introns).
+ The introns are stripped out during creation of the protein.
+ 
+\end_layout
 
+\begin_layout Standard
+As part of a workflow, the student needed to determine, for a large number
+ of exons, how many reads each exon overlapped with.
+ The file 
+\emph on
+exons.Rda
+\emph default
+ has position information for the reads (in an object called 
+\emph on
+reads
+\emph default
+) as well as position information for a number of exons (in 
+\emph on
+exons
+\emph default
+).
+ Each element of 
+\emph on
+reads
+\emph default
+, which is a list, is a set of short sequences making up a single read.
+ So the challenge is to figure out, for each exon, how many of the reads
+ there are for which the exon overlaps at least one of the short sequences
+ making up the read.
+ 
 \end_layout
 
 \begin_layout Section
@@ -5123,10 +5412,12 @@ pryr
 \end_layout
 
 \begin_layout Chunk
+
 <<gc>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -5172,10 +5463,12 @@ object.size()
 \end_layout
 
 \begin_layout Chunk
+
 <<ls-sizes>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -5195,10 +5488,12 @@ containers
 \end_layout
 
 \begin_layout Chunk
+
 <<serialize>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -5265,10 +5560,12 @@ inspect()
 \end_layout
 
 \begin_layout Chunk
+
 <<inspect>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -5300,10 +5597,12 @@ address()
 \end_layout
 
 \begin_layout Chunk
+
 <<pryr-address>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -5328,10 +5627,12 @@ Replacement functions can hide the use of additional memory.
 \end_layout
 
 \begin_layout Chunk
+
 <<hidden1, eval=FALSE>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -5344,10 +5645,12 @@ Not all replacement functions actually involve creating a new object and
 \end_layout
 
 \begin_layout Chunk
+
 <<hidden2, eval=TRUE>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -5360,10 +5663,12 @@ Indexing large subsets can involve a lot of memory use.
 \end_layout
 
 \begin_layout Chunk
+
 <<hidden3, eval=FALSE>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -5484,10 +5789,12 @@ Let's consider when copies are made in casts:
 \end_layout
 
 \begin_layout Chunk
+
 <<casts, eval=FALSE>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -5503,10 +5810,12 @@ ng with C.
 \end_layout
 
 \begin_layout Chunk
+
 <<pass-to-C>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -5555,10 +5864,12 @@ gc()
 \end_layout
 
 \begin_layout Chunk
+
 <<copy-on-change-fun, eval=TRUE>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -5571,10 +5882,12 @@ In fact, this occurs outside function calls as well.
 \end_layout
 
 \begin_layout Chunk
+
 <<copy-on-change, eval=TRUE>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -5588,10 +5901,12 @@ mem_change()
 \end_layout
 
 \begin_layout Chunk
+
 <<copy-mem-change>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -5636,10 +5951,12 @@ X in frist case points to Y
 \end_layout
 
 \begin_layout Chunk
+
 <<named>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -5661,10 +5978,12 @@ inspect()
 \end_layout
 
 \begin_layout Chunk
+
 <<tracemem>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -5673,10 +5992,12 @@ Given our understanding of copy-on-change, explain what happens here:
 \end_layout
 
 \begin_layout Chunk
+
 <<copy-on-change-question, eval=TRUE>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -5689,10 +6010,12 @@ Challenge
 \end_layout
 
 \begin_layout Chunk
+
 <<memuse1>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -5701,10 +6024,12 @@ How about here? What is going on?
 \end_layout
 
 \begin_layout Chunk
+
 <<memuse2>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -5797,10 +6122,12 @@ yvar
 \end_layout
 
 \begin_layout Chunk
+
 <<memuse-real, eval = FALSE>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -5883,10 +6210,12 @@ Some functionality is implemented internally within the C implementation
 \end_layout
 
 \begin_layout Chunk
+
 <<internal-funs>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -5922,10 +6251,12 @@ print()
 \end_layout
 
 \begin_layout Chunk
+
 <<quote, tidy=FALSE>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -5945,10 +6276,12 @@ symbol
 \end_layout
 
 \begin_layout Chunk
+
 <<type-quote>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -5961,10 +6294,12 @@ expression
 \end_layout
 
 \begin_layout Chunk
+
 <<expr>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -5992,10 +6327,12 @@ expression()
 \end_layout
 
 \begin_layout Chunk
+
 <<parsing>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -6398,10 +6735,12 @@ Let's take a look at some examples of language objects and parsing.
 \end_layout
 
 \begin_layout Chunk
+
 <<lang-objects, tidy=FALSE>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -6414,10 +6753,12 @@ eval()
 \end_layout
 
 \begin_layout Chunk
+
 <<eval-lang>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -6431,10 +6772,12 @@ Now let's look in more detail at the components of R expressions.
 \end_layout
 
 \begin_layout Chunk
+
 <<expr-structure>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -6452,10 +6795,12 @@ compute on the language
 \end_layout
 
 \begin_layout Chunk
+
 <<manip-expr>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -6464,10 +6809,12 @@ Here's another example:
 \end_layout
 
 \begin_layout Chunk
+
 <<manip-expr2>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -6489,10 +6836,12 @@ quote()
 \end_layout
 
 \begin_layout Chunk
+
 <<deparse>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -6506,10 +6855,12 @@ It can be very useful to be able to convert names of objects that are in
 \end_layout
 
 \begin_layout Chunk
+
 <<manip-names>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -6527,10 +6878,12 @@ Let's consider replacement expressions.
 \end_layout
 
 \begin_layout Chunk
+
 <<replace-lang>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -6563,10 +6916,12 @@ out2
 \end_layout
 
 \begin_layout Chunk
+
 <<replace-lang2>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -6599,10 +6954,12 @@ quote()
 \end_layout
 
 \begin_layout Chunk
+
 <<substitute>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -6616,10 +6973,12 @@ substitute()
 \end_layout
 
 \begin_layout Chunk
+
 <<substitute2>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -6628,10 +6987,12 @@ This can do non-sensical stuff:
 \end_layout
 
 \begin_layout Chunk
+
 <<crazy-subst>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -6700,10 +7061,12 @@ rnorm()
 \end_layout
 
 \begin_layout Chunk
+
 <<subst-example>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -6721,10 +7084,12 @@ call
 \end_layout
 
 \begin_layout Chunk
+
 <<subst3>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -6733,10 +7098,12 @@ Things can get intricate quickly:
 \end_layout
 
 \begin_layout Chunk
+
 <<subst4>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -6771,10 +7138,12 @@ e1
 \end_layout
 
 \begin_layout Chunk
+
 <<double-subst>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 

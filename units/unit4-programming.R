@@ -1030,7 +1030,7 @@ benchmark(f(x), fc(x), x <- x + 1, replications = 5)
 ### 7.3 Challenges                  
                   
 ## @knitr mixture-example
-lik <- matrix(NA, nr = n, nc = p)
+lik <- matrix(as.numeric(NA), nr = n, nc = p)
 for(j in 1:p) lik[ , j] <- dnorm(y, mns[j], sds[j])
                   
 ## @knitr challenge5
