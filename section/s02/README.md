@@ -10,3 +10,8 @@ helpful:
 I will be covering a subset of Karl Broman's slides:
 
 - http://kbroman.org/Tools4RR/assets/lectures/09_testdebug.pdf
+
+### Errata
+
+- objects in `R` are [copy-on-modify](http://stackoverflow.com/questions/15759117/what-exactly-is-copy-on-modify-semantics-in-r-and-where-is-the-canonical-source), not immutable (no idea why I said that. I've been thinking about strings too much)
+- I swapped the notation of `df[['idx']]` (which always returns a vector) and `df[c('idx')]` (which always returns a `data.frame`)
