@@ -4920,52 +4920,7 @@ cmpfun()
 
 \begin_layout Chunk
 
-<<chunk14, cache=TRUE>>=
-\end_layout
-
-\begin_layout Chunk
-
-library(compiler); library(rbenchmark)
-\end_layout
-
-\begin_layout Chunk
-
-f <- function(x){
-\end_layout
-
-\begin_layout Chunk
-
-	for(i in 1:length(x)) x[i] <- x[i] + 1
-\end_layout
-
-\begin_layout Chunk
-
-	return(x)
-\end_layout
-
-\begin_layout Chunk
-
-}
-\end_layout
-
-\begin_layout Chunk
-
-fc <- cmpfun(f)
-\end_layout
-
-\begin_layout Chunk
-
-fc # notice the indication that the function is byte compiled.
-\end_layout
-
-\begin_layout Chunk
-
-x <- rnorm(100000)
-\end_layout
-
-\begin_layout Chunk
-
-benchmark(f(x), fc(x), x <- x + 1, replications = 5)
+<<byte, cache=TRUE>>=
 \end_layout
 
 \begin_layout Chunk
@@ -5002,7 +4957,7 @@ Unfortunately, in my experience, byte compiling doesn't usually speed things
 \end_layout
 
 \begin_layout Subsection
-Challenges [UNDER CONSTRUCTION]
+Challenges
 \end_layout
 
 \begin_layout Standard
@@ -5058,17 +5013,7 @@ th mixture component.
 
 \begin_layout Chunk
 
-<<chunk14aa, eval=FALSE>>
-\end_layout
-
-\begin_layout Chunk
-
-lik <- matrix(NA, nr = n, nc = p)
-\end_layout
-
-\begin_layout Chunk
-
-for(j in 1:p) lik[ , j] <- dnorm(y, mns[j], sds[j])
+<<mixture-example, eval=FALSE>>=
 \end_layout
 
 \begin_layout Chunk
@@ -5107,10 +5052,14 @@ Challenge 2
 : Here's a calculation of the sort needed in a mixed membership model, where
  each observation is associated with some number of components.
  Suppose you have 
-\begin_inset Formula $y_{i}\sim\mathcal{N}(\sum_{k=1}^{m_{i}}w_{i,k}\mu_{ID[i,k]},\sigma^{2})$
+\begin_inset Formula 
+\[
+y_{i}\sim\mathcal{N}(\sum_{k=1}^{m_{i}}w_{i,k}\mu_{ID[i,k]},\sigma^{2})
+\]
+
 \end_inset
 
- for a large number of observations, 
+for a large number of observations, 
 \begin_inset Formula $n$
 \end_inset
 
@@ -5119,8 +5068,9 @@ Challenge 2
 \begin_inset Formula $\mu$
 \end_inset
 
- values and a ragged list of weights and a ragged list of IDs identifying
- the cluster corresponding to each weight (note 
+ values and a ragged list of weights (i.e., the number of weights varies by
+ observation) and a ragged list of IDs identifying the cluster corresponding
+ to each weight (note 
 \begin_inset Formula $m_{i}$
 \end_inset
 
@@ -5141,6 +5091,19 @@ Challenge 2
  might have many elements) - could this help you? Part of thinking this
  through involves thinking about how you want to store the information so
  that the calculations can be done quickly.
+ The data file 
+\emph on
+mixed-member.Rda
+\emph default
+ contains example data for two scenarios: Scenario A has many 
+\begin_inset Formula $\mu$
+\end_inset
+
+ values and Scenario B has few 
+\begin_inset Formula $\mu$
+\end_inset
+
+ values.
 \end_layout
 
 \begin_layout Standard
@@ -5189,93 +5152,18 @@ Challenge 4:
 \series bold
 Challenge 5:
 \series default
- Figure out how to efficiency improvements in the following code chunk,
- which is part of a likelihood calculation for a student's PhD research.
+ Figure out how to improve the efficiency of the following code chunk, which
+ is part of a likelihood calculation for a student's PhD research.
+ Some test data is in 
+\emph on
+likLoops.Rda
+\emph default
+.
 \end_layout
 
 \begin_layout Chunk
 
-<<chunk14a, eval=FALSE>>=
-\end_layout
-
-\begin_layout Chunk
-
-for (i in 1:n) {        
-\end_layout
-
-\begin_layout Chunk
-
-  for (j in 1:n) {
-\end_layout
-
-\begin_layout Chunk
-
-    for (z in 1:K) { 
-\end_layout
-
-\begin_layout Chunk
-
-       if (theta.old[i, z]*theta.old[j, z] == 0){ 
-\end_layout
-
-\begin_layout Chunk
-
-          q[i, j, z] <- 0 
-\end_layout
-
-\begin_layout Chunk
-
-       } else { 
-\end_layout
-
-\begin_layout Chunk
-
-          q[i, j, z] <- theta.old[i, z]*theta.old[j, z] /
-\end_layout
-
-\begin_layout Chunk
-
-               Theta.old[i, j] 
-\end_layout
-
-\begin_layout Chunk
-
-       } 
-\end_layout
-
-\begin_layout Chunk
-
-    } 
-\end_layout
-
-\begin_layout Chunk
-
-  }
-\end_layout
-
-\begin_layout Chunk
-
-}
-\end_layout
-
-\begin_layout Chunk
-
-theta.new <- theta.old 
-\end_layout
-
-\begin_layout Chunk
-
-for (z in 1:K) { 
-\end_layout
-
-\begin_layout Chunk
-
-   theta.new[,z] <- rowSums(A*q[,,z])/sqrt(sum(A*q[,,z])) 
-\end_layout
-
-\begin_layout Chunk
-
-} 
+<<challenge5, eval=FALSE>>=
 \end_layout
 
 \begin_layout Chunk
@@ -5284,31 +5172,91 @@ for (z in 1:K) {
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Note
-status open
 
-\begin_layout Plain Layout
-Sometimes we can avoid dealing with indexing by using vectorized mathematical
- operations.
-\end_layout
+\series bold
+Challenge 6
+\series default
+: Another problem involving a computation from a student's PhD research.
+ The following is the probability mass function for an overdispersed binomial
+ random variable:
+\begin_inset Formula 
+\begin{eqnarray*}
+P(Y & = & y)=\frac{f(y;n,p,\phi)}{\sum_{k=0}^{n}f(k;n,p,\phi)}\\
+f(k;n,p,\phi) & = & {n \choose k}\frac{k^{k}(n-k)^{n-k}}{n^{n}}\left(\frac{n^{n}}{k^{k}(n-k)^{n-k}}\right)^{\phi}p^{k\phi}(1-p)^{(n-k)\phi},
+\end{eqnarray*}
 
 \end_inset
 
+where the denominator serves as a normalizing constant to ensure this is
+ a valid probability mass function.
+ How would one efficiently code the computation of the denominator? For
+ our purposes here you can take 
+\begin_inset Formula $n=2000$
+\end_inset
 
+, 
+\begin_inset Formula $p=0.3$
+\end_inset
+
+ and 
+\begin_inset Formula $\phi=0.5$
+\end_inset
+
+ when you need to actually run your code.
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Note
-status open
 
-\begin_layout Plain Layout
-Have them look at Duncan's random walk example.
- Or perhaps do as part of profiling section.
+\series bold
+Challenge 7
+\series default
+: Yet another problem from a student's PhD research.
+ This is a very simplified version of a bioinformatics problem.
+ 
 \end_layout
 
-\end_inset
+\begin_layout Standard
+Fact 1: DNA sequencing involves chopping up the long sequence of DNA on
+ a chromosome into many short 
+\emph on
+reads
+\emph default
+, which may overlap and are of various lengths.
+ 
+\end_layout
 
+\begin_layout Standard
+Fact 2: DNA is composed of interspersed chunks of DNA that code for proteins
+ (exons) and chunks that do not code for proteins (introns).
+ The introns are stripped out during creation of the protein.
+ 
+\end_layout
 
+\begin_layout Standard
+As part of a workflow, the student needed to determine, for a large number
+ of exons, how many reads each exon overlapped with.
+ The file 
+\emph on
+exons.Rda
+\emph default
+ has position information for the reads (in an object called 
+\emph on
+reads
+\emph default
+) as well as position information for a number of exons (in 
+\emph on
+exons
+\emph default
+).
+ Each element of 
+\emph on
+reads
+\emph default
+, which is a list, is a set of short sequences making up a single read.
+ So the challenge is to figure out, for each exon, how many of the reads
+ there are for which the exon overlaps at least one of the short sequences
+ making up the read.
+ 
 \end_layout
 
 \begin_layout Section
@@ -5659,7 +5607,6 @@ address()
 \end_layout
 
 \begin_layout Standard
-
 Apparently there is a memory profiler in R, 
 \emph on
 Rprofmem
