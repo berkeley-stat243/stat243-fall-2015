@@ -772,7 +772,7 @@ f <- function() { assign('x', x^2, env = .GlobalEnv) }
 # careful, this could be dangerous as a variable is changed as a side effect
 f()
 x
-f <- function() { x ## @knitr - x^2 }
+f <- function(x) { x <<- x^2 }
 # careful, this could be dangerous as a variable is changed as a side effect
 f(5)
 x
@@ -781,22 +781,22 @@ x
 ## @knitr scope, eval=FALSE
 x <- 3
 f <- function() { 
-f2 <- function() { print(x) }
-f2()
+    f2 <- function() { print(x) }
+    f2()
 } 
 f() # what will happen?
 
 f <- function() {
-f2 <- function() { print(x) }
-x <- 7
-f2()
+    f2 <- function() { print(x) }
+    x <- 7
+    f2()
 }
 f() # what will happen?
 
 f2 <- function() print(x)
 f <- function() {
-x <- 7
-f2()
+    x <- 7
+    f2()
 }
 f() # what will happen?
 
