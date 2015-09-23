@@ -1080,7 +1080,8 @@ ls.sizes <- function(howMany = 10, minSize = 1){
 	pf <- parent.frame()
 	obj <- ls(pf) # or ls(sys.frame(-1)) 
 	objSizes <- sapply(obj, function(x) {
-	object.size(get(x, pf))})
+                               object.size(get(x, pf))
+                           })
 	# or sys.frame(-4) to get out of FUN, lapply(), sapply() and sizes()
 	objNames <- names(objSizes)
 	howmany <- min(howMany, length(objSizes))
