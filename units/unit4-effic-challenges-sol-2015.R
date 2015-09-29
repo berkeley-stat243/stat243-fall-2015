@@ -33,6 +33,10 @@ system.time(matrix(dnorm(y, rep(mns, each = n), rep(sds, each = n)), nc = p))
 
 ## challenge 7
 
+################################
+# create the data in exons.Rda
+################################
+
 nExons <- 100
 seqlen <- 1e6
 m = 10000
@@ -65,9 +69,11 @@ save(reads, exons, file = 'exons.Rda')
 # or one could suppose the reads come as a ragged CSV file:
 #tmp = sapply(reads, paste0, collapse = ',')
 
-## rough solution
+###############################################################
+# work with the data following the strategy discussed in class
+###############################################################
 
-#mx = max(sapply(tmp, function(row) length(strsplit(row, split = ',')[[1]]))) # .2
+#mx = max(sapply(tmp, function(row) length(strsplit(row, split = ',')[[1]]))) # if reads came as ragged CSV
 mx = max(sapply(reads, length))
 
 m <- length(reads)
@@ -75,7 +81,7 @@ m <- length(reads)
 matS = matE = matrix(0, m, mx)  # .002
 system.time({
 for(i in 1:m) {   # .24
-#    vals = matrix(as.numeric(strsplit(tmp[i], split = ',')[[1]]), ncol = 2, byrow = TRUE)
+#    vals = matrix(as.numeric(strsplit(tmp[i], split = ',')[[1]]), ncol = 2, byrow = TRUE)  # if reads came as ragged CSV
     vals = matrix(reads[[i]], ncol = 2, byrow = TRUE)
     inds = 1:nrow(vals)
     matS[i, inds] = vals[,1]
