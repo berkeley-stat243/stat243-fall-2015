@@ -1,0 +1,1666 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\begin_preamble
+\usepackage{/accounts/gen/vis/paciorek/latex/paciorek-asa,times,graphics}
+\input{/accounts/gen/vis/paciorek/latex/paciorekMacros}
+%\renewcommand{\baselinestretch}{1.5}
+\usepackage[unicode=true]{hyperref}
+\hypersetup{unicode=true, pdfusetitle,
+bookmarks=true,bookmarksnumbered=false,bookmarksopen=false,
+ breaklinks=false,pdfborder={0 0 1},backref=false,colorlinks=true,}
+\end_preamble
+\use_default_options false
+\begin_modules
+knitr
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 12
+\spacing onehalf
+\use_hyperref false
+\papersize letterpaper
+\use_geometry true
+\use_amsmath 1
+\use_esint 0
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 1in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Unit 6: Computer numbers
+\end_layout
+
+\begin_layout Standard
+References: 
+\end_layout
+
+\begin_layout Itemize
+Gentle, Computational Statistics, Chapter 2.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "http://www.lahey.com/float.htm"
+target "http://www.lahey.com/float.htm"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+And for more gory detail, see Monahan, Chapter 2.
+\end_layout
+
+\begin_layout Standard
+A quick note that, as we've already seen, R's version of scientific notation
+ is 
+\emph on
+XeY
+\emph default
+, which means 
+\begin_inset Formula $X\cdot10^{Y}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+A second note is that the concepts developed here apply outside of R, but
+ we'll illustrate the principles of computer numbers using R.
+ R makes use of the 
+\emph on
+double
+\emph default
+ and 
+\emph on
+int
+\emph default
+ types in C for the underlying representation of R's numbers in C variables,
+ so what we'll really be seeing is how such types behave in C on most modern
+ machines.
+\end_layout
+
+\begin_layout Chunk
+<<chunk_setup, include=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+library(fields)
+\end_layout
+
+\begin_layout Chunk
+library(knitr)
+\end_layout
+
+\begin_layout Chunk
+library(pryr)
+\end_layout
+
+\begin_layout Chunk
+read_chunk("unit6-numbers.R")
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+make note of what I mean by agreeing to X places - 1.01 vs 1.08 error is order
+ of 0.1; compare 1.01000 vs 1.00996 - error is .00004 so in 5th place 1.01, 1.010,
+ 1.0100 but not 1.00996
+\end_layout
+
+\begin_layout Plain Layout
+is it how R represents or how C represents?
+\end_layout
+
+\begin_layout Plain Layout
+try using bits()
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Basic representations
+\end_layout
+
+\begin_layout Standard
+Everything in computer memory or on disk is stored in terms of bits.
+ A 
+\emph on
+bit
+\emph default
+ is essentially a switch than can be either on or off.
+ Thus everything is encoded as numbers in base 2, i.e., 0s and 1s.
+ 8 bits make up a 
+\emph on
+byte
+\emph default
+.
+ For information stored as plain text (ASCII), each byte is used to encode
+ a single character (actually 7 bits are used, hence there are 
+\begin_inset Formula $2^{7}=128$
+\end_inset
+
+ ASCII characters).
+ One way to represent a byte is to write it in hexadecimal, rather than
+ as 8 0/1 bits.
+ Since there are 
+\begin_inset Formula $2^{8}=256$
+\end_inset
+
+ possible values in a byte, we can represent it more compactly as 2 base-16
+ numbers, such as 
+\begin_inset Quotes eld
+\end_inset
+
+3e
+\begin_inset Quotes erd
+\end_inset
+
+ or 
+\begin_inset Quotes eld
+\end_inset
+
+a0
+\begin_inset Quotes erd
+\end_inset
+
+ or 
+\begin_inset Quotes eld
+\end_inset
+
+ba
+\begin_inset Quotes erd
+\end_inset
+
+.
+ A file format is nothing more than a way of interpreting the bytes in a
+ file.
+ Here we'll use the 
+\emph on
+bits
+\emph default
+ function from 
+\emph on
+pryr
+\emph default
+ to look at the underlying binary representation.
+ From this it's not clear if the character is being stored in 7 or 8 bits.
+\end_layout
+
+\begin_layout Chunk
+<<char-bits>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+We can think about how we'd store an integer in terms of bytes.
+ With two bytes, we could encode any value from 
+\begin_inset Formula $0,\ldots,2^{16}-1=65535$
+\end_inset
+
+.
+ This is an unsigned integer representation.
+ To store negative numbers as well, we can use one bit for the sign, giving
+ us the ability to encode -32767 - 32767 (
+\begin_inset Formula $\pm2^{15}-1$
+\end_inset
+
+).
+ Note that in general, rather than be stored simply as the sign and then
+ a number in base 2, integers are actually stored in a different binary
+ encoding to facilitate arithmetic.
+ 
+\end_layout
+
+\begin_layout Chunk
+<<bits>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+Finally note that the set of computer integers is not closed under arithmetic,
+ with R reporting an overflow (i.e., a result that is too large to be stored
+ as an integer):
+\end_layout
+
+\begin_layout Chunk
+<<not-closed>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+Real numbers (or 
+\emph on
+floating points
+\emph default
+) use a minimum of 4 bytes, for single precision floating points.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Note that if you give me 4 bytes to use, depending on the format we are
+ using to interpret it, it could represent 4 characters, 2 integers, or
+ 1 single precision floating point.
+\end_layout
+
+\end_inset
+
+ In general 8 bytes are used to represent real numbers on a computer and
+ these are called 
+\emph on
+double precision floating points
+\emph default
+ or 
+\emph on
+doubles
+\emph default
+.
+ Let's see some examples in R of how much space different types of variables
+ take up.
+ 
+\end_layout
+
+\begin_layout Standard
+Let's see how this plays out in terms of memory use in R.
+ 
+\end_layout
+
+\begin_layout Chunk
+<<storage>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+We can easily calculate the number of megabytes (Mb) a vector of floating
+ points (in double precision) will use as the number of elements times 8
+ (bytes/double) divided by 
+\begin_inset Formula $10^{6}$
+\end_inset
+
+ to convert from bytes to megabytes.
+ (In some cases when considering computer memory, a megabyte is 
+\begin_inset Formula $1,048,576=2^{20}=1024^{2}$
+\end_inset
+
+ bytes so slightly different than 
+\begin_inset Formula $10^{6}$
+\end_inset
+
+).
+ Finally, R has a special object that tells us about the characteristics
+ of computer numbers on the machine that R is running on called 
+\emph on
+.Machine.
+ 
+\emph default
+For example, 
+\emph on
+.Machine$integer.max
+\emph default
+ is 
+\begin_inset Formula $2147483647=2^{31}-1$
+\end_inset
+
+, which confirms how many bytes R is using for each integer (and that R
+ is using a bit for the sign of the integer).
+ We have 
+\begin_inset Formula $2\cdot2^{31}=2^{32}=(2^{8})^{4}$
+\end_inset
+
+, i.e., 4 bytes, with each byte having 8 bits.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+tells us R is using 4 bytes for each integer, rather than 2 bytes and is
+ using a bit for the sign.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Chunk
+<<int-max-bits>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Section
+Floating point basics
+\end_layout
+
+\begin_layout Subsection
+Representing real numbers
+\end_layout
+
+\begin_layout Standard
+Reals (also called floating points) are stored on the computer as an approximati
+on, albeit a very precise approximation.
+ As an example, with a double, the error in the distance from the earth
+ to the sun is around a millimeter.
+ However, we need to be very careful if we're trying to do a calculation
+ that produces a very small (or very large number) and particularly when
+ we want to see if numbers are equal to each other.
+ 
+\end_layout
+
+\begin_layout Chunk
+<<imprecision>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+Notice that we can represent the result accurately only up to the 16th decimal
+ place.
+ This suggests no need to show more than 16 decimal places and no need to
+ print out any more when writing to a file.
+ And of course, often we don't need anywhere near that many.
+ 
+\emph on
+Machine epsilon
+\emph default
+ is the term used for indicating the accuracy of real numbers and it is
+ defined as the smallest float, 
+\begin_inset Formula $x$
+\end_inset
+
+, such that 
+\begin_inset Formula $1+x\ne1$
+\end_inset
+
+:
+\end_layout
+
+\begin_layout Chunk
+<<machine-precision>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+
+\emph on
+Floating point
+\emph default
+ refers to the decimal point (or radix point since we'll be working with
+ base 2 and 
+\emph on
+decimal
+\emph default
+ relates to 10).
+ Consider Avogadro's number in terms of scientific notation: 
+\begin_inset Formula $+6.023\times10^{23}$
+\end_inset
+
+.
+ A real number on a computer is stored in what is basically scientific notation:
+\begin_inset Formula 
+\begin{equation}
+\pm d_{0}.d_{1}d_{2}\ldots d_{p}\times b^{e}\label{eq:floatRep}
+\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula $b$
+\end_inset
+
+ is the base, 
+\begin_inset Formula $e$
+\end_inset
+
+ is an integer and 
+\begin_inset Formula $d_{i}\in\{0,\ldots,b-1\}$
+\end_inset
+
+.
+ First, we need to choose the number of bits to represent 
+\begin_inset Formula $e$
+\end_inset
+
+ so that we can represent sufficiently large and small numbers.
+ Second we need to choose the number of bits, 
+\begin_inset Formula $p$
+\end_inset
+
+, to allocate to 
+\begin_inset Formula $d=d_{1}d_{2}\ldots d_{p}$
+\end_inset
+
+, which determines the accuracy of any computer representation of a real.
+ The great thing about floating points is that we can represent numbers
+ that range from incredibly small to very large while maintaining good precision.
+ The floating point floats to adjust to the size of the number.
+ Suppose we had only three digits to use and were in base 10.
+ In floating point notation we can express 
+\begin_inset Formula $0.12\times0.12=0.0144$
+\end_inset
+
+ as 
+\begin_inset Formula $(1.20\times10^{-1})\times(1.20\times10^{-1})=1.44\times10^{-2}$
+\end_inset
+
+, but if we had fixed the decimal point, we'd have 
+\begin_inset Formula $0.120\times0.120=0.014$
+\end_inset
+
+ and we'd have lost a digit of accuracy.
+\end_layout
+
+\begin_layout Standard
+More specifically, the actual storage of a number on a computer these days
+ is generally as a double in the form: 
+\begin_inset Formula 
+\[
+(-1)^{S}\times1.d\times2^{e-1023}=(-1)^{S}\times1.d_{1}d_{2}\ldots d_{52}\times2^{e-1023}
+\]
+
+\end_inset
+
+where the computer uses base 2, 
+\begin_inset Formula $b=2$
+\end_inset
+
+, because base-2 arithmetic is faster than base-10 arithmetic.
+ The leading 1 normalizes the number; i.e., ensures there is a unique representati
+on for a given computer number.
+ This avoids representing any number in multiple ways, e.g., either 
+\begin_inset Formula $1=1.0\times2^{0}=0.1\times2^{1}=0.01\times2^{2}$
+\end_inset
+
+.
+ For a double, we have 8 bytes=64 bits.
+ Consider our representation as (
+\begin_inset Formula $S,d,e$
+\end_inset
+
+) where 
+\begin_inset Formula $S$
+\end_inset
+
+ is the sign.
+ The leading 1 is the 
+\emph on
+hidden bit
+\emph default
+.
+ In general 
+\begin_inset Formula $e$
+\end_inset
+
+ is represented using 11 bits (
+\begin_inset Formula $2^{11}=2048$
+\end_inset
+
+), and the subtraction takes the place of having a sign bit for the exponent.
+ This leaves 
+\begin_inset Formula $p=52$
+\end_inset
+
+ bits for 
+\begin_inset Formula $d$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Chunk
+<<bits-floating>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+e represented as d_10 ...
+ d_1...d_0 so 0 thrugh 2047 so e-1023 = -1023 thru 1024 (but why no -1023 in
+ R?)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Question
+\series default
+: Given a fixed number of bits for a number, what is the tradeoff between
+ using bits for the 
+\begin_inset Formula $d$
+\end_inset
+
+ part vs.
+ bits for the 
+\begin_inset Formula $e$
+\end_inset
+
+ part?
+\end_layout
+
+\begin_layout Standard
+Let's consider what can be represented exactly: 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+First, let's do this on my Linux machine:
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Chunk
+<<what-exact>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+So why is 0.5 stored exactly and 0.1 not stored exactly? 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+base2
+\end_layout
+
+\end_inset
+
+By analogy, consider the difficulty with representing 1/3 in base 10.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Strangely, if we do this on my laptop or one of the department's Mac or
+ Linux machines, we get 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+> 0.1 # 0.1 
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Perhaps the computer is doing something more sophisticated that we're not
+ understanding.
+ However, we see that 1/3 only prints out 16 3's, so I think it's just ignoring
+ my request for 22 digits and only giving 16.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Overflow and underflow
+\end_layout
+
+\begin_layout Standard
+The largest and smallest numbers we can represent are 
+\begin_inset Formula $2^{e_{\max}}$
+\end_inset
+
+ and 
+\begin_inset Formula $2^{e_{\min}}$
+\end_inset
+
+ where 
+\begin_inset Formula $e_{\max}$
+\end_inset
+
+ and 
+\begin_inset Formula $e_{\min}$
+\end_inset
+
+ are the smallest and largest possible values of the exponent.
+ Let's consider the exponent and what we can infer about the range of possible
+ numbers.
+ With 11 bits for 
+\begin_inset Formula $e$
+\end_inset
+
+, we can represent 
+\begin_inset Formula $\pm2^{10}=\pm1024$
+\end_inset
+
+ different exponent values (see 
+\emph on
+.Machine$double.max.exp
+\emph default
+) (why is 
+\emph on
+.Machine$double.min.exp
+\emph default
+ only -1022? 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+we can represent 2048 numbers, but this includes zero, and it turns out
+ for technical reasons we allow +0, -0
+\end_layout
+
+\end_inset
+
+).
+ So the largest number we could represent is 
+\begin_inset Formula $2^{1024}$
+\end_inset
+
+.
+ What is this in base 10? 
+\end_layout
+
+\begin_layout Chunk
+<<double-max>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+We could have been smarter about that calculation: 
+\begin_inset Formula $\log_{10}2^{1024}=\log_{2}2^{1024}/\log_{2}10=1024/3.32\approx308$
+\end_inset
+
+.
+ Analogously for the smallest number, so we have that floating points can
+ range between 
+\begin_inset Formula $1\times10^{-308}$
+\end_inset
+
+ and 
+\begin_inset Formula $1\times10^{308}$
+\end_inset
+
+.
+ Take a look at 
+\emph on
+.Machine$double.xmax
+\emph default
+ and 
+\emph on
+.Machine.double.xmin
+\emph default
+.
+ Producing something larger or smaller in magnitude than these values is
+ called overflow and underflow respectively.
+ When we overflow, R gives back an Inf or -Inf (and in other cases we might
+ get an error message).
+ When we underflow, we get back 0, which in particular can be a problem
+ if we try to divide by the value.
+ 
+\end_layout
+
+\begin_layout Subsection
+Integers or floats?
+\end_layout
+
+\begin_layout Standard
+Values stored as integers should overflow if they exceed 
+\emph on
+.Machine$integer.max
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Should 
+\begin_inset Formula $2^{45}$
+\end_inset
+
+ overflow?
+\end_layout
+
+\begin_layout Chunk
+<<ints-represent, tidy=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+In R, numbers are generally stored as doubles.
+ We've basically already seen why - consider the maximum integer when using
+ 4 bytes and the maximum floating point value.
+ Representing integers as floats isn't generally a problem, in part because
+ integers will be stored exactly in base two provided the absolute value
+ is less than 
+\begin_inset Formula $2^{53}$
+\end_inset
+
+.
+ Why 
+\begin_inset Formula $2^{53}$
+\end_inset
+
+?
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+ Consider the base 2 representation of an integer in terms of the form 
+\begin_inset Formula $-1^{S}\times1.d\times2^{e-127}$
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+ [write out how integers can be stored exactly]
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+However, you can force storage as integers in a few ways: values generated
+ based on 
+\emph on
+seq()
+\emph default
+, based on the : operator, specified with an 
+\begin_inset Quotes eld
+\end_inset
+
+L
+\begin_inset Quotes erd
+\end_inset
+
+, or explicitly coerced:
+\end_layout
+
+\begin_layout Chunk
+<<force-ints>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Subsection
+Precision
+\end_layout
+
+\begin_layout Standard
+Consider our representation as (
+\emph on
+S, d, e
+\emph default
+) where we have 
+\begin_inset Formula $p=52$
+\end_inset
+
+ bits for 
+\begin_inset Formula $d$
+\end_inset
+
+.
+ Since we have 
+\begin_inset Formula $2^{52}\approx0.5\times10^{16}$
+\end_inset
+
+, we can represent about that many discrete values, which means we can accuratel
+y represent about 16 digits (in base 10).
+ The result is that floats on a computer are actually discrete (we have
+ a finite number of bits), and if we get a number that is in one of the
+ gaps (there are uncountably many reals), it's approximated by the nearest
+ discrete value.
+ The accuracy of our representation is to within 1/2 of the gap between
+ the two discrete values bracketing the true number.
+ Let's consider the implications for accuracy in working with large and
+ small numbers.
+ By changing 
+\begin_inset Formula $e$
+\end_inset
+
+ we can change the magnitude of a number.
+ So regardless of whether we have a very large or small number, we have
+ about 16 digits of accuracy, since the absolute spacing depends on what
+ value is represented by the least significant digit (the 
+\emph on
+ulp
+\emph default
+, or 
+\emph on
+unit in the last place
+\emph default
+) in 
+\begin_inset Formula $d$
+\end_inset
+
+, i.e., the 
+\begin_inset Formula $p=52$
+\end_inset
+
+nd one, or in terms of base 10, the 16th digit.
+ Let's explore this:
+\end_layout
+
+\begin_layout Chunk
+<<precision, tidy=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+We can see the implications of this in the context of calculations:
+\end_layout
+
+\begin_layout Chunk
+<<precision-implications, tidy=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+Suppose we try this calculation: 
+\begin_inset Formula $123456781234-.0000123456781234$
+\end_inset
+
+.
+ How many decimal places do we expect to be accurate? 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+the 8 is not accurate compare 3.99998 to 4.00000 and we see we're off
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The spacing of possible computer numbers that have a magnitude of about
+ 1 leads us to another definition of 
+\emph on
+machine epsilon
+\emph default
+ (an alternative, but essentially equivalent definition to that given previously
+ in this Unit).
+ Machine epsilon tells us also about the relative spacing of numbers.
+ First let's consider numbers of magnitude one.
+ The difference between 
+\begin_inset Formula $1=1.00...00\times2^{0}$
+\end_inset
+
+ and 
+\begin_inset Formula $1.000...01\times2^{0}$
+\end_inset
+
+ is 
+\begin_inset Formula $1\times2^{-52}\approx2.2\times10^{-16}$
+\end_inset
+
+.
+ Machine epsilon gives the 
+\emph on
+absolute spacing
+\emph default
+ for numbers near 1 and the 
+\emph on
+relative spacing
+\emph default
+ for numbers with a different order of magnitude and therefore a different
+ absolute magnitude of the error in representing a real.
+ The relative spacing at 
+\begin_inset Formula $x$
+\end_inset
+
+ is
+\begin_inset Formula 
+\[
+\frac{(1+\epsilon)x-x}{x}=\epsilon
+\]
+
+\end_inset
+
+since the next largest number from 
+\begin_inset Formula $x$
+\end_inset
+
+ is given by 
+\begin_inset Formula $(1+\epsilon)x$
+\end_inset
+
+.
+ Suppose 
+\begin_inset Formula $x=1\times10^{6}$
+\end_inset
+
+.
+ Then the absolute error in representing a number of this magnitude is 
+\begin_inset Formula $x\epsilon\approx2\times10^{-10}$
+\end_inset
+
+.
+ (Actually the error would be one-half of the spacing, but that's a minor
+ distinction.) We can see by looking at the numbers in decimal form, where
+ we are accurate to the order 
+\begin_inset Formula $10^{-10}$
+\end_inset
+
+ but not 
+\begin_inset Formula $10^{-11}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Chunk
+<<spacing-example>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+Let's see what arithmetic we can do exactly with integers stored as doubles
+ and how that relates to the absolute spacing of numbers we've just seen:
+ 
+\end_layout
+
+\begin_layout Chunk
+<<spacing-ints>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+The absolute spacing is 
+\begin_inset Formula $x\epsilon$
+\end_inset
+
+, so 
+\begin_inset Formula $2^{52}\times2^{-52}=1$
+\end_inset
+
+, 
+\begin_inset Formula $2^{53}\times2^{-52}=2$
+\end_inset
+
+, 
+\begin_inset Formula $2^{54}\times2^{-52}=4$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+With a bit more work (e.g., using Mathematica), one can demonstrate that doubles
+ in R in general are represented as the nearest number that can stored with
+ the 64-bit structure we have discussed and that the spacing is as we have
+ discussed.
+ The results below show the spacing that results, in base 10, for numbers
+ around 1.
+ The numbers R reports are spaced in increments of individual bits in the
+ base 2 representation.
+\end_layout
+
+\begin_layout Chunk
+<<spacing-doubles, tidy=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Subsection
+Working with higher precision numbers
+\end_layout
+
+\begin_layout Standard
+The 
+\emph on
+Rmpfr
+\emph default
+ package allows us to work with numbers in higher precision.
+ (This code is not working with 
+\emph on
+knitr
+\emph default
+, so I'm just showing the code here, not the output.)
+\end_layout
+
+\begin_layout Chunk
+<<higher-precision, eval=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+In contrast to R, Python has arbitrary precision integers.
+ So, e.g., 
+\family typewriter
+pow(3423333, 15)
+\family default
+ returns an integer.
+ But floating points are handled in similar fashion to R.
+\end_layout
+
+\begin_layout Section
+Implications for calculations and comparisons
+\end_layout
+
+\begin_layout Subsection
+Computer arithmetic is not mathematical arithmetic!
+\end_layout
+
+\begin_layout Standard
+As mentioned for integers, computer number arithmetic is not closed, unlike
+ real arithmetic.
+ For example, if we multiply two computer floating points, we can overflow
+ and not get back another computer floating point.
+ One term that is used, which might pop up in an error message (though probably
+ not in R) is that an 
+\begin_inset Quotes eld
+\end_inset
+
+exception
+\begin_inset Quotes erd
+\end_inset
+
+ is 
+\begin_inset Quotes eld
+\end_inset
+
+thrown
+\begin_inset Quotes erd
+\end_inset
+
+.
+ Another mathematical concept we should consider here is that computer arithmeti
+c does not obey the associative and distribute laws, i.e., 
+\begin_inset Formula $(a+b)+c$
+\end_inset
+
+ may not equal 
+\begin_inset Formula $a+(b+c)$
+\end_inset
+
+ on a computer and 
+\begin_inset Formula $a(b+c)$
+\end_inset
+
+ may not be the same as 
+\begin_inset Formula $ab+ac$
+\end_inset
+
+.
+ Here's an example:
+\end_layout
+
+\begin_layout Chunk
+<<non-associative>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Subsection
+Calculating with integers vs.
+ floating points
+\end_layout
+
+\begin_layout Standard
+It's important to note that operations with integers are fast and exact
+ (but can easily overflow) while operations with floating points are slower
+ and approximate.
+ Because of this slowness, floating point operations (
+\emph on
+flops
+\emph default
+) dominate calculation intensity and are used as the metric for the amount
+ of work being done - a multiplication (or division) combined with an addition
+ (or subtraction) is one flop.
+ We'll talk a lot about flops in the next unit on linear algebra.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+<<chunkLate>>= # doesn't work - int is slower
+\end_layout
+
+\begin_layout Plain Layout
+library(rbenchmark)
+\end_layout
+
+\begin_layout Plain Layout
+xInt <- sample(1:10, 1e7, replace = TRUE)
+\end_layout
+
+\begin_layout Plain Layout
+xFloat <- as.numeric(xInt)
+\end_layout
+
+\begin_layout Plain Layout
+benchmark(xInt*xInt, xFloat*xFloat)
+\end_layout
+
+\begin_layout Plain Layout
+class(xInt^2) # be aware that calcs may coerce integers to floats
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Comparisons
+\end_layout
+
+\begin_layout Standard
+As we saw, we should never test 
+\family typewriter
+a==b
+\family default
+\series bold
+ 
+\series default
+unless (1) 
+\emph on
+a
+\emph default
+ and 
+\emph on
+b
+\emph default
+ are represented as integers in R, (2) they are integer-valued but stored
+ as doubles that are small enough that they can be stored exactly) or (3)
+ they are decimal numbers that have been created in the same way (e.g., 
+\family typewriter
+0.1==0.1
+\family default
+ vs.
+ 
+\family typewriter
+0.1==0.4-0.3
+\family default
+.
+ Similarly we should be careful about testing 
+\family typewriter
+a==0
+\family default
+.
+ And be careful of greater than/less than comparisons.
+ For example, be careful of 
+\family typewriter
+x[ x < 0 ] <- NA
+\family default
+ if what you are looking for is values that might be 
+\emph on
+mathematically
+\emph default
+ less than zero, rather than whatever is 
+\emph on
+numerically
+\emph default
+ less than zero.
+ 
+\end_layout
+
+\begin_layout Chunk
+<<comparisons>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+One nice approach to checking for approximate equality is to make use of
+ 
+\emph on
+machine epsilon
+\emph default
+.
+ If the relative spacing of two numbers is less than 
+\emph on
+machine epsilon
+\emph default
+, then for our computer approximation, we say they are the same.
+ Here's an implementation that relies on the absolute spacing being 
+\begin_inset Formula $x\epsilon$
+\end_inset
+
+ (see above).
+\end_layout
+
+\begin_layout Chunk
+<<approx-equality>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+A
+\family default
+ctually, we probably want to use a number slightly larger than 
+\emph on
+.Machine$double.eps
+\emph default
+ to be safe.
+ You can also take a look at the R function 
+\emph on
+all.equal.numeric()
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Finally, in computing, we often encounter the use of an unusual integer
+ as a symbol for missing values.
+ E.g., a datafile might store missing values as -9999.
+ Testing for this using == in R should generally be ok:
+\family typewriter
+ x [ x == -9999 ] <- NA
+\family default
+, but only because integers of this magnitude are stored exactly.
+ To be really careful, you can read in as character type and do the assessment
+ before converting to numeric.
+ 
+\end_layout
+
+\begin_layout Subsection
+Calculations
+\end_layout
+
+\begin_layout Standard
+Given the limited 
+\emph on
+precision
+\emph default
+ of computer numbers, we need to be careful when:
+\end_layout
+
+\begin_layout Itemize
+Subtracting large numbers that are nearly equal (or adding negative and
+ positive numbers of the same magnitude).
+ You won't have the precision in the answer that you would like.
+\end_layout
+
+\begin_deeper
+\begin_layout Chunk
+<<catastrophic-cancel, tidy=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+The absolute error here, based on the larger value (which has the fewest
+ error-free decimal places) is of the order 
+\begin_inset Formula $\epsilon x=2.2\times10^{-16}\cdot1\times10^{12}\approx1\times10^{-4}=.0001$
+\end_inset
+
+, so while we might think that the result is close to the value 1 and should
+ have error of about machine epsilon, we actually only have about four significa
+nt digits in our result.
+\end_layout
+
+\begin_layout Standard
+This is called 
+\emph on
+catastrophic cancellation
+\emph default
+, because most of the digits that are left represent rounding error - all
+ the significant digits have cancelled with each other.
+ 
+\begin_inset Newline newline
+\end_inset
+
+Here's catastrophic cancellation with small numbers.
+ The right answer here is exactly 0.000000000000000000001234.
+\end_layout
+
+\begin_layout Chunk
+<<catastrophic-cancel-small, tidy=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+But the result is accurate only to 8 places + 21 = 29 places, as expected
+ from a machine precision-based calculation, since the 
+\begin_inset Quotes eld
+\end_inset
+
+1
+\begin_inset Quotes erd
+\end_inset
+
+ is in the 13th position (13+16=29).
+ Ideally, we would have accuracy to 37 places (16 + the 21), but we've lost
+ 8 digits to catastrophic cancellation.
+\end_layout
+
+\begin_layout Standard
+It's best to do any subtraction on numbers that are not too large.
+ For example, we can get catastrophic cancellation when computing a sum
+ of squares in a naive way: 
+\begin_inset Formula 
+\[
+s^{2}=\sum x_{i}^{2}-n\bar{x}^{2}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Chunk
+<<real-catastrophe, tidy=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+A good principle to take away is to subtract off a number similar in magnitude
+ to the values (in this case 
+\begin_inset Formula $\bar{x}$
+\end_inset
+
+ is obviously ideal) and adjust your calculation accordingly.
+ In general, you can sometimes rearrange your calculation to avoid catastrophic
+ cancellation.
+ Another example involves the quadratic formula for finding a root (p.
+ 101 of Gentle).
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Adding or subtracting numbers that are very different in magnitude.
+ The precision will be that of the large magnitude number, since we can
+ only represent that number to a certain absolute accuracy, which is much
+ less than the absolute accuracy of the smaller number:
+\end_layout
+
+\begin_deeper
+\begin_layout Chunk
+<<magnitude-diff>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+The absolute error in representing the larger number is around 
+\begin_inset Formula $1\times10^{^{-4}}$
+\end_inset
+
+ and the smaller number is smaller than this.
+\begin_inset Newline newline
+\end_inset
+
+A work-around is to add a set of numbers in increasing order.
+ However, if the numbers are all of similar magnitude, then by the time
+ you add ones later in the summation, the partial sum will be much larger
+ than the new term.
+ A work-around is to add the numbers in a tree-like fashion, so that each
+ addition involves a summation of numbers of similar size.
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+Given the limited 
+\emph on
+range
+\emph default
+ of computer numbers, be careful when you are:
+\end_layout
+
+\begin_layout Itemize
+Multiplying or dividing many numbers, particularly large or small ones.
+ Never take the product of many large or small numbers as this can cause
+ over- or under-flow.
+ Rather compute on the log scale and only at the end of your computations
+ should you exponentiate.
+ E.g.,
+\begin_inset Formula 
+\[
+\prod_{i}x_{i}/\prod_{j}y_{j}=\exp(\sum_{i}\log x_{i}-\sum_{j}\log y_{j})
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Challenge: Let's think about how we can handle the following calculation.
+ Suppose I want to calculate a predictive density (e.g., in a model comparison
+ in a Bayesian context):
+\begin_inset Formula 
+\begin{eqnarray*}
+f(y^{*}|y,x) & = & \int f(y^{*}|y,x,\theta)\pi(\theta|y,x)d\theta\\
+ & \approx & \frac{1}{M}\sum_{j=1}^{m}\prod_{i=1}^{n}f(y_{i}^{*}|x,\theta_{j})\\
+ & = & \frac{1}{M}\sum_{j=1}^{m}\exp\sum_{i=1}^{n}\log f(y_{i}^{*}|x,\theta_{j})\\
+ & \equiv & \frac{1}{M}\sum_{j=1}^{m}\exp(v_{j})
+\end{eqnarray*}
+
+\end_inset
+
+First, why do I use the log conditional predictive density? Second, let's
+ work with an estimate of the unconditional predictive density on the log
+ scale, 
+\begin_inset Formula $\log f(y^{*}|y,x)\approx\log\frac{1}{M}\sum_{j=1}^{m}\exp(v_{j})$
+\end_inset
+
+.
+ Now note that 
+\begin_inset Formula $e^{v_{j}}$
+\end_inset
+
+ may be quite small as 
+\begin_inset Formula $v_{j}$
+\end_inset
+
+ is the sum of log likelihoods.
+ So what happens if we have terms something like 
+\begin_inset Formula $e^{-1000}$
+\end_inset
+
+? So we can't exponentiate each individual 
+\begin_inset Formula $v_{j}$
+\end_inset
+
+.
+ Thoughts? I have one solution in mind, but there might be other approaches.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+hint: consider using 
+\begin_inset Formula $\max_{j}v_{j}$
+\end_inset
+
+: 
+\begin_inset Formula $\log\frac{1}{M}\sum_{j}e^{v_{j}-m}e^{m}=m+\log\sum_{j}e^{v_{j}-m}-\log M$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Numerical issues come up frequently in linear algebra.
+ For example, they come up in working with positive definite and semi-positive-d
+efinite matrices, such as covariance matrices.
+ You can easily get negative numerical eigenvalues even if all the eigenvalues
+ are positive or non-negative.
+ Here's an example where we use an squared exponential correlation as a
+ function of time (or distance in 1-d), which is 
+\emph on
+mathematically
+\emph default
+ positive definite (i.e., all the eigenvalues are positive) but not numerically
+ positive definite:
+\end_layout
+
+\begin_layout Chunk
+<<numerical-linalg, cache=TRUE>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Subsection
+Final note
+\end_layout
+
+\begin_layout Standard
+How the computer actually does arithmetic with the floating point representation
+ in base 2 gets pretty complicated, and we won't go into the details.
+ These rules of thumb should be enough for our practical purposes.
+ Monahan and the URL reference have many of the gory details.
+\end_layout
+
+\end_body
+\end_document
