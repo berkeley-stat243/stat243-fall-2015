@@ -44,6 +44,16 @@ which(first_line %in% which_columns)
 
 Let's discuss the strengths and drawbacks of each one.
 
+### general suggestions moving forward
+
+While I did not deduct points this time (ps2), I will likely deduct points on problem set four for the following:
+
+- don't hardcode filenames. instead, use variables in your functions for the filename
+- don't use `T` as shorthand for `TRUE`
+- most of the time, if you are using a global variable in your function, it should probably be an argument to the function
+- don't name variables the same name as an existing function in R or other packages
+- don't use "magic numbers" (hardcoded numbers)
+
 ## branches in git
 
 We will continue going through the git tutorial, this time covering branches:
