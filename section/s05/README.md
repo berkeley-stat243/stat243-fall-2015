@@ -8,7 +8,7 @@ There are several different strategies to this problem:
 2. Stripping out columns that you don't need using `cut`, then doing (1)
 ```{bash}
 FILE=ss13hus.csv.bz2
-# be lazy and automatically generate an expression for grep
+# be lazy and programmatically generate an expression for grep
 echo "ST", "NP", "BDSP", "BLD", "RMSP", "TEN", "FINCP", "FPARC", "HHL", "NOC", "MV", "VEH", "YBL" | \
   tr -d " " | \
   tr , "\n" | \
@@ -28,6 +28,17 @@ COLUMN_NUMBERS=$(cat column_numbers.txt)
 
 # use the column numbers to extract the columns
 bzcat $FILE | tail -n +2 | cut -f$COLUMN_NUMBERS -d, | bzip2 > out.bz2
+```
+
+simpler solution in `R`:
+```{r}
+fname <- "ss13hus.csv.bz2"
+first_line <- read.csv(fname, stringsAsFactors = FALSE, nrows = 1,
+  header = FALSE)
+first_line <- as.character(first_line[1, ])
+which_columns <- c("ST", "NP", "BDSP", "BLD", "RMSP", "TEN", "FINCP", "FPARC",
+  "HHL", "NOC", "MV", "VEH", "YBL")
+which(first_line %in% which_columns)
 ```
 3. Do all processing at the command line (`cut`, `shuf`)
 
