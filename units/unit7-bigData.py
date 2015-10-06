@@ -11,6 +11,7 @@
 
 export SPARK_VERSION=1.5.1
 export CLUSTER_SIZE=12  # number of slave nodes
+export mycluster=sparkvm-paciorek # need unique name relative to other users
 
 # I unzipped the Spark tarball to /usr/lib/spark via sudo on BCE
 cd /usr/lib/spark/ec2
@@ -22,13 +23,13 @@ AWS_ACCESS_KEY_ID=$(grep -i "^AWS_ACCESS_KEY_ID" ~/stat243-fall-2015-credentials
 AWS_SECRET_ACCESS_KEY=$(grep -i "^AWS_SECRET_ACCESS_KEY" ~/stat243-fall-2015-credentials.boto | cut -d' ' -f3)
 
 # start cluster
-./spark-ec2 -k stat243-fall-2015-ssh_key.pem -i ~/.ssh/stat243-fall-2015-ssh_key.pem  \
- --region=us-west-2 -s ${CLUSTER_SIZE} -w 300 -v ${SPARK_VERSION} launch sparkvm
+./spark-ec2 -k chris_paciorek@yahoo.com:stat243-fall-2015 -i ~/.ssh/stat243-fall-2015-ssh_key.pem  \
+ --region=us-west-2 -s ${CLUSTER_SIZE} -v ${SPARK_VERSION} launch ${mycluster}
 
 # login to cluster
 # as root
 ./spark-ec2 -k ec2star -i ~/.ssh/stat243-fall-2015-ssh_key.pem --region=us-west-2 \
-   login sparkvm
+   login ${mycluster}
 # or you can ssh in directly if you know the URL
 # ssh -i ~/.ssh/stat243-fall-2015-ssh_key.pem root@ec2-54-71-204-234.us-west-2.compute.amazonaws.com
 
@@ -56,7 +57,7 @@ echo "http://${MASTER_IP}:50070/"
 
 # when you are done and want to shutdown the cluster:
 #  IMPORTANT to avoid extra charges!!!
-./spark-ec2 --region=us-west-2 destroy sparkvm
+./spark-ec2 --region=us-west-2 destroy ${mycluster}
 
 ## @knitr spark-hdfs
 
@@ -68,15 +69,21 @@ hadoop fs -mkdir /data/airline
 
 df -h
 mkdir /mnt/airline
-scp paciorek@saruman.berkeley.edu:/scratch/users/paciorek/243/AirlineData/[12]*bz2 \ 
+scp paciorek@smeagol.berkeley.edu:/scratch/users/paciorek/243/AirlineData/[12]*bz2 \ 
    /mnt/airline
 # for in-class demo:
-# scp paciorek@saruman.berkeley.edu:/scratch/users/paciorek/243/AirlineData/198*bz2 /mnt/airline
+# scp paciorek@smeagol.berkeley.edu:/scratch/users/paciorek/243/AirlineData/198*bz2 /mnt/airline
 
 hadoop fs -copyFromLocal /mnt/airline/*bz2 /data/airline
 
 # check files on the HDFS, e.g.:
 hadoop fs -ls /data/airline
+
+# get numpy installed
+# there is a glitch in the EC2 setup that Spark provides -- numpy is not installed on the version of Python that Spark uses (Python 2.7). To install numpy on both the master and worker nodes, do the following as root on the master node.
+yum install python27-pip python27-devel
+pip-2.7 install 'numpy==1.9.2'  # 1.10.1 has an issue with a warning in median()
+/root/spark-ec2/copy-dir /usr/local/lib64/python2.7/site-packages/numpy
 
 # pyspark is in /root/spark/bin
 export PATH=${PATH}:/root/spark/bin
