@@ -12,8 +12,7 @@
 ## @knitr chunk1
 library(RSQLite)
 
-# fileName <- "/mirror/data/pub/html/scf/cis.db"
-fileName <- "/tmp/cis.db"
+fileName <- "/server/web/scf/cis.db"
 drv <- dbDriver("SQLite")
 db <- dbConnect(drv, dbname = fileName) # using a connection once again!
 # con <- dbConnect(SQLite(), dbname = fileName) # alternative
@@ -64,9 +63,9 @@ head(info)
 
 ## @knitr 
 # in event that db is read-only: to create a view we need to be able to modify it
-# system(paste0('cp ', fileName, ' /tmp/.'))
-# dbDisconnect(db)
-# db <- dbConnect(drv, dbname = '/tmp/cis.db') 
+system(paste0('cp ', fileName, ' /tmp/.'))
+dbDisconnect(db)
+db <- dbConnect(drv, dbname = '/tmp/cis.db') 
 
 ## @knitr chunk4
 
@@ -234,8 +233,6 @@ system.time(ffload('/tmp/AirlineDataAll'))
 
 ## @knitr tableInfo
 
-# load again as previous chunk not run w/in pdf compilation
-
 ffload('/tmp/AirlineDataAll')
 # [1] "tmp/RtmpU5Uw6z/ffdf4e684aecd7c4.ff" "tmp/RtmpU5Uw6z/ffdf4e687fb73a88.ff"
 # [3] "tmp/RtmpU5Uw6z/ffdf4e6862b1033f.ff" "tmp/RtmpU5Uw6z/ffdf4e6820053932.ff"
@@ -294,6 +291,44 @@ system.time(sfo <- read.csv.sql(fn,
       sql = "select * from file where Origin = 'SFO'",
       dbname=tempfile(), header = TRUE))
 
+## 3.3 dplyr package
+
+# with database
+cis <- src_sqlite("/tmp/cis.db")
+authors <- tbl(cis, "authors") 
+authors
+
+# with data.table
+fileName <- '/tmp/AirlineDataAll.csv'
+flights <- tbl_dt(fread(fileName, colClasses=c(rep("numeric", 8), "factor",
+                            "numeric", "factor", rep("numeric", 5),
+                            rep("factor", 2), rep("numeric", 4),
+                            "factor", rep("numeric", 6))))
+
+# now use dplyr functionality on 'authors' or 'flights'
+# example analysis
+summarize(group_by(flights, UniqueCarrier), mean(DepDelay, na.rm=TRUE))
+
+# Source: local data table [29 x 2]
+#
+#   UniqueCarrier mean(DepDelay, na.rm = TRUE)
+#1             PS                     8.928104
+#2             TW                     7.658251
+#3             UA                     9.667930
+#4             WN                     9.077167
+#5             EA                     8.674051
+#6             HP                     8.107790
+#7             NW                     6.007974
+#8         PA (1)                     5.532442
+#9             PI                     9.560336
+#10            CO                     7.695967
+#..           ...                          ...
+
+
+
+## @knitr
+
+### 3.4
 
 ## @knitr airline-model
 

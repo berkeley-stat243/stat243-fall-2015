@@ -164,30 +164,37 @@ explore spark and in-memory looped processing of huge logistic regression
 \end_layout
 
 \begin_layout Chunk
+
 <<read-chunk, echo=FALSE, include=FALSE>>= 
 \end_layout
 
 \begin_layout Chunk
+
 read_chunk('unit7-bigData.R') 
 \end_layout
 
 \begin_layout Chunk
+
 read_chunk('unit7-bigData.py') 
 \end_layout
 
 \begin_layout Chunk
+
 library(ff)
 \end_layout
 
 \begin_layout Chunk
+
 library(ffbase)
 \end_layout
 
 \begin_layout Chunk
+
 library(spam)
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -476,21 +483,11 @@ There are often multiple ways to interact with a DBMS, including directly
 \end_layout
 
 \begin_layout Standard
-We'll use an SQLite database 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-available on any SCF machine at 
+We'll use an SQLite database available on any SCF machine at 
 \emph on
-/mirror/data/pub/html/scf/cis.db
+/server/web/scf/cis.db
 \emph default
- 
-\end_layout
-
-\end_inset
-
-as our example database.
+ as our example database.
  This is a database of the metadata (authors, titles, years, journal, etc.)
  for articles published in Statistics journals over the last century.
  First, let's talk through how one would set up a relational database to
@@ -534,10 +531,12 @@ schema
 \end_layout
 
 \begin_layout Chunk
+
 <<chunk1>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -579,10 +578,12 @@ company in ('IBM', 'Apple', 'Dell')
 \end_layout
 
 \begin_layout Chunk
+
 <<chunk2, tidy=FALSE>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -613,10 +614,12 @@ inner join
 \end_layout
 
 \begin_layout Chunk
+
 <<chunk3>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -630,10 +633,12 @@ view
 \end_layout
 
 \begin_layout Chunk
+
 <<chunk4>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -1223,7 +1228,20 @@ The
 data.table
 \emph default
  package provides for fast operations on large data tables in memory.
- 
+ The 
+\emph on
+dplyr
+\emph default
+ package has also been optimized to work quickly on large data tables in
+ memory, including operating on 
+\emph on
+data.table
+\emph default
+ objects from the 
+\emph on
+data.table
+\emph default
+ package.
 \end_layout
 
 \begin_layout Itemize
@@ -1321,16 +1339,18 @@ fread()
  doesn't have to detect what they are.
  I'll also use factors since factors are represented numerically.
  It only takes about 5 minutes to read the data in.
- We'll see in the next section that this would be much slower with other
+ We'll see in the next section that this is much faster than with other
  approaches within R.
  
 \end_layout
 
 \begin_layout Chunk
+
 <<data.table-read, eval=FALSE>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -1341,10 +1361,12 @@ Now let's do some basic subsetting.
 \end_layout
 
 \begin_layout Chunk
+
 <<data.table-subset, eval=FALSE, tidy=FALSE>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -1357,7 +1379,7 @@ data.table
  fast lookup later using binary search algorithms, as seen with the last
  query.
  Think about the analogy of looking up by name vs.
- index that we've discussed, or problem 2 on PS4.
+ index that we discussed in Unit 4.
  From my fairly quick look through the 
 \emph on
 data.table
@@ -1375,14 +1397,14 @@ There's a bunch more to
 \emph on
 data.table
 \emph default
- and you'll have to learn a modest amount of syntax, but if you're working
+ and you'll have to learn a modest amount of new syntax, but if you're working
  with large datasets in memory, it will probably be well worth your while.
  Plus 
 \emph on
 data.table
 \emph default
- objects are (i.e., inherit from) dataframes so they are compatible with R
- code that uses dataframes.
+ objects are data frames (i.e., they inherit from data frames) so they are
+ compatible with R code that uses dataframes.
 \end_layout
 
 \begin_layout Subsection
@@ -1397,7 +1419,7 @@ radagast
 \emph default
 .
  Operations on the dataset would then use up additional RAM.
- So this would not be feasible on ordinary machines.
+ So this would not be feasible on most machines.
  And of course other datasets might be so big that even 
 \emph on
 radagast
@@ -1432,10 +1454,12 @@ read.table.ffdf()
 \end_layout
 
 \begin_layout Chunk
+
 <<ff, eval=FALSE, tidy=FALSE>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -1513,15 +1537,17 @@ Next let's do a bit of exploration of the dataset.
 \end_layout
 
 \begin_layout Chunk
+
 <<tableInfo, cache=TRUE, tidy=FALSE, eval=FALSE, fig.width=4>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
 \begin_layout Standard
-Let's review our understanding of OOP.
+Let's review our understanding of S3 methods.
  Why did I need to call 
 \emph on
 table.ff()
@@ -1603,7 +1629,8 @@ big.matrix
 \emph on
 foreach
 \emph default
- without passing a copy of the matrix to each worker.
+ (one of R's parallelization tools, to be discussed soon) without passing
+ a copy of the matrix to each worker.
  Rather the workers can access the matrix stored on disk.
 \end_layout
 
@@ -1630,10 +1657,49 @@ read.csv.sql()
 \end_layout
 
 \begin_layout Chunk
+
 <<sqldf, eval=FALSE, tidy=FALSE>>=
 \end_layout
 
 \begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Subsection
+dplyr package
+\end_layout
+
+\begin_layout Standard
+The 
+\emph on
+dplyr
+\emph default
+ package is the successor to the 
+\emph on
+plyr
+\emph default
+ package, providing plyr type functionality for data frames with enhancements
+ for working with large tables and accessing databases (among other things).
+ With 
+\emph on
+dplyr
+\emph default
+ one can work with data stored in the 
+\emph on
+data.table
+\emph default
+ format and in external databases.
+ 
+\end_layout
+
+\begin_layout Chunk
+
+<<dplyr, eval=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+
 @
 \end_layout
 
@@ -1670,17 +1736,19 @@ ffdf
 \end_layout
 
 \begin_layout Chunk
+
 <<airline-model, eval=FALSE, tidy=FALSE>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
 \begin_layout Standard
 Here are the results.
- Day 1 is Monday, so that's the baseline category for ANOVA-like part of
- the model.
+ Day 1 is Monday, so that's the baseline category for the ANOVA-like part
+ of the model.
 \end_layout
 
 \begin_layout Standard
@@ -1786,18 +1854,22 @@ Now let's consider the fact that very small substantive effects can be highly
 \end_layout
 
 \begin_layout Chunk
+
 <<significance-prep, eval=FALSE, tidy=FALSE>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
 \begin_layout Chunk
+
 <<significance-model, eval=FALSE, tidy=FALSE>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -1920,6 +1992,7 @@ There are many others (I've been lazy here in not coming up with a comprehensive
 \begin_layout Standard
 When storing and manipulating sparse matrices, there is no need to store
  the zeros, nor to do any computation with elements that are zero.
+ A few of you exploited sparse matrices in PS4.
 \end_layout
 
 \begin_layout Standard
@@ -1929,10 +2002,12 @@ R, Matlab and Python all have functionality for storing and computing with
 \end_layout
 
 \begin_layout Chunk
+
 <<spam, cache=TRUE>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -2323,10 +2398,12 @@ my_readline()
 \end_layout
 
 \begin_layout Chunk
+
 <<mr-example, eval=FALSE, tidy=FALSE>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -2389,17 +2466,19 @@ source code
  This all works from the VM.
  Also, on the SCF it's available on the Linux machines at 
 \emph on
-/usr/local/src/pd/spark-1.1.0/spark-1.1.0/ec2
+/usr/local/src/pd/spark-1.4.0/spark-1.4.0/ec2
 \emph default
 .
  
 \end_layout
 
 \begin_layout Chunk
+
 <<spark-setup, eval=FALSE, engine='bash'>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -2417,10 +2496,12 @@ hadoop fs -
 \end_layout
 
 \begin_layout Chunk
+
 <<spark-hdfs, eval=FALSE, engine='bash'>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -2466,10 +2547,12 @@ In the last step, let's compare how long it took to grab the SFO subset
 \end_layout
 
 \begin_layout Chunk
+
 <<spark-data, eval=FALSE, engine='bash'>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -2562,10 +2645,12 @@ Here's an example where we don't have a simple commutative/associative reducer
 \end_layout
 
 \begin_layout Chunk
+
 <<spark-nonstandard, eval=FALSE, engine='bash'>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -2636,10 +2721,12 @@ In the first algorithm we actually compute the sufficient statistics, which
 \end_layout
 
 \begin_layout Chunk
+
 <<spark-fit1, eval=FALSE, engine='python'>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -2712,10 +2799,12 @@ batch
 \end_layout
 
 \begin_layout Chunk
+
 <<spark-fit2, eval=FALSE, engine='python'>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -2776,10 +2865,12 @@ Cycling through each coefficient has the obvious disadvantage of having
 \end_layout
 
 \begin_layout Chunk
+
 <<spark-fit3, eval=FALSE, engine='python'>>=
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -2818,6 +2909,7 @@ spark-submit piCalc.py 100000000 1000
 \end_layout
 
 \begin_layout Chunk
+
 <<pyspark-script, eval=FALSE, engine='python'>>=
 \begin_inset CommandInset href
 LatexCommand href
@@ -2830,6 +2922,7 @@ target "http://www.jstatsoft.org/v33/i01/"
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
