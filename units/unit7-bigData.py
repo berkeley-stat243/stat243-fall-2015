@@ -22,6 +22,8 @@ AWS_ACCESS_KEY_ID=$(grep -i "^AWS_ACCESS_KEY_ID" ~/stat243-fall-2015-credentials
 #AWS_SECRET_ACCESS_KEY=blahhhh
 AWS_SECRET_ACCESS_KEY=$(grep -i "^AWS_SECRET_ACCESS_KEY" ~/stat243-fall-2015-credentials.boto | cut -d' ' -f3)
 
+### DO NOT HARD CODE YOUR AMAZON SECRET KEY INFORMATION INTO ANY PUBLIC FILE, INCLUDING A GITHUB REPO !!!!! ###
+
 # start cluster
 ./spark-ec2 -k chris_paciorek@yahoo.com:stat243-fall-2015 -i ~/.ssh/stat243-fall-2015-ssh_key.pem  \
  --region=us-west-2 -s ${CLUSTER_SIZE} -v ${SPARK_VERSION} launch ${mycluster}
@@ -378,6 +380,7 @@ while crit > tol and it < maxIts:
 
 import sys
 from pyspark import SparkContext
+from numpy import random as rand
 if __name__ == "__main__":
     sc = SparkContext()
     # use sys.argv to get arguments

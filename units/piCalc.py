@@ -1,4 +1,5 @@
 import sys
+from numpy import random as rand
 from pyspark import SparkContext
 if __name__ == "__main__":
     sc = SparkContext()

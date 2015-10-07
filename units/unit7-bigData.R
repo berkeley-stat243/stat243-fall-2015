@@ -9,7 +9,7 @@
 
 ### 2.2 Accessing databases in R
 
-## @knitr chunk1
+## @knitr databases
 library(RSQLite)
 
 fileName <- "/server/web/scf/cis.db"
@@ -24,7 +24,7 @@ dbListFields(db, "authors")
 dbListFields(db, "authorships")
 
 
-## @knitr chunk2
+## @knitr query
 
 auth <- dbSendQuery(db, "select * from authorships")
 fetch(auth, 5)
@@ -50,7 +50,7 @@ titles <- dbGetQuery(db, query)
 head(titles)
 # do a google scholar check to see that things seem to be ok
 
-## @knitr chunk3
+## @knitr join
 
 # alternatively, we can do a query that involves multiple tables
 info <- dbGetQuery(db, "select * from articles, authors, authorships where
@@ -61,13 +61,14 @@ info <- dbGetQuery(db, "select * from articles, authors, authorships where
 #  authorships.id_title = articles.id_title"
 head(info)
 
-## @knitr 
+## @knitr copy-db
+
 # in event that db is read-only: to create a view we need to be able to modify it
 system(paste0('cp ', fileName, ' /tmp/.'))
 dbDisconnect(db)
 db <- dbConnect(drv, dbname = '/tmp/cis.db') 
 
-## @knitr chunk4
+## @knitr view
 
 # finally, we can create a view that amounts to joining the tables
 fullAuthorInfo <- dbSendQuery(db, 'create view fullAuthorInfo as select *
@@ -102,7 +103,7 @@ identical(sub1, sub2)
 
 dbDisconnect(db)
 
-## @knitr extra-end
+## @knitr
 
 #####################################################
 # 3: R and big data
@@ -191,7 +192,7 @@ system.time(sfoShort <- subset(dt, Origin == "SFO" & Distance < 1000 ))
 system.time(sfo <- dt[.('SFO'), ])
 ## 0.8 seconds
 
-## @knitr dummy1
+## @knitr 
 
 ### 3.2 Working with big datasets on disk: ff
 
@@ -276,7 +277,7 @@ max.ff(dat$DepDelay, na.rm = TRUE)
 
 # tmp <- clone(dat$DepDelay) # make a deep copy
 
-## @knitr dummy2
+## @knitr 
 
 ### 3.2.3 sqldf
 
@@ -291,7 +292,11 @@ system.time(sfo <- read.csv.sql(fn,
       sql = "select * from file where Origin = 'SFO'",
       dbname=tempfile(), header = TRUE))
 
+## @knitr
+
 ## 3.3 dplyr package
+
+## @knitr dplyr
 
 # with database
 cis <- src_sqlite("/tmp/cis.db")
@@ -323,8 +328,6 @@ summarize(group_by(flights, UniqueCarrier), mean(DepDelay, na.rm=TRUE))
 #9             PI                     9.560336
 #10            CO                     7.695967
 #..           ...                          ...
-
-
 
 ## @knitr
 
@@ -412,7 +415,7 @@ vec <- rnorm(1e4)
 system.time(mat %*% vec)
 system.time(sMat %*% vec)
 
-## @knitr dummy3
+## @knitr 
 
 #####################################################
 # 6: Hadoop, MapReduce, and Spark
