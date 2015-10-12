@@ -12,7 +12,7 @@ FILE=ss13hus.csv.bz2
 echo "ST", "NP", "BDSP", "BLD", "RMSP", "TEN", "FINCP", "FPARC", "HHL", "NOC", "MV", "VEH", "YBL" | \
   tr -d " " | \
   tr , "\n" | \
-  awk 'NR > 1 { printf("| ") } {print "^"$0"$"}' | 
+  awk 'NR > 1 { printf("| ") } {print "^"$0"$"}' |
   tr -d "\n" | \
   tr -d " " > column_expression.txt
 WHICH_COLUMNS=$(cat column_expression.txt)
