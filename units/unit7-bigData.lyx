@@ -1,0 +1,2924 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\begin_preamble
+\usepackage[unicode=true]{hyperref}
+\usepackage{/accounts/gen/vis/paciorek/latex/paciorek-asa,times,graphics}
+\input{/accounts/gen/vis/paciorek/latex/paciorekMacros}
+%\renewcommand{\baselinestretch}{1.5}
+\hypersetup{unicode=true, pdfusetitle,bookmarks=true,bookmarksnumbered=false,bookmarksopen=false,breaklinks=false,pdfborder={0 0 1},backref=false,colorlinks=true,}
+\end_preamble
+\use_default_options false
+\begin_modules
+knitr
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 12
+\spacing onehalf
+\use_hyperref false
+\papersize letterpaper
+\use_geometry true
+\use_amsmath 1
+\use_esint 0
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 1in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<setup, include=FALSE, cache=TRUE>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+## I use = but I can replace it with <-; set code/output width to be 68
+\end_layout
+
+\begin_layout Plain Layout
+
+options(replace.assign=TRUE, width=52)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Title
+Unit 7: Databases and Big Data
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+BEFORE 2015 notes:
+\end_layout
+
+\begin_layout Plain Layout
+cover dplyr along with data.table - it seems to be fast show magrittr pipeline,
+ e.g.
+ flights %>% group_by(carrier) %>% summarize(mean(arr_delay, na.rm=TRUE))
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+BEFORE 2014 notes:
+\end_layout
+
+\begin_layout Plain Layout
+in big data, look ahead to logistic regression
+\end_layout
+
+\begin_layout Plain Layout
+regr delay on carrier, airport, airport*airport, airport*carrier 
+\end_layout
+
+\begin_layout Plain Layout
+see jss v55i14.pdf for info on bigmemory (big.matrix) and foreach and use
+ together - ok I've mentioned this 
+\end_layout
+
+\begin_layout Plain Layout
+big data: see "Big Data Sets you can use with R" REvolutions blog late Aug;
+ airline dataset, medicare dataset 
+\end_layout
+
+\begin_layout Plain Layout
+explore spark and in-memory looped processing of huge logistic regression
+ - construct variables on the fly in the latter case 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Chunk
+<<read-chunk, echo=FALSE, include=FALSE>>= 
+\end_layout
+
+\begin_layout Chunk
+read_chunk('unit7-bigData.R') 
+\end_layout
+
+\begin_layout Chunk
+read_chunk('unit7-bigData.py') 
+\end_layout
+
+\begin_layout Chunk
+library(ff)
+\end_layout
+
+\begin_layout Chunk
+library(ffbase)
+\end_layout
+
+\begin_layout Chunk
+library(spam)
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+References: 
+\end_layout
+
+\begin_layout Itemize
+Murrell: Introduction to Data Technologies
+\end_layout
+
+\begin_layout Itemize
+Adler: R in a Nutshell
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Spark Programming Guide"
+target "http://spark.apache.org/docs/latest/programming-guide.html"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+I've also pulled material from a variety of other sources, some mentioned
+ in context below.
+\end_layout
+
+\begin_layout Standard
+Note that for a lot of the demo code I ran the code separately outside of
+ 
+\emph on
+knitr
+\emph default
+ and this document because of the time involved in working with large datasets.
+\end_layout
+
+\begin_layout Section
+A few preparatory notes
+\end_layout
+
+\begin_layout Subsection
+An editorial on 'big data'
+\end_layout
+
+\begin_layout Standard
+Big data is trendy these days.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+\begin_inset Quotes eld
+\end_inset
+
+Big data is like teen sex.
+ Everybody is talking about it, everyone thinks everyone else is doing it,
+ so everyone claims they are doing it.
+\begin_inset Quotes erd
+\end_inset
+
+ - Dan Ariely
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Personally, I think some of the hype is justified and some is hype.
+ Large datasets allow us to address questions that we can't with smaller
+ datasets, and they allow us to consider more sophisticated (e.g., nonlinear)
+ relationships than we might with a small dataset.
+ But they do not directly help with the problem of correlation not being
+ causation.
+ Having medical data on every American still doesn't tell me if higher salt
+ intake causes hypertension.
+ Internet transaction data does not tell me if one website feature causes
+ increased viewership or sales.
+ One either needs to carry out a designed experiment or think carefully
+ about how to infer causation from observational data.
+ Nor does big data help with the problem that an ad hoc 'sample' is not
+ a statistical sample and does not provide the ability to directly infer
+ properties of a population.
+ A well-chosen smaller dataset may be much more informative than a much
+ larger, more ad hoc dataset.
+ However, having big datasets might allow you to select from the dataset
+ in a way that helps get at causation or in a way that allows you to construct
+ a population-representative sample.
+ Finally, having a big dataset also allows you to do a large number of statistic
+al analyses and tests, so multiple testing is a big issue.
+ With enough analyses, something will look interesting just by chance in
+ the noise of the data, even if there is no underlying reality to it.
+ 
+\end_layout
+
+\begin_layout Standard
+Here's a 
+\begin_inset CommandInset href
+LatexCommand href
+name "different way to summarize it"
+target "http://i2.wp.com/blog.datacamp.com/wp-content/uploads/2014/03/big-data.jpg"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Different people define the 'big' in big data differently.
+ One definition involves the actual size of the data.
+ Our efforts here will focus on dataset sizes that are large for traditional
+ statistical work but would probably not be thought of as large in some
+ contexts such as Google or the NSA.
+ Another definition of 'big data' has more to do with how pervasive data
+ and empirical analyses backed by data are in society and not necessarily
+ how large the actual dataset size is.
+\end_layout
+
+\begin_layout Subsection
+Logistics
+\end_layout
+
+\begin_layout Standard
+One of the main drawbacks with R in working with big data is that all objects
+ are stored in memory, so you can't directly work with datasets that are
+ more than 1-20 Gb or so, depending on the memory on your machine.
+ 
+\end_layout
+
+\begin_layout Standard
+Note: in handling big data files, it's best to have the data on the local
+ disk of the machine you are using to reduce traffic and delays from moving
+ data over the network.
+\end_layout
+
+\begin_layout Subsection
+What we already know about handling big data!
+\end_layout
+
+\begin_layout Standard
+UNIX operations are generally very fast, so if you can manipulate your data
+ via UNIX commands and piping, that will allow you to do a lot.
+ We've already seen UNIX commands for extracting columns.
+ And various commands such as 
+\emph on
+grep
+\emph default
+, 
+\emph on
+head
+\emph default
+, 
+\emph on
+tail
+\emph default
+, etc.
+ allow you to pick out rows based on certain criteria.
+ As some of you have done in problem sets, one can use 
+\emph on
+awk
+\emph default
+ to extract rows.
+ So basic shell scripting may allow you to reduce your data to a more manageable
+ size.
+ 
+\end_layout
+
+\begin_layout Standard
+And don't forget simple things.
+ If you have a dataset with 30 columns that takes up 10 Gb but you only
+ need 5 of the columns, get rid of the rest and work with the smaller dataset.
+ Or you might be able to get the same information from a random sample of
+ your large dataset as you would from doing the analysis on the full dataset.
+ Strategies like this will often allow you to stick with the tools you already
+ know.
+\end_layout
+
+\begin_layout Standard
+Also, the example datasets in Section 3 are not good illustrations of this,
+ but as we'll see scattered throughout the Unit and as we saw in Unit 3,
+ there are more compact ways of storing data than in flat text (e.g., csv)
+ files.
+ 
+\end_layout
+
+\begin_layout Section
+Databases
+\end_layout
+
+\begin_layout Subsection
+Overview
+\end_layout
+
+\begin_layout Standard
+A relational database stores data as a set of tables (or relations), which
+ are rather similar to R data frames, in that a table is made up of columns
+ or fields, each containing a single type (numeric, character, date, currency,
+ ...) and rows or records containing the observations for one entity.
+ One principle of databases is that if a category is repeated in a given
+ variable, you can more efficiently store information about each level of
+ the category in a separate table; consider information about people living
+ in a state and information about each state - you don't want to include
+ variables that only vary by state in the table containing information about
+ individuals (at least until you're doing the actual analysis that needs
+ the information in a single table).
+ Or consider students nested within classes nested within schools.
+ Databases are set up to allow for fast querying and merging (called 
+\emph on
+joins
+\emph default
+ in database terminology).
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+[show picture on p.
+ 122 of ItDT]
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+You can interact with databases in a variety of database systems (DBMS=database
+ management system) (some systems are 
+\emph on
+SQLite
+\emph default
+, 
+\emph on
+MySQL
+\emph default
+, 
+\emph on
+postgreSQL
+\emph default
+, 
+\emph on
+Oracle
+\emph default
+, 
+\emph on
+Access
+\emph default
+).
+ We'll concentrate on accessing data in a database rather than management
+ of databases.
+ SQL is the 
+\emph on
+Structured Query Language
+\emph default
+ and is a special-purpose language for managing databases and making queries.
+ Variations on SQL are used in many different DBMS.
+\end_layout
+
+\begin_layout Standard
+Many DBMS have a client-server model.
+ Clients connect to the server, with some authentication, and make requests.
+ We'll concentrate here on a simple DBMS, 
+\emph on
+SQLite
+\emph default
+, that allows us to just work on our local machine, with the database stored
+ as a single file.
+\end_layout
+
+\begin_layout Standard
+There are often multiple ways to interact with a DBMS, including directly
+ using command line tools provided by the DBMS or via Python or R, among
+ others.
+ 
+\end_layout
+
+\begin_layout Standard
+We'll use an SQLite database available on any SCF machine at 
+\emph on
+/server/web/scf/cis.db
+\emph default
+ as our example database.
+ This is a database of the metadata (authors, titles, years, journal, etc.)
+ for articles published in Statistics journals over the last century.
+ First, let's talk through how one would set up a relational database to
+ store journal article information.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+[have them chime in with the table setup - journal info, author info, article
+ info]
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Accessing databases in R
+\end_layout
+
+\begin_layout Standard
+In R, the 
+\emph on
+DBI
+\emph default
+ package provides a front-end for manipulating databases from a variety
+ of DBMS (MySQL, SQLite, Oracle, among others).
+ Basically, you tell the package what DBMS is being used on the backend,
+ link to the actual database, and then you can use the syntax in the package.
+ 
+\end_layout
+
+\begin_layout Standard
+First we'll connect to the database and get some information on the 
+\emph on
+schema
+\emph default
+, i.e., the structure of the database.
+\end_layout
+
+\begin_layout Chunk
+<<databases>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+For queries, SQL has statements like:
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+SELECT var1, var2, var3 FROM tableX WHERE condition1 AND condition2 ORDER
+ BY var4
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+E.g., 
+\emph on
+condition1
+\emph default
+ might be 
+\family typewriter
+latitude > 80
+\family default
+ or 
+\family typewriter
+name = 'Breiman'
+\family default
+ or 
+\family typewriter
+company in ('IBM', 'Apple', 'Dell')
+\family default
+.
+ Now we'll do some queries to pull together information we want.
+ Because of the relational structure, to extract the titles for a given
+ author, we need to do a series of queries.
+ 
+\end_layout
+
+\begin_layout Chunk
+<<query, tidy=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+Note that we were able to insert values from R into the set used to do the
+ selection.
+\end_layout
+
+\begin_layout Standard
+Now let's see a 
+\emph on
+join
+\emph default
+ (by default this is an 
+\begin_inset Quotes eld
+\end_inset
+
+
+\emph on
+inner join
+\emph default
+
+\begin_inset Quotes erd
+\end_inset
+
+ -- see below) of multiple tables, combined with a query.
+ This allows us to extract the information on Breiman's articles more easily.
+\end_layout
+
+\begin_layout Chunk
+<<join>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+Finally, let's see the idea of creating a 
+\emph on
+view
+\emph default
+, which you can think of as a new table, though the DBMS is not actually
+ explicitly constructing such a table.
+\end_layout
+
+\begin_layout Chunk
+<<copy-db, echo=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Chunk
+<<view>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+As seen above, you can also use 
+\emph on
+dbSendQuery()
+\emph default
+ combined with 
+\emph on
+fetch()
+\emph default
+ to pull in a fixed number of records at a time, if you're working with
+ a big database.
+ 
+\end_layout
+
+\begin_layout Subsection
+Details on joins
+\end_layout
+
+\begin_layout Standard
+A bit more on joins - as we saw with 
+\emph on
+merge()
+\emph default
+ in R, there are various possibilities for how to do the merge depending
+ on whether there are rows in one table that are not in another table.
+ In other words, we need to think about whether the relationship between
+ tables is one-to-one, one-to-many, or many-to-many.
+ In database terminology an 
+\emph on
+inner join
+\emph default
+ is when you get the rows for which there is data in both tables.
+ A 
+\emph on
+left outer join
+\emph default
+ gives all the rows from the first table but only those from the second
+ table that match a row in the first table.
+ A 
+\emph on
+right outer join
+\emph default
+ is the reverse, while a 
+\emph on
+full outer join
+\emph default
+ returns all rows from both tables.
+ A 
+\emph on
+cross join
+\emph default
+ gives the Cartesian product, namely the combination of every row from each
+ table, analogous to 
+\emph on
+expand.grid()
+\emph default
+ in R.
+ However a 
+\emph on
+cross join
+\emph default
+ with a 
+\emph on
+where
+\emph default
+ statement can duplicate the result of an 
+\emph on
+inner join
+\emph default
+:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{verbatim}
+\end_layout
+
+\begin_layout Plain Layout
+
+select * from table1 cross join table2 where table1.id = table2.id
+\end_layout
+
+\begin_layout Plain Layout
+
+select * from table1 join table2 on table1.id = table2.id
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{verbatim}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Keys and indices
+\end_layout
+
+\begin_layout Standard
+A key is a field or collection of fields that gives a unique value for every
+ row/observation.
+ A table in a database should then have a primary key that is the main unique
+ identifier used by the DBMS.
+ Foreign keys are columns in one table that give the value of the primary
+ key in another table.
+\end_layout
+
+\begin_layout Standard
+An index is an ordering of rows based on one or more fields.
+ DBMS use indices to look up values quickly.
+ (Recall our discussion in Unit 4 on looking up values by name vs.
+ index and the benefits of hashing.) So in general you want your tables to
+ have indices.
+ And having indices on the columns used in the matching for a join allows
+ for quick joins.
+ DBMS use indexing to provide sub-linear time lookup, so that lookup is
+ faster than linear time (
+\begin_inset Formula $O(n)$
+\end_inset
+
+ when there are 
+\begin_inset Formula $n$
+\end_inset
+
+ rows), which is what would occur if one had to look at each row sequentially.
+ Lookup may be logarithmic [
+\begin_inset Formula $O(log(n))$
+\end_inset
+
+] or constant time [
+\begin_inset Formula $O(1)$
+\end_inset
+
+].
+ A binary search is logarithmic while looking up based on numeric position
+ is 
+\begin_inset Formula $O(1)$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+So if you're working with a database and speed is important, check to see
+ if there are indices.
+\end_layout
+
+\begin_layout Subsection
+Creating SQLite database tables from R
+\end_layout
+
+\begin_layout Standard
+I won't do a full demo of this, but the basic syntax for this is as follows.
+ You can read from a CSV to create the table or from an R dataframe.
+ The following assumes you have two tables stored as CSVs, with one table
+ of student info and one table of class info.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{verbatim}
+\end_layout
+
+\begin_layout Plain Layout
+
+dbWriteTable(conn = db, name = "student", value = "student.csv",
+\end_layout
+
+\begin_layout Plain Layout
+
+   row.names = FALSE, header = TRUE)
+\end_layout
+
+\begin_layout Plain Layout
+
+dbWriteTable(conn = db, name = "class", value = "class.csv",
+\end_layout
+
+\begin_layout Plain Layout
+
+   row.names = FALSE, header = TRUE)
+\end_layout
+
+\begin_layout Plain Layout
+
+# alternatively
+\end_layout
+
+\begin_layout Plain Layout
+
+student <- read.csv("student.csv") # Read csv files into R
+\end_layout
+
+\begin_layout Plain Layout
+
+class <- read.csv("class.csv")
+\end_layout
+
+\begin_layout Plain Layout
+
+# Import data frames into database
+\end_layout
+
+\begin_layout Plain Layout
+
+dbWriteTable(conn = db, name = "student", value = student, 
+\end_layout
+
+\begin_layout Plain Layout
+
+   row.names = FALSE)
+\end_layout
+
+\begin_layout Plain Layout
+
+dbWriteTable(conn = db, name = "class", value = class, 
+\end_layout
+
+\begin_layout Plain Layout
+
+   row.names = FALSE)
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{verbatim}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+SAS
+\end_layout
+
+\begin_layout Standard
+SAS is quite good at handling large datasets, storing them on disk rather
+ than in memory.
+ I have used SAS in the past for subsetting and merging large datasets.
+ Then I will generally extract the data I need for statistical modeling
+ and do the analysis in R.
+ 
+\end_layout
+
+\begin_layout Standard
+Here's an example of some SAS code for reading in a CSV followed by some
+ subsetting and merging and then output.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{verbatim}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+/* we can use a pipe - in this case to remove carriage returns, */
+\end_layout
+
+\begin_layout Plain Layout
+
+/* presumably because the CSV file was created in Windows */
+\end_layout
+
+\begin_layout Plain Layout
+
+filename tmp pipe "cat ~/shared/hei/gis/100w4kmgrid.csv | tr -d '
+\backslash
+r'";
+\end_layout
+
+\begin_layout Plain Layout
+
+    
+\end_layout
+
+\begin_layout Plain Layout
+
+/* read in one data file */
+\end_layout
+
+\begin_layout Plain Layout
+
+data grid;
+\end_layout
+
+\begin_layout Plain Layout
+
+	infile tmp
+\end_layout
+
+\begin_layout Plain Layout
+
+	lrecl=500 truncover dsd firstobs=2; 
+\end_layout
+
+\begin_layout Plain Layout
+
+	informat gridID x y landMask dataMask;
+\end_layout
+
+\begin_layout Plain Layout
+
+	input gridID x y landMask dataMask;
+\end_layout
+
+\begin_layout Plain Layout
+
+run ;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+filename tmp pipe "cat ~/shared/hei/GOES12/goes/Goes_int4km.csv | tr -d '
+\backslash
+r'";
+\end_layout
+
+\begin_layout Plain Layout
+
+    
+\end_layout
+
+\begin_layout Plain Layout
+
+/* read in second data file */
+\end_layout
+
+\begin_layout Plain Layout
+
+data match;
+\end_layout
+
+\begin_layout Plain Layout
+
+	infile tmp
+\end_layout
+
+\begin_layout Plain Layout
+
+	lrecl=500 truncover dsd firstobs=2; 
+\end_layout
+
+\begin_layout Plain Layout
+
+	informat goesID gridID areaInt areaPix;
+\end_layout
+
+\begin_layout Plain Layout
+
+	input goesID gridID areaInt areaPix;
+\end_layout
+
+\begin_layout Plain Layout
+
+run ;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+/* need to sort before merging */
+\end_layout
+
+\begin_layout Plain Layout
+
+proc sort data=grid;
+\end_layout
+
+\begin_layout Plain Layout
+
+    by gridID;
+\end_layout
+
+\begin_layout Plain Layout
+
+run;
+\end_layout
+
+\begin_layout Plain Layout
+
+proc sort data=match;
+\end_layout
+
+\begin_layout Plain Layout
+
+    by gridID;
+\end_layout
+
+\begin_layout Plain Layout
+
+run;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+/* notice some similarity to SQL */
+\end_layout
+
+\begin_layout Plain Layout
+
+data merged;
+\end_layout
+
+\begin_layout Plain Layout
+
+	merge match(in=in1) grid(in=in2);
+\end_layout
+
+\begin_layout Plain Layout
+
+	by gridID;  /* key field */
+\end_layout
+
+\begin_layout Plain Layout
+
+	if in1=1;   /* also do some subsetting */
+\end_layout
+
+\begin_layout Plain Layout
+
+	/* only keep certain fields */
+\end_layout
+
+\begin_layout Plain Layout
+
+	keep gridID goesID x y landMask dataMask areaInt areaPix;
+\end_layout
+
+\begin_layout Plain Layout
+
+run;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+/* do some subsetting */
+\end_layout
+
+\begin_layout Plain Layout
+
+data PA;   /* new dataset */
+\end_layout
+
+\begin_layout Plain Layout
+
+    set merged;  /* original dataset */
+\end_layout
+
+\begin_layout Plain Layout
+
+    if x<1900000 and x>1200000 and y<2300000 and y>1900000;
+\end_layout
+
+\begin_layout Plain Layout
+
+run;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+%let filename="~/shared/hei/code/model/GOES-gridMatchPA.csv";
+\end_layout
+
+\begin_layout Plain Layout
+
+/* output to CSV */
+\end_layout
+
+\begin_layout Plain Layout
+
+PROC EXPORT DATA= WORK.PA
+\end_layout
+
+\begin_layout Plain Layout
+
+            OUTFILE= &filename
+\end_layout
+
+\begin_layout Plain Layout
+
+            DBMS=CSV REPLACE;
+\end_layout
+
+\begin_layout Plain Layout
+
+RUN;
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{verbatim}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Note that SAS is oriented towards working with data in a 
+\begin_inset Quotes eld
+\end_inset
+
+data frame
+\begin_inset Quotes erd
+\end_inset
+
+-style format; i.e., rows as observations and columns as fields, with different
+ fields of possibly different types.
+ As you can see in the syntax above, the operations concentrate on transforming
+ one dataset into another dataset.
+ 
+\end_layout
+
+\begin_layout Section
+R and big data 
+\end_layout
+
+\begin_layout Standard
+There has been a lot of work in recent years to allow R to work with big
+ datasets.
+\end_layout
+
+\begin_layout Itemize
+The 
+\emph on
+data.table
+\emph default
+ package provides for fast operations on large data tables in memory.
+ The 
+\emph on
+dplyr
+\emph default
+ package has also been optimized to work quickly on large data tables in
+ memory, including operating on 
+\emph on
+data.table
+\emph default
+ objects from the 
+\emph on
+data.table
+\emph default
+ package.
+\end_layout
+
+\begin_layout Itemize
+The 
+\emph on
+ff
+\emph default
+ and 
+\emph on
+bigmemory
+\emph default
+ packages provide the ability to load datasets into R without having them
+ in memory, but rather stored in clever ways on disk that allow for fast
+ access.
+ Metadata is stored in R.
+ 
+\end_layout
+
+\begin_layout Itemize
+The 
+\emph on
+biglm
+\emph default
+ package provides the ability to fit linear models and GLMs to big datasets,
+ with integration with 
+\emph on
+ff
+\emph default
+ and 
+\emph on
+bigmemory
+\emph default
+.
+\end_layout
+
+\begin_layout Itemize
+Finally the 
+\emph on
+sqldf
+\emph default
+ package provides the ability to use SQL queries on R dataframes and on-the-fly
+ when reading from CSV files.
+ The latter can help you avoid reading in the entire dataset into memory
+ in R if you just need a subset of it.
+\end_layout
+
+\begin_layout Standard
+In this section we'll use an example of US government data on airline delays
+ (1987-2008) available through the ASA 2009 Data Expo at 
+\begin_inset CommandInset href
+LatexCommand href
+target "http://stat-computing.org/dataexpo/2009/the-data.html"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+First we'll use UNIX tools to download the individual yearly CSV files and
+ make a single CSV (~12 Gb).
+ See the demo code file for the bash code.
+ Note that it's much smaller when compressed (1.7 Gb) or if stored in a binary
+ format.
+ 
+\end_layout
+
+\begin_layout Subsection
+Working quickly with big datasets in memory: data.table
+\end_layout
+
+\begin_layout Standard
+In many cases, particularly on a machine with a lot of memory, R might be
+ able to read the dataset into memory but computations with the dataset
+ may be slow.
+ 
+\end_layout
+
+\begin_layout Standard
+The 
+\emph on
+data.table
+\emph default
+ package provides a lot of functionality for fast manipulation: indexing,
+ merges/joins, assignment, grouping, etc.
+ 
+\end_layout
+
+\begin_layout Standard
+Let's read in the airline dataset, specifying the column classes so that
+ 
+\emph on
+fread()
+\emph default
+ doesn't have to detect what they are.
+ I'll also use factors since factors are represented numerically.
+ It only takes about 5 minutes to read the data in.
+ We'll see in the next section that this is much faster than with other
+ approaches within R.
+ 
+\end_layout
+
+\begin_layout Chunk
+<<data.table-read, eval=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+Now let's do some basic subsetting.
+ We'll see that setting a key and using binary search can improve lookup
+ speed dramatically.
+\end_layout
+
+\begin_layout Chunk
+<<data.table-subset, eval=FALSE, tidy=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+Setting a key in 
+\emph on
+data.table
+\emph default
+ simply amounts to sorting based on the columns provided, which allows for
+ fast lookup later using binary search algorithms, as seen with the last
+ query.
+ Think about the analogy of looking up by name vs.
+ index that we discussed in Unit 4.
+ From my fairly quick look through the 
+\emph on
+data.table
+\emph default
+ documentation I don't see a way to do the subsetting with distance less
+ than 1000 using the specialized functionality of 
+\emph on
+data.table
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+There's a bunch more to 
+\emph on
+data.table
+\emph default
+ and you'll have to learn a modest amount of new syntax, but if you're working
+ with large datasets in memory, it will probably be well worth your while.
+ Plus 
+\emph on
+data.table
+\emph default
+ objects are data frames (i.e., they inherit from data frames) so they are
+ compatible with R code that uses dataframes.
+\end_layout
+
+\begin_layout Subsection
+Working with big datasets on disk: ff and bigmemory
+\end_layout
+
+\begin_layout Standard
+Note that with our 12 Gb dataset, the data took up 27 Gb of RAM on the SCF
+ server 
+\emph on
+radagast
+\emph default
+.
+ Operations on the dataset would then use up additional RAM.
+ So this would not be feasible on most machines.
+ And of course other datasets might be so big that even 
+\emph on
+radagast
+\emph default
+ wouldn't be able to hold them in memory.
+\end_layout
+
+\begin_layout Subsubsection
+ff
+\end_layout
+
+\begin_layout Standard
+Now we can read the data into R using the 
+\emph on
+ff
+\emph default
+ package, in particular reading in as an 
+\emph on
+ffdf
+\emph default
+ object.
+ Note the arguments are similar to those for 
+\emph on
+read.{table,csv}()
+\emph default
+.
+ 
+\emph on
+read.table.ffdf()
+\emph default
+ reads the data in chunks.
+\end_layout
+
+\begin_layout Chunk
+<<ff, eval=FALSE, tidy=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+In the above operations, we wrote a copy of the file in the ff binary format
+ that can be read more quickly back into R than the original reading of
+ the CSV using 
+\emph on
+ffsave()
+\emph default
+ and 
+\emph on
+ffload()
+\emph default
+.
+ Also note the reduced size of the binary format file compared to the original
+ CSV.
+ It's good to be aware of where the binary ff file is stored given that
+ for large datasets, it will be large.
+ With 
+\emph on
+ff
+\emph default
+ (I think 
+\emph on
+bigmemory
+\emph default
+ is different in how it handles this) it appears to be stored in 
+\emph on
+/tmp
+\emph default
+ in an R temporary directory.
+ Note that as we work with large files we need to be more aware of the filesyste
+m, making sure in this case that 
+\emph on
+/tmp
+\emph default
+ has enough space.
+ 
+\end_layout
+
+\begin_layout Standard
+Let's look at the 
+\emph on
+ff
+\emph default
+ and 
+\emph on
+ffbase
+\emph default
+ packages to see what functions are available using 
+\family typewriter
+library(help=ff)
+\family default
+.
+ Notice that there is an 
+\emph on
+merge.ff()
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Note that a copy of an 
+\emph on
+ff
+\emph default
+ object appears to be a shallow copy.
+\end_layout
+
+\begin_layout Standard
+Next let's do a bit of exploration of the dataset.
+ Of course in a real analysis we'd do a lot more and some of this would
+ take some time.
+\end_layout
+
+\begin_layout Chunk
+<<tableInfo, cache=TRUE, tidy=FALSE, eval=FALSE, fig.width=4>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+Let's review our understanding of S3 methods.
+ Why did I need to call 
+\emph on
+table.ff()
+\emph default
+ rather than just simply calling 
+\emph on
+table()
+\emph default
+ on the ff object?
+\end_layout
+
+\begin_layout Standard
+A note of caution.
+ Debugging code involving 
+\emph on
+ff
+\emph default
+ can be a hassle because the size gets in the way in various ways.
+ Until you're familiar with the various operations on ff objects, you'd
+ be wise to try to run your code on a small test dataset loaded in as an
+ ff object.
+ Also, we want to be sure that the operations we use keep any resulting
+ large objects in the 
+\emph on
+ff
+\emph default
+ format and use 
+\emph on
+ff
+\emph default
+ methods and not standard R functions.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+First, following the steps outlined at http://www.bigmemory.org/, we'll download
+ the individual yearly CSV files and make a single CSV (~12 Gb).
+ Then we'll use the python script they provide to format the data, which
+ produces airline.csv, which is X Gb.
+ Unfortunately, bigmemory requires a CSV as input, so we can't read from
+ a bz2 file via a file connection.
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+bigmemory
+\end_layout
+
+\begin_layout Standard
+The 
+\emph on
+bigmemory
+\emph default
+ package is an alternative way to work with datasets in R that are kept
+ stored on disk rather than read entirely into memory.
+ 
+\emph on
+bigmemory
+\emph default
+ provides a 
+\emph on
+big.matrix
+\emph default
+ class, so it appears to be limited to datasets with a single type for all
+ the variables.
+ However, one nice feature is that one can use 
+\emph on
+big.matrix
+\emph default
+ objects with 
+\emph on
+foreach
+\emph default
+ (one of R's parallelization tools, to be discussed soon) without passing
+ a copy of the matrix to each worker.
+ Rather the workers can access the matrix stored on disk.
+\end_layout
+
+\begin_layout Subsubsection
+sqldf
+\end_layout
+
+\begin_layout Standard
+The 
+\emph on
+sqldf
+\emph default
+ package provides the ability to use SQL queries on data frames (via 
+\emph on
+sqldf()
+\emph default
+) as well as to filter an input CSV via an SQL query (via 
+\emph on
+read.csv.sql()
+\emph default
+), with only the result of the subsetting put in memory in R.
+ The full input data can be stored temporarily in an SQLite database on
+ disk.
+\end_layout
+
+\begin_layout Chunk
+<<sqldf, eval=FALSE, tidy=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Subsection
+dplyr package
+\end_layout
+
+\begin_layout Standard
+The 
+\emph on
+dplyr
+\emph default
+ package is the successor to the 
+\emph on
+plyr
+\emph default
+ package, providing plyr type functionality for data frames with enhancements
+ for working with large tables and accessing databases (among other things).
+ With 
+\emph on
+dplyr
+\emph default
+ one can work with data stored in the 
+\emph on
+data.table
+\emph default
+ format and in external databases.
+ 
+\end_layout
+
+\begin_layout Chunk
+<<dplyr, eval=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Subsection
+Fitting models to big datasets: biglm
+\end_layout
+
+\begin_layout Standard
+The 
+\emph on
+biglm
+\emph default
+ package provides the ability to fit large linear models and GLMs.
+ 
+\emph on
+ffbase
+\emph default
+ has a 
+\emph on
+bigglm.ffdf()
+\emph default
+ function that builds on 
+\emph on
+biglm
+\emph default
+ for use with 
+\emph on
+ffdf
+\emph default
+ objects.
+ Let's fit a basic model on the airline data.
+ Note that we'll also fit the same model on the dataset when we use Spark
+ at the end of the Unit.
+\end_layout
+
+\begin_layout Chunk
+<<airline-model, eval=FALSE, tidy=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+Here are the results.
+ Day 1 is Monday, so that's the baseline category for the ANOVA-like part
+ of the model.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{verbatim}
+\end_layout
+
+\begin_layout Plain Layout
+
+Large data regression model: bigglm(DepDelay ~ Distance + DayOfWeek, data
+ = datUse)
+\end_layout
+
+\begin_layout Plain Layout
+
+Sample size =  119971791 
+\end_layout
+
+\begin_layout Plain Layout
+
+               Coef    (95%     CI)     SE p
+\end_layout
+
+\begin_layout Plain Layout
+
+(Intercept)  6.3662  6.3504  6.3820 0.0079 0
+\end_layout
+
+\begin_layout Plain Layout
+
+Distance     0.7638  0.7538  0.7737 0.0050 0
+\end_layout
+
+\begin_layout Plain Layout
+
+DayOfWeek2  -0.6996 -0.7197 -0.6794 0.0101 0
+\end_layout
+
+\begin_layout Plain Layout
+
+DayOfWeek3   0.3928  0.3727  0.4129 0.0101 0
+\end_layout
+
+\begin_layout Plain Layout
+
+DayOfWeek4   2.2247  2.2046  2.2449 0.0101 0
+\end_layout
+
+\begin_layout Plain Layout
+
+DayOfWeek5   2.8867  2.8666  2.9068 0.0101 0
+\end_layout
+
+\begin_layout Plain Layout
+
+DayOfWeek6  -2.4273 -2.4481 -2.4064 0.0104 0
+\end_layout
+
+\begin_layout Plain Layout
+
+DayOfWeek7  -0.1362 -0.1566 -0.1158 0.0102 0
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{verbatim}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Of course as good statisticians/data analysts we want to do careful assessment
+ of our model, consideration of alternative models, etc.
+ This is going to be harder to do with large datasets than with more manageable
+ ones.
+ However, one possibility is to do the diagnostic work on subsamples of
+ the data.
+\end_layout
+
+\begin_layout Standard
+Now let's consider the fact that very small substantive effects can be highly
+ statistically significant when estimated from a large dataset.
+ In this analysis the data are generated from 
+\begin_inset Formula $Y\sim\mathcal{N}(0+0.001x,1)$
+\end_inset
+
+, so the 
+\begin_inset Formula $R^{2}$
+\end_inset
+
+ is essentially zero.
+\end_layout
+
+\begin_layout Chunk
+<<significance-prep, eval=FALSE, tidy=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Chunk
+<<significance-model, eval=FALSE, tidy=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+Here are the results:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{verbatim}
+\end_layout
+
+\begin_layout Plain Layout
+
+Large data regression model: bigglm(y ~ x1 + x2 + x3, data = dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+Sample size = 1.5e+08 
+\end_layout
+
+\begin_layout Plain Layout
+
+              Coef         (95%       CI)          SE         p
+\end_layout
+
+\begin_layout Plain Layout
+
+(Intercept) -0.0001437 -0.0006601 0.0003727 0.0002582 0.5777919
+\end_layout
+
+\begin_layout Plain Layout
+
+x1           0.0013703  0.0008047 0.0019360 0.0002828 0.0000013
+\end_layout
+
+\begin_layout Plain Layout
+
+x2           0.0002371 -0.0003286 0.0008028 0.0002828 0.4018565
+\end_layout
+
+\begin_layout Plain Layout
+
+x3          -0.0002620 -0.0008277 0.0003037 0.0002829 0.3542728
+\end_layout
+
+\begin_layout Plain Layout
+
+### and here is the R^2 calculation (why can it be negative?)
+\end_layout
+
+\begin_layout Plain Layout
+
+[1] -1.111046828e-06
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{verbatim}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+So, do I care the result is highly significant? Perhaps if I'm hunting the
+ Higgs boson...
+ As you have hopefully seen in statistics courses, statistical significance
+ 
+\begin_inset Formula $\ne$
+\end_inset
+
+ practical significance.
+\end_layout
+
+\begin_layout Section
+Sparsity
+\end_layout
+
+\begin_layout Standard
+A lot of statistical methods are based on sparse matrices.
+ These include:
+\end_layout
+
+\begin_layout Itemize
+Matrices representing the neighborhood structure (i.e., conditional dependence
+ structure) of networks/graphs.
+\end_layout
+
+\begin_layout Itemize
+Matrices representing autoregressive models (neighborhood structure for
+ temporal and spatial data)
+\end_layout
+
+\begin_layout Itemize
+A statistical method called the 
+\emph on
+lasso
+\emph default
+ is used in high-dimensional contexts to give sparse results (sparse parameter
+ vector estimates, sparse covariance matrix estimates)
+\end_layout
+
+\begin_layout Itemize
+There are many others (I've been lazy here in not coming up with a comprehensive
+ list, but trust me!)
+\end_layout
+
+\begin_layout Standard
+When storing and manipulating sparse matrices, there is no need to store
+ the zeros, nor to do any computation with elements that are zero.
+ A few of you exploited sparse matrices in PS4.
+\end_layout
+
+\begin_layout Standard
+R, Matlab and Python all have functionality for storing and computing with
+ sparse matrices.
+ We'll see this a bit more in the linear algebra unit.
+\end_layout
+
+\begin_layout Chunk
+<<spam, cache=TRUE>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+Here's a 
+\begin_inset CommandInset href
+LatexCommand href
+name "blog post"
+target "http://blog.revolutionanalytics.com/2011/05/the-neflix-prize-big-data-svd-and-r.html"
+
+\end_inset
+
+ describing the use of sparse matrix manipulations for analysis of the Netflix
+ Prize data.
+\end_layout
+
+\begin_layout Section
+Using statistical concepts to deal with computational bottlenecks
+\end_layout
+
+\begin_layout Standard
+As statisticians, we have a variety of statistical/probabilistic tools that
+ can aid in dealing with big data.
+\end_layout
+
+\begin_layout Enumerate
+Usually we take samples because we cannot collect data on the entire population.
+ But we can just as well take a sample because we don't have the ability
+ to process the data from the entire population.
+ We can use standard uncertainty estimates to tell us how close to the true
+ quantity we are likely to be.
+ And we can always take a bigger sample if we're not happy with the amount
+ of uncertainty.
+\end_layout
+
+\begin_layout Enumerate
+There are a variety of ideas out there for making use of sampling to address
+ big data challenges.
+ One idea (due in part to Prof.
+ Michael Jordan here in Statistics/EECS) is to compute estimates on many
+ (relatively small) bootstrap samples from the data (cleverly creating a
+ reduced-form version of the entire dataset from each bootstrap sample)
+ and then combine the estimates across the samples.
+ Here's 
+\begin_inset CommandInset href
+LatexCommand href
+name "the arXiv paper"
+target "http://arxiv.org/abs/1112.5016"
+
+\end_inset
+
+ on this topic.
+\end_layout
+
+\begin_layout Enumerate
+Randomized algorithms: there has been a lot of attention recently to algorithms
+ that make use of randomization.
+ E.g., in optimizing a likelihood, you might choose the next step in the optimizat
+ion based on random subset of the data rather than the full data.
+ Or in a regression context you might choose a subset of rows of the design
+ matrix (the matrix of covariates) and corresponding observations, weighted
+ based on the statistical leverage [recall the discussion of regression
+ diagnostics in a regression course] of the observations.
+ Here's another 
+\begin_inset CommandInset href
+LatexCommand href
+name "arXiv paper"
+target "http://arxiv.org/abs/1104.5557"
+
+\end_inset
+
+ that provides some ideas in this area.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+There are standard estimators (e.g., from the literature on imputation for
+ missing data) for doing this combination that account for the within sample
+ uncertainty and the across-sample variability.
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Hadoop, MapReduce, and Spark
+\end_layout
+
+\begin_layout Standard
+Here we'll talk about a fairly recent development in parallel computing.
+ Traditionally, high-performance computing (HPC) has concentrated on techniques
+ and tools for message passing such as MPI and on developing efficient algorithm
+s to use these techniques.
+\end_layout
+
+\begin_layout Subsection
+Overview
+\end_layout
+
+\begin_layout Standard
+A basic paradigm for working with big datasets is the 
+\emph on
+MapReduce
+\emph default
+ paradigm.
+ The basic idea is to store the data in a distributed fashion across multiple
+ nodes and try to do the computation in pieces on the data on each node.
+ Results can also be stored in a distributed fashion.
+\end_layout
+
+\begin_layout Standard
+A key benefit of this is that if you can't fit your dataset on disk on one
+ machine you can on a cluster of machines.
+ And your processing of the dataset can happen in parallel.
+ This is the basic idea of 
+\emph on
+MapReduce
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+The basic steps of 
+\emph on
+MapReduce
+\emph default
+ are as follows:
+\end_layout
+
+\begin_layout Itemize
+read individual data objects (e.g., records/lines from CSVs or individual
+ data files)
+\end_layout
+
+\begin_layout Itemize
+map: create key-value pairs using the inputs (more formally, the map step
+ takes a key-value pair and returns a new key-value pair)
+\end_layout
+
+\begin_layout Itemize
+reduce - for each key, do an operation on the associated values and create
+ a result - i.e., aggregate within the values assigned to each key
+\end_layout
+
+\begin_layout Itemize
+write out the {key,result} pair
+\end_layout
+
+\begin_layout Standard
+A similar paradigm that is being implemented in some R packages by Hadley
+ Wickham is the split-apply-combine strategy (
+\begin_inset CommandInset href
+LatexCommand href
+target "http://www.jstatsoft.org/v40/i01/paper"
+
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Standard
+
+\emph on
+Hadoop
+\emph default
+ is an infrastructure for enabling MapReduce across a network of machines.
+ The basic idea is to hide the complexity of distributing the calculations
+ and collecting results.
+ Hadoop includes a file system for distributed storage (HDFS), where each
+ piece of information is stored redundantly (on multiple machines).
+ Calculations can then be done in a parallel fashion, often on data in place
+ on each machine thereby limiting the amount of communication that has to
+ be done over the network.
+ Hadoop also monitors completion of tasks and if a node fails, it will redo
+ the relevant tasks on another node.
+ Hadoop is based on Java but there are projects that allow R to interact
+ with Hadoop, in particular 
+\emph on
+RHadoop
+\emph default
+ and 
+\emph on
+RHipe
+\emph default
+.
+ 
+\emph on
+Rhadoop
+\emph default
+ provides the 
+\emph on
+rmr
+\emph default
+, 
+\emph on
+rhdfs
+\emph default
+, and 
+\emph on
+rhbase
+\emph default
+ packages.
+ For more details on 
+\emph on
+RHadoop
+\emph default
+ see Adler and 
+\begin_inset CommandInset href
+LatexCommand href
+target "http://blog.revolutionanalytics.com/2011/09/mapreduce-hadoop-r.html"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Setting up a Hadoop cluster can be tricky.
+ Hopefully if you're in a position to need to use Hadoop, it will be set
+ up for you and you will be interacting with it as a user/data analyst.
+\end_layout
+
+\begin_layout Standard
+Ok, so what is Spark? You can think of Spark as in-memory Hadoop.
+ Spark allows one to treat the memory across multiple nodes as a big pool
+ of memory.
+ So just as 
+\emph on
+data.table
+\emph default
+ was faster than 
+\emph on
+ff
+\emph default
+ because we kept everything in memory, Spark should be faster than Hadoop
+ when the data will fit in the collective memory of multiple nodes.
+ In cases where it does not, Spark will make use of the HDFS.
+ 
+\end_layout
+
+\begin_layout Subsection
+MapReduce and RHadoop
+\end_layout
+
+\begin_layout Standard
+Let's see some examples of the MapReduce approach using R syntax of the
+ sort one would use with 
+\emph on
+RHadoop
+\emph default
+.
+ While we'll use R syntax in the second piece of code below, the basic idea
+ of what the map and reduce functions are is not specific to R.
+ Note that using Hadoop with R may be rather slower than actually writing
+ Java code for Hadoop.
+\end_layout
+
+\begin_layout Standard
+First, let's consider a basic word-counting example.
+ Suppose we have many, many individual text documents distributed as individual
+ files in the HDFS.
+ Here's pseudo code from Wikipedia.
+ Here in the map function, the input {key,value} pair is the name of a document
+ and the words in the document and the output {key, value} pairs are each
+ word and the value 1.
+ Then the reduce function takes each key (i.e., each word) and counts up the
+ number of ones.
+ The output {key, value} pair from the reduce step is the word and the count
+ for that word.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{verbatim}
+\end_layout
+
+\begin_layout Plain Layout
+
+function map(String name, String document):
+\end_layout
+
+\begin_layout Plain Layout
+
+// name (key): document name
+\end_layout
+
+\begin_layout Plain Layout
+
+// document (value): document contents
+\end_layout
+
+\begin_layout Plain Layout
+
+   for each word w in document:
+\end_layout
+
+\begin_layout Plain Layout
+
+      return (w, 1) 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+function reduce(String word, Iterator partialCounts):
+\end_layout
+
+\begin_layout Plain Layout
+
+// word (key): a word
+\end_layout
+
+\begin_layout Plain Layout
+
+// partialCounts (values): a list of aggregated partial counts
+\end_layout
+
+\begin_layout Plain Layout
+
+sum = 0
+\end_layout
+
+\begin_layout Plain Layout
+
+for each pc in partialCounts:
+\end_layout
+
+\begin_layout Plain Layout
+
+   sum += pc
+\end_layout
+
+\begin_layout Plain Layout
+
+return (word, sum)
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{verbatim}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Now let's consider an example where we calculate mean and standard deviation
+ for the income of individuals in each state.
+ Assume we have a large collection of CSVs, with each row containing information
+ on an individual.
+ 
+\emph on
+mapreduce()
+\emph default
+ and 
+\emph on
+keyval()
+\emph default
+ are functions in the 
+\emph on
+RHadoop
+\emph default
+ package.
+ I'll assume we've written a separate helper function, 
+\emph on
+my_readline()
+\emph default
+, that manipulates individual lines from the CSVs.
+\end_layout
+
+\begin_layout Chunk
+<<mr-example, eval=FALSE, tidy=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+A few additional comments.
+ In our map function, we could exclude values or transform them in some
+ way, including producing multiple records from a single record.
+ And in our reduce function, we can do more complicated analysis.
+ So one can actually do fairly sophisticated things within what may seem
+ like a restrictive paradigm.
+ But we are constrained such that in the map step, each record needs to
+ be treated independently and in the reduce step each key needs to be treated
+ independently.
+ This allows for the parallelization.
+\end_layout
+
+\begin_layout Subsection
+Spark
+\end_layout
+
+\begin_layout Standard
+We'll focus on Spark rather than Hadoop for the speed reasons described
+ above and because I think Spark provides a very nice environment in which
+ to work.
+ Plus it comes out of the AmpLab here at Berkeley.
+ One downside is we'll have to know a bit of Python to use it.
+\end_layout
+
+\begin_layout Subsubsection
+Getting set up on Spark and the HDFS
+\end_layout
+
+\begin_layout Standard
+We'll use Spark on an Amazon EC2 virtual cluster.
+ Thankfully, Spark provides a Python-based script for setting up such a
+ cluster.
+ Occasionally the setup process goes awry but usually it's pretty easy.
+ We need our Amazon authentication keys as well as public-private keypair
+ for SSH.
+ 
+\series bold
+Make sure you don't hard code your Amazon key information into any public
+ file (including Github public repositories) - hackers will find the keys
+ and use them to spin up instances, probably to mine bitcoin or send Spam;
+ this happened in this class in 2014.
+\end_layout
+
+\begin_layout Standard
+We start by 
+\begin_inset CommandInset href
+LatexCommand href
+name "downloading the Spark package"
+target "https://spark.apache.org/downloads.html"
+
+\end_inset
+
+ as a .tgz file (choosing the 
+\begin_inset Quotes eld
+\end_inset
+
+source code
+\begin_inset Quotes erd
+\end_inset
+
+ option) and untarring/zipping it.
+ This all works from the VM.
+ Also, on the SCF it's available on the Linux machines at 
+\emph on
+/usr/local/src/pd/spark-1.4.0/spark-1.4.0/ec2
+\emph default
+.
+ 
+\end_layout
+
+\begin_layout Chunk
+<<spark-setup, eval=FALSE, engine='bash'>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+Next let's get the airline dataset onto the master node and then into the
+ HDFS.
+ Note that the file system commands are like standard UNIX commands, but
+ you need to do 
+\family typewriter
+hadoop fs -
+\family default
+ in front of the command.
+ At the end of this chunk we'll start the Python interface for Spark.
+ 
+\end_layout
+
+\begin_layout Chunk
+<<spark-hdfs, eval=FALSE, engine='bash'>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Chunk
+
+\end_layout
+
+\begin_layout Subsubsection
+Using Spark for pre-processing
+\end_layout
+
+\begin_layout Standard
+Now we'll do some basic manipulations with the airline dataset.
+ We'll count the number of lines/observations in our dataset.
+ Then we'll do a map-reduce calculation that involves counting the number
+ of flights by airline, so airline will serve as the key.
+ 
+\end_layout
+
+\begin_layout Standard
+Note that all of the various operations are OOP methods applied to either
+ the SparkContext management object or to a Spark dataset, called a Resilient
+ Distributed Dataset (RDD).
+ Here 
+\emph on
+lines
+\emph default
+ and 
+\emph on
+output
+\emph default
+ are both RDDs.
+ However the result of 
+\emph on
+collect()
+\emph default
+ is just a standard Python object.
+\end_layout
+
+\begin_layout Standard
+In the last step, let's compare how long it took to grab the SFO subset
+ relative to the performance of R earlier in this Unit.
+\end_layout
+
+\begin_layout Chunk
+<<spark-data, eval=FALSE, engine='bash'>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+Let's consider some of the core methods we used.
+ The 
+\begin_inset CommandInset href
+LatexCommand href
+name "Spark programming guide"
+target "http://spark.apache.org/docs/latest/programming-guide.html"
+
+\end_inset
+
+ discusses these and a number of others.
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+map()
+\emph default
+: take an RDD and apply a function to each element, returning an RDD
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+reduce()
+\emph default
+ and 
+\emph on
+reduceByKey()
+\emph default
+: take an RDD and apply a reduction operation to the elements, doing the
+ reduction stratified by the key values for 
+\emph on
+reduceByKey()
+\emph default
+.
+ Reduction functions need to be associative and commutative and take 2 arguments
+ and return 1, all so that they can be done in parallel in a straightforward
+ way.
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+filter()
+\emph default
+: create a subset
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+collect()
+\emph default
+: collect results back to the master
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+cache()
+\emph default
+: tell Spark to keep the RDD in memory for later use
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+repartition()
+\emph default
+: rework the RDD so it is in the specified number of chunks
+\end_layout
+
+\begin_layout Standard
+Question: how many chunks do you think we want the RDD split into? What
+ might the tradeoffs be?
+\end_layout
+
+\begin_layout Standard
+Here's an example where we don't have a simple commutative/associative reducer
+ function.
+ Instead we group all the observations for each key into a so-called iterable
+ object.
+ Then our second map function treats each key as an element, iterating over
+ the observations grouped within each key.
+ 
+\end_layout
+
+\begin_layout Chunk
+<<spark-nonstandard, eval=FALSE, engine='bash'>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Subsubsection
+Using Spark for fitting models
+\end_layout
+
+\begin_layout Standard
+Here we'll see the use of Spark to fit basic regression models in two ways.
+ Warning: there may well be better algorithms to use and there may be better
+ ways to implement these algorithms in Spark.
+ But these work and give you the idea of how you can implement fitting within
+ the constraints of a map-reduce paradigm.
+ 
+\end_layout
+
+\begin_layout Standard
+Note that my first step is to repartition the data for better computational
+ efficiency.
+ Instead of having the data split into 22 year-specific chunks that vary
+ in size (which is how things are initially because of the initial file
+ structure), I'm going to split into a larger number of equal-size chunks
+ to get better load-balancing.
+\end_layout
+
+\begin_layout Paragraph
+Linear regression via sufficient statistics
+\end_layout
+
+\begin_layout Standard
+In the first algorithm we actually compute the sufficient statistics, which
+ are simply 
+\begin_inset Formula $X^{\top}X$
+\end_inset
+
+ and 
+\begin_inset Formula $X^{\top}Y$
+\end_inset
+
+.
+ Because the number of predictors is small, these are miniscule compared
+ to the size of the dataset.
+ This code has two ways of computing the matrices.
+ The first treats each line as an observation and sums the 
+\begin_inset Formula $X_{i}^{\top}X_{i}$
+\end_inset
+
+ and 
+\begin_inset Formula $X_{i}Y_{i}$
+\end_inset
+
+ values across all observations.
+ The second uses a map function that can operate on an entire partition,
+ iterating through the elements of the partition, and computing 
+\begin_inset Formula $X_{k}^{\top}X_{k}$
+\end_inset
+
+ and 
+\begin_inset Formula $X_{k}^{\top}Y_{k}$
+\end_inset
+
+ for each partition, 
+\begin_inset Formula $k$
+\end_inset
+
+.
+ The second way is rather faster.
+\end_layout
+
+\begin_layout Chunk
+<<spark-fit1, eval=FALSE, engine='python'>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Paragraph
+Linear regression via cyclic coordinate descent
+\end_layout
+
+\begin_layout Standard
+In the second algorithm we pretend that we don't want to compute 
+\begin_inset Formula $X^{\top}X$
+\end_inset
+
+, mimicing the situation in which we have too many predictors to either
+ store 
+\begin_inset Formula $X^{\top}X$
+\end_inset
+
+ or to do linear algebra on 
+\begin_inset Formula $X^{\top}X$
+\end_inset
+
+.
+ Instead we'll have a vector of starting values for 
+\begin_inset Formula $\beta$
+\end_inset
+
+.
+ Then we'll cycle through each element of 
+\begin_inset Formula $\beta$
+\end_inset
+
+ and optimize that element, holding the others constant.
+ The individual update steps look like this:
+\begin_inset Formula 
+\[
+\beta_{p}^{t+1}=\frac{\sum_{i}r_{i}x_{i}}{\sum_{i}x_{ip}^{2}}
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $r_{i}$
+\end_inset
+
+ the residual not including the 
+\begin_inset Formula $p$
+\end_inset
+
+th predictor: 
+\begin_inset Formula $\sum_{i}\left(y_{i}-\sum_{j\ne p}x_{ij}\beta_{j}^{t}\right)$
+\end_inset
+
+ and based on the current parameter values.
+\end_layout
+
+\begin_layout Standard
+Once again, we'll use 
+\emph on
+mapPartitions()
+\emph default
+ to do the calculations we need for each step of the optimization piecewise
+ on each partition (I use 
+\emph on
+batch
+\emph default
+ to describe this in the code).
+ Note that the result after 10 iterations here is not the MLE, though most
+ of the day of week effects are all shifted by a common amount relative
+ to the mean when compared to the MLE.
+\end_layout
+
+\begin_layout Chunk
+<<spark-fit2, eval=FALSE, engine='python'>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+We've only done linear regression here, but similar coordinate descent computati
+ons can be done for GLMs and for Lasso type problems, and probably for other
+ types of models.
+ In fact coordinate descent is a (the?) standard algorithm for Lasso as
+ discussed in 
+\begin_inset CommandInset href
+LatexCommand href
+target "this paper"
+
+\end_inset
+
+, which describes the methods in the 
+\emph on
+glmnet
+\emph default
+ package.
+\end_layout
+
+\begin_layout Paragraph
+Linear regression via gradient descent
+\end_layout
+
+\begin_layout Standard
+Cycling through each coefficient has the obvious disadvantage of having
+ to cycle through each coefficient, which would become particularly problematic
+ in a model with more predictors.
+ An alternative is to do gradient descent on the entire vector of coefficients
+ at once.
+ For this problem the update at each step looks like this
+\begin_inset Formula 
+\[
+\beta^{t+1}=\beta^{t}-\alpha\nabla L(\beta^{t})
+\]
+
+\end_inset
+
+ where 
+\begin_inset Formula $\nabla L(\beta^{t})$
+\end_inset
+
+ is the gradient vector of the log-likelihood evaluated at the current value,
+ 
+\begin_inset Formula $\beta^{t}$
+\end_inset
+
+.
+ A key issue here, which we'll discuss in detail in the Unit on optimization
+ is the step size, 
+\begin_inset Formula $\alpha$
+\end_inset
+
+, also known as the learning rate.
+ Here's the code for doing gradient descent on the entire set of coefficients.
+\end_layout
+
+\begin_layout Chunk
+<<spark-fit3, eval=FALSE, engine='python'>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+Note that I'm recording the value of the objective function to make sure
+ that it is decreasing in every iteration, as one could set the learning
+ rate such that that does not happen.
+\end_layout
+
+\begin_layout Subsubsection
+Final comments
+\end_layout
+
+\begin_layout Paragraph
+Running a batch Spark job
+\end_layout
+
+\begin_layout Standard
+We can run a Spark job using Python code as a batch script rather than interacti
+vely.
+ Here's an example, which computes the value of 
+\begin_inset Formula $\pi$
+\end_inset
+
+ by Monte Carlo simulation (more on the general technique in the Unit on
+ simulation).
+ Assuming the script is named 
+\emph on
+piCalc.py
+\emph default
+, we would call the script like this: 
+\family typewriter
+spark-submit piCalc.py 100000000 1000
+\family default
+ 
+\end_layout
+
+\begin_layout Chunk
+<<pyspark-script, eval=FALSE, engine='python'>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+This code again uses the idea that it's computationally more efficient to
+ have each operation occur on a batch of data rather than an individual
+ data point.
+ So there are 1000 tasks and the total number of samples is broken up amongst
+ those tasks.
+ In fact, Spark has problems if the number of tasks gets too large.
+\end_layout
+
+\begin_layout Paragraph
+Python vs.
+ Scala/Java
+\end_layout
+
+\begin_layout Standard
+Spark is implemented natively in Java and Scala, so all calculations in
+ Python involve taking Java data objects converting them to Python objects,
+ doing the calculation, and then converting back to Java.
+ This process is called serialization and takes time, so the speed when
+ implementing your work in Scala (or Java) may be faster.
+ Here's a 
+\begin_inset CommandInset href
+LatexCommand href
+name "small bit of info"
+target "http://apache-spark-user-list.1001560.n3.nabble.com/Scala-vs-Python-performance-differences-td4247.html"
+
+\end_inset
+
+ on that.
+\end_layout
+
+\begin_layout Paragraph
+sparkR
+\end_layout
+
+\begin_layout Standard
+Finally, there is an R interface for Spark, but it's pretty new and not
+ as widely used, so I didn't think it worth covering.
+ 
+\end_layout
+
+\end_body
+\end_document
