@@ -1,0 +1,10 @@
+#!/bin/bash
+
+apt-get update
+apt-get install -y lvm2
+umount /mnt
+vgcreate instance-store /dev/xvdb /dev/xvdc
+lvcreate -l 100%FREE -n scratch instance-store
+mkfs -t ext4 -m 0 /dev/mapper/instance--store-scratch
+sed -i 's/\/dev\/xvdb/\/dev\/mapper\/instance--store-scratch/' /etc/fstab
+mount /mnt

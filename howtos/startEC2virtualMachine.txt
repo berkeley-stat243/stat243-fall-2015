@@ -1,0 +1,40 @@
+These instructions will allow you to start a single virtual machine on Amazon's EC2. You can use the VM to test out shared memory parallelization.
+
+Note that these instructions lead you through starting the VM through the AWS web interface. You can also use Python's boto package, the Starcluster tools, or the EC2 command line tools to directly make use of Amazon's EC2 API.
+
+1) Login to your class account using the instructions provide in the AWSsetup.txt file (namely the URL provided in the email sent to you).
+
+2) Under Services, select EC2.
+
+3) Click on "Launch Instance"
+
+4) In the list of tabs on the left, select "Community AMIs" and search for BCE-2015-fall. Then Select that AMI. This is an updated version of the VM you've been using on your laptop but set up to work on Amazon's EC2.
+
+5) You should now be at "2 - Choose Instance Type". For exploring shared memory parallelization you'll probably want to choose an instance type with at least 4 vCPUs (m3.xlarge would be appropriate). Try not to choose an instance more powerful than you need as the more powerful the instance the more of our class credits you'll use. At the moment, I've restricted use to the following instance types, "t2.micro", "t2.small", "m3.xlarge", "m1.large", "m3.large", "c4.xlarge", "c4.large", but if you have a reason to want to try a different one, let me know. Click on 'Next: Configure Instance Details" and then on "Next: Add Storage".
+
+6) Add disk space to your image. Change the 8 Gb default to 100 Gb. Click on "Next: Tag Instance" and then "Next: Configure Security Group". 
+
+7) Use the security group named 'default'. To do so, change from the default "Create a new security group" to "Select an existing security group" and selection 'default', the 'default VPC security group'. Click on "Review and Launch" and then on "Launch".
+
+8) Choose the key pair associated with your account and "Launch Instances". Then choose "View Instances".
+
+9) Once the instance has finished launching you can select "Connect". The basic syntax you'll need to ssh to the instance is:
+ssh -i ~/.ssh/stat243-fall-2014-ssh_key.pem ubuntu@54.69.233.66
+But the digits following 'ubuntu' will vary.
+
+(This assumes that you've saved your private SSH key (that you downloaded as in AWSsetup.txt) to ~/.ssh. Also you'll likely need to change the permissions on the private SSH key file so they are read-only for only "u". You can do this with:
+chmod 400 ~/.ssh/stat243-fall-2015-ssh_key.pem
+
+10) Note that on the EC2 VM you'll be the 'ubuntu' user rather than the 'oski' user.
+
+11) If you want more than 40 Gb available in /mnt, which is where you want your database and the files that ffload creates to be, you can do the following. This will make /mnt have 80 Gb rather than 40 Gb.
+
+ * After logging into the instance copy the setup-storage file from the howtos directory to the instance.
+ * setup-storage is just a bash script. Run it as follows on the instance:
+    sudo ./setup_storage
+
+12) To completely delete your VM, go to Actions -> Terminate. This will remove all trace of the instance and we'll no longer be charged.
+
+13) If you want your instance to persist so that you don't have to start everything from scratch, including copying data, you can do Actions -> Stop and then later do Actions -> Start to restart it. Note that we'll still be charged for this, so please don't have your instance stopped for more than 24 hours or so. 
+
+Note that anything in your home directory will still exist if you do stop/start, but not if you terminate your instance. However, anything in /mnt or /tmp will be removed when you start/stop.
