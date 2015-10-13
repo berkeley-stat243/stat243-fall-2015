@@ -1,0 +1,272 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\begin_preamble
+\usepackage[unicode=true]{hyperref}
+\usepackage{/accounts/gen/vis/paciorek/latex/paciorek-asa,times,graphics}
+\input{/accounts/gen/vis/paciorek/latex/paciorekMacros}
+%\renewcommand{\baselinestretch}{1.5}
+\hypersetup{unicode=true, pdfusetitle,bookmarks=true,bookmarksnumbered=false,bookmarksopen=false,breaklinks=false,pdfborder={0 0 1},backref=false,colorlinks=true,}
+\end_preamble
+\use_default_options false
+\begin_modules
+knitr
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 12
+\spacing onehalf
+\use_hyperref false
+\papersize letterpaper
+\use_geometry true
+\use_amsmath 1
+\use_esint 0
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 1in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Unit 8: Parallel Processing 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Enumerate
+multicore vs.
+ distributed vs GPU
+\end_layout
+
+\begin_layout Enumerate
+foreach (see modelLongFitPPpar.q in extremes) [test out with SNOW, multicore,
+ maybe Rmpi on SCF] (be careful with memory since it loads up the cores/processo
+rs)
+\end_layout
+
+\begin_layout Enumerate
+snowfall package
+\end_layout
+
+\begin_layout Enumerate
+Schmidberger M, Morgan M, Eddelbuettel D, Yu H, Tierney L, Mansmann U (2009).
+ "State of the Art in Parallel Computing with R." Journal of Statistical
+ Software, 31(1), 1­27.
+ 
+\end_layout
+
+\begin_layout Enumerate
+threading - test with openBLAS by requesting more threads on SCF
+\end_layout
+
+\begin_layout Enumerate
+manual parallel processing (see batch package in R)
+\end_layout
+
+\begin_layout Enumerate
+bigmem
+\end_layout
+
+\begin_layout Enumerate
+map-reduce
+\end_layout
+
+\begin_layout Enumerate
+parallel RNG
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Computer architecture
+\end_layout
+
+\begin_layout Standard
+Computers now come with multiple processors for doing computation.
+ Basically, physical constraints have made it harder to keep increasing
+ the speed of individual processors, so the chip industry is now putting
+ multiple processing units in a given computer and trying/hoping to rely
+ on implementing computations in a way that takes advantage of the multiple
+ processors.
+\end_layout
+
+\begin_layout Standard
+Everyday personal computers often have more than one processor (more than
+ one chip) and on a given processor, often have more than one core (multi-core).
+ A multi-core processor has multiple processors on a single computer chip.
+ On personal computers, all the processors and cores share the same memory.
+\end_layout
+
+\begin_layout Standard
+Supercomputers and computer clusters generally have tens, hundreds, or thousands
+ of 'nodes', linked by a fast local network.
+ Each node is essentially a computer with its own processor(s) and memory.
+ Memory is local to each node (distributed memory).
+ One basic principle is that communication between a processor and its memory
+ is much faster than communication between processors with different memory.
+ An example of a modern supercomputer is the Edison supercomputer at Lawrence
+ Berkeley National Lab, which has 5576 nodes, each with two processors and
+ each processor with 12 cores, giving 133,824 total processing cores.
+ Each node has 64 Gb of memory for a total of 357 Tb.
+\end_layout
+
+\begin_layout Standard
+There is little practical distinction between multi-processor and multi-core
+ situations.
+ The main issue is whether processes share memory or not.
+ In general, I won't distinguish between cores and processors.
+ We'll just focus on the number of cores on given personal computer or a
+ given node in a cluster.
+\end_layout
+
+\begin_layout Section
+Parallel processing with shared memory
+\end_layout
+
+\begin_layout Standard
+The core content on parallel processing that we'll cover in the course is
+ in the tutorial on basic parallel processing in R, Python, Matlab and C:
+ see 
+\begin_inset CommandInset href
+LatexCommand href
+target "https://github.com/berkeley-scf/tutorial-parallel-basics"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+You can ignore the material in the tutorial that is related to Python, Matlab,
+ and C for the purpose of this course.
+\end_layout
+
+\begin_layout Standard
+For now, you can also ignore the section on random number generation as
+ we'll be talking about that in the simulation unit in a couple weeks.
+ 
+\end_layout
+
+\begin_layout Section
+Other approaches to parallel processing
+\end_layout
+
+\begin_layout Standard
+Other approaches to parallel processing include:
+\end_layout
+
+\begin_layout Itemize
+GPUs
+\end_layout
+
+\begin_layout Itemize
+Spark and Hadoop
+\end_layout
+
+\begin_layout Itemize
+Tools in R, Python and Matlab that allow for parallelizing loops across
+ multiple machines
+\end_layout
+
+\begin_layout Itemize
+Distributed computing using MPI
+\end_layout
+
+\begin_layout Standard
+The tutorial on basic parallel processing has some links to information
+ on these topics.
+ Unfortunately, except for Spark, we won't have time in this course to go
+ into these topics.
+ 
+\end_layout
+
+\begin_layout Section
+Using an Amazon Web Services EC2 virtual machine
+\end_layout
+
+\begin_layout Standard
+We have a small grant from Amazon to use their EC2 service for class work.
+ Mostly this will be used for Spark, but you can also use it for parallel
+ processing on a single machine, either to test out the code in the parallel
+ processing tutorial or to work on problem set questions.
+ That said, for the most part you can also just use the BCE VM on your own
+ machine provided your machine has enough cores, memory, and disk space
+ that can be shared with the VM.
+ 
+\end_layout
+
+\begin_layout Standard
+For details on starting up an Amazon EC2 instance that uses the BCE VM,
+ please se the 
+\emph on
+AWSsetup.txt
+\emph default
+ and 
+\emph on
+startEC2virtualMachine.txt
+\emph default
+ files in the 
+\emph on
+howtos
+\emph default
+ directory of the class repository.
+ Please stop or terminate your instance as soon as you are done using it,
+ so we don't run out of credits, and please don't run an EC2 instance for
+ more than a couple of hours.
+\end_layout
+
+\end_body
+\end_document
