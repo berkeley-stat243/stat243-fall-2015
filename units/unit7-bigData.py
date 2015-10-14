@@ -59,7 +59,7 @@ echo "http://${MASTER_IP}:50070/"
 
 # when you are done and want to shutdown the cluster:
 #  IMPORTANT to avoid extra charges!!!
-./spark-ec2 --region=us-west-2 destroy ${mycluster}
+./spark-ec2 --region=us-west-2 --delete-groups destroy ${mycluster}
 
 ## @knitr spark-hdfs
 

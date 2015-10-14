@@ -5,6 +5,6 @@ These instructions are for setting up your Amazon web services class account.
 2) Go to Services and select S3 under Storage and Content Delivery.
 
 3) Navigate through the directory structure to the folder for your account.
-All Buckets / stat243-fall-2015-uq90e10 / home / <your_username>
+All Buckets / berkeley-scf / home / <your_username>
 
 4) Download the stat243-fall-2015-credentials.boto file and the stat243-fall-2015-ssh_key.pem file to your local computer. You'll need to select each file and then choose "Actions -> Download". Put the .pem file in the .ssh directory in your home directory.

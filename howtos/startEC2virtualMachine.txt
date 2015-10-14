@@ -8,7 +8,7 @@ Note that these instructions lead you through starting the VM through the AWS we
 
 3) Click on "Launch Instance"
 
-4) In the list of tabs on the left, select "Community AMIs" and search for BCE-2015-fall. Then Select that AMI. This is an updated version of the VM you've been using on your laptop but set up to work on Amazon's EC2.
+4) In the list of tabs on the left, select "Community AMIs" and search for BCE-2015-fall (or BCE-2015-fall-preview-2 if BCE-2015-fall is not available yet). Then Select that AMI. This is an updated version of the VM you've been using on your laptop but set up to work on Amazon's EC2.
 
 5) You should now be at "2 - Choose Instance Type". For exploring shared memory parallelization you'll probably want to choose an instance type with at least 4 vCPUs (m3.xlarge would be appropriate). Try not to choose an instance more powerful than you need as the more powerful the instance the more of our class credits you'll use. At the moment, I've restricted use to the following instance types, "t2.micro", "t2.small", "m3.xlarge", "m1.large", "m3.large", "c4.xlarge", "c4.large", but if you have a reason to want to try a different one, let me know. Click on 'Next: Configure Instance Details" and then on "Next: Add Storage".
 
