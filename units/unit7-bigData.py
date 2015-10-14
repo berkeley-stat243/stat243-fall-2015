@@ -30,7 +30,7 @@ AWS_SECRET_ACCESS_KEY=$(grep -i "^AWS_SECRET_ACCESS_KEY" ~/stat243-fall-2015-cre
 
 # login to cluster
 # as root
-./spark-ec2 -k ec2star -i ~/.ssh/stat243-fall-2015-ssh_key.pem --region=us-west-2 \
+./spark-ec2 -k chris_paciorek@yahoo.com:stat243-fall-2015 -i ~/.ssh/stat243-fall-2015-ssh_key.pem --region=us-west-2 \
    login ${mycluster}
 # or you can ssh in directly if you know the URL
 # ssh -i ~/.ssh/stat243-fall-2015-ssh_key.pem root@ec2-54-71-204-234.us-west-2.compute.amazonaws.com
@@ -97,11 +97,12 @@ pyspark
 from operator import add
 import numpy as np
 
-lines = sc.textFile('/data/airline').cache()
-numLines = lines.count()
+lines = sc.textFile('/data/airline')
 
 # particularly for in-class demo - good to repartition the 3 files to more partitions
 # lines = lines.repartition(96).cache()
+
+numLines = lines.count()
 
 # mapper
 def stratify(line):
@@ -175,7 +176,7 @@ def medianFun(input):
         return((input[0], -9999, -9999))
 
 
-output = lines.map(computeKeyValue).groupByKey().cache()
+output = lines.map(computeKeyValue).groupByKey()
 medianResults = output.map(medianFun).collect()
 medianResults[0:5]
 # [(u'DL-8-PHL-LAX', 85.0, 108.0), (u'OO-12-IAH-CLL', -6.0, 0.0), (u'AA-4-LAS-JFK', 2.0, 0.0), (u'WN-8-SEA-GEG', 0.0, 0.0), (u'MQ-1-ORD-MDT', 3.0, 1.0)]
