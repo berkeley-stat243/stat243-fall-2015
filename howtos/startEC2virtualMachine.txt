@@ -19,7 +19,7 @@ Note that these instructions lead you through starting the VM through the AWS we
 8) Choose the key pair associated with your account and "Launch Instances". Then choose "View Instances".
 
 9) Once the instance has finished launching you can select "Connect". The basic syntax you'll need to ssh to the instance is:
-ssh -i ~/.ssh/stat243-fall-2014-ssh_key.pem ubuntu@54.69.233.66
+ssh -i ~/.ssh/stat243-fall-2015-ssh_key.pem ubuntu@54.69.233.66
 But the digits following 'ubuntu' will vary.
 
 (This assumes that you've saved your private SSH key (that you downloaded as in AWSsetup.txt) to ~/.ssh. Also you'll likely need to change the permissions on the private SSH key file so they are read-only for only "u". You can do this with:
