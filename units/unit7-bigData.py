@@ -71,10 +71,16 @@ hadoop fs -mkdir /data/airline
 
 df -h
 mkdir /mnt/airline
-scp paciorek@smeagol.berkeley.edu:/scratch/users/paciorek/243/AirlineData/[12]*bz2 \ 
-   /mnt/airline
+cd /mnt/airline
 # for in-class demo:
-# scp paciorek@smeagol.berkeley.edu:/scratch/users/paciorek/243/AirlineData/198*bz2 /mnt/airline
+scp paciorek@smeagol.berkeley.edu:/scratch/users/paciorek/243/AirlineData/198*bz2 .
+# scp paciorek@smeagol.berkeley.edu:/scratch/users/paciorek/243/AirlineData/[12]*bz2 .
+
+# for students:
+# wget http://www.stat.berkeley.edu/share/paciorek/1987-2008.csvs.tgz
+# tar -xvzf 1987-2008.csvs.tgz
+# or individual files, e.g., data for 1987
+# wget http://www.stat.berkeley.edu/share/paciorek/1987.csv.bz2
 
 hadoop fs -copyFromLocal /mnt/airline/*bz2 /data/airline
 

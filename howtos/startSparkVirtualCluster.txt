@@ -28,6 +28,12 @@ Occasionally you'll get some error messages and things won't start up correctly.
 
 6) Now you can follow the template provided in the Unit 7 class notes to use Spark
 
+Note that the airline data can be obtained (once you login to the master node) via:
+wget http://www.stat.berkeley.edu/share/paciorek/1987-2008.csvs.tgz
+tar -xvzf 1987-2008.csvs.tgz
+or for an individual file, such as for 1987:
+wget http://www.stat.berkeley.edu/share/paciorek/1987.csv.bz2
+
 6a) If you experience problems where the connection to your master instance gets cut off, this may be interruption due to a bad wireless connection. Here's something that can help. As soon as you login to your instance, type "screen -x -RR". This will put you in a shell session that you'll be able to go back to even if you lose your connection. If you lose the connection, then when you connect back to the master node, type "screen -x -RR" again and you should be back where you were. If you were in Python, you may need to hit return once or twice to get the Python prompt back.
 
 7) IMPORTANT: delete your cluster as soon as you are done with it. We only have a limited number of credits for everyone in the class to use.
