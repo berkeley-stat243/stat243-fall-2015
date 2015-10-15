@@ -251,7 +251,8 @@ dat$Dest
 
 # let's do some basic tabulation
 DestTable <- sort(table.ff(dat$Dest), decreasing = TRUE)
-# why do I need to call table.ff() and not table()?
+# table is a generic, so shouldn't need explicit table.ff,
+# unless dat$Dest is not see as an ff object
 
 # takes a while
 
@@ -274,6 +275,8 @@ min.ff(dat$DepDelay, na.rm = TRUE)
 # [1] -1410
 max.ff(dat$DepDelay, na.rm = TRUE)
 # [1] 2601
+
+# why do I need to call min.ff and max.ff rather than min/max?
 
 # tmp <- clone(dat$DepDelay) # make a deep copy
 
