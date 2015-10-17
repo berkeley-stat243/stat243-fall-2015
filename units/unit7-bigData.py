@@ -89,7 +89,7 @@ hadoop fs -ls /data/airline
 
 # get numpy installed
 # there is a glitch in the EC2 setup that Spark provides -- numpy is not installed on the version of Python that Spark uses (Python 2.7). To install numpy on both the master and worker nodes, do the following as root on the master node.
-yum install python27-pip python27-devel
+yum install -y python27-pip python27-devel
 pip-2.7 install 'numpy==1.9.2'  # 1.10.1 has an issue with a warning in median()
 /root/spark-ec2/copy-dir /usr/local/lib64/python2.7/site-packages/numpy
 
@@ -210,7 +210,6 @@ import numpy as np
 from operator import add
 
 P = 8
-bc = sc.broadcast(P)
 
 #######################
 # calc xtx and xty
@@ -287,6 +286,9 @@ batches = lines.mapPartitions(readPointPartition).cache()
 def denomSumSqPartition(mat):
     return((mat*mat).sum(axis=0))
 
+# notice I do use global variables in here
+# one may be able to avoid this by using
+# nested functions, if one wanted to
 def getNumPartition(mat):
     beta[p] = 0
     sumXb = mat[:, 0:P].dot(beta)
@@ -308,9 +310,6 @@ crit = 1e16
 while crit > tol and it <= maxIts:
 #for it in range(1,6):
     for p in xrange(P):
-        # distribute current beta and current coordinate
-        bc = sc.broadcast(beta)
-        bc = sc.broadcast(p)
         # get numerator as product of residual and X for coordinate
         sumNum = batches.map(getNumPartition).reduce(add)
         beta[p] = sumNum / sumx2[p]   
@@ -342,9 +341,6 @@ beta = np.array([0.0] * P)
 beta[0] = batches.map(sumVals).reduce(add) / n
 oldBeta = beta.copy()
 
-bc = sc.broadcast(P)
-bc = sc.broadcast(beta)
-
 def getGradBatch(mat):
     sumXb = mat[:, 0:P].dot(beta)
     return( ((sumXb - mat[:,P])*((mat[:, 0:P]).T)).sum(1) )
@@ -365,7 +361,6 @@ while crit > tol and it < maxIts:
     gradVec = batches.map(getGradBatch).reduce(add)
     beta = beta - alpha*gradVec / n
     crit = sum(abs(beta - oldBeta))
-    bc = sc.broadcast(beta)
     objValue = batches.map(ssqObj).reduce(add)
     oldBeta = beta.copy()
     storeVals[it, 0] = pow(objValue/n,0.5)
