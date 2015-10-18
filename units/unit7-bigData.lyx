@@ -1535,13 +1535,21 @@ Next let's do a bit of exploration of the dataset.
 Let's review our understanding of S3 methods.
  Why did I need to call 
 \emph on
-table.ff()
+min.ff()
 \emph default
  rather than just simply calling 
 \emph on
+min()
+\emph default
+ on the ff object? Could I have called 
+\emph on
 table()
 \emph default
- on the ff object?
+ instead of 
+\emph on
+table.ff()
+\emph default
+?
 \end_layout
 
 \begin_layout Standard

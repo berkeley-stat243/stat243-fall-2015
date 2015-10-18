@@ -1,0 +1,6309 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\begin_preamble
+\usepackage{/accounts/gen/vis/paciorek/latex/paciorek-asa,times,graphics,listings}
+\input{/accounts/gen/vis/paciorek/latex/paciorekMacros}
+%\renewcommand{\baselinestretch}{1.5}
+
+\hypersetup{unicode=true, pdfusetitle,
+bookmarks=true,bookmarksnumbered=false,bookmarksopen=false,
+ breaklinks=false,pdfborder={0 0 1},backref=false,colorlinks=true,}
+\end_preamble
+\use_default_options false
+\begin_modules
+knitr
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 12
+\spacing onehalf
+\use_hyperref false
+\papersize letterpaper
+\use_geometry true
+\use_amsmath 1
+\use_esint 0
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 1in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Unit 9: Numerical linear algebra
+\end_layout
+
+\begin_layout Chunk
+
+<<read-chunk, echo=FALSE, include=FALSE>>= 
+\end_layout
+
+\begin_layout Chunk
+
+read_chunk('unit9-linalg.R') 
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+For 2015 - find an example of a doc corpus on which to explicitly illustrate
+ the SVD word-doc-topic example
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Note that in this material, I often sneak an extra trick into my example
+ code.
+ Focus first on the key thing I'm illustrating and then you might absorb
+ the extra trick.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+References: 
+\end_layout
+
+\begin_layout Itemize
+Gentle: Numerical Linear Algebra for Applications in Statistics (my notes
+ here are based primarily on this source) [Gentle-NLA]
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Unfortunately, this is not in the UCB library system - I have a copy that
+ you can take a look at.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Gentle: Computational Statistics [Gentle-CS]
+\end_layout
+
+\begin_layout Itemize
+Lange: Numerical Analysis for Statisticians
+\end_layout
+
+\begin_layout Itemize
+Monahan: Numerical Methods of Statistics
+\end_layout
+
+\begin_layout Standard
+In working through how to compute something or understanding an algorithm,
+ it can be very helpful to depict the matrices and vectors graphically.
+ We'll see this on the board in class.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+[Question: When would we actually find an explicit matrix inverse? [std
+ error]
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+[discuss sweeping?]
+\end_layout
+
+\begin_layout Enumerate
+computational order
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+ill-conditioned matrices (discuss condition number)
+\end_layout
+
+\begin_layout Enumerate
+matrix decompositions (G-CS, L, GvL if need more technical non-computing
+ detail, a bit in VR p.
+ 63)
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+SVD, eigen, Chol, Moore-Penrose (LU, QR?)
+\end_layout
+
+\begin_layout Enumerate
+challenge: have them profile chol in R, Matlab (on SCF), py, C and talk
+ about how R is probably pretty fast
+\end_layout
+
+\begin_layout Enumerate
+talk about BLAS/Lapack
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+orthogonalizations (Householder, Gram-Schmidt, Givens) (G-NLA, T, L)
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+reflections and rotations
+\end_layout
+
+\begin_layout Enumerate
+solving linear systems
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+matrix storage and access (G-NLA)
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+a bit on C/Fortran and passing objects
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+efficient matrix calcs
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+computational order of a calc (O(n^3), etc.)
+\end_layout
+
+\begin_layout Enumerate
+in R
+\end_layout
+
+\begin_layout Enumerate
+trace(AB)=sum(A direct B^T)
+\end_layout
+
+\begin_layout Enumerate
+external libraries: BLAS/Lapack/GSL
+\end_layout
+
+\begin_layout Enumerate
+threading?
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+low-rank updates/SMW (G-CS), conjugate gradient
+\end_layout
+
+\begin_layout Enumerate
+tensor product matrices?
+\end_layout
+
+\begin_layout Enumerate
+sparse matrices
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+talk abut sparse storage and algorithms for general sparse matrices
+\end_layout
+
+\begin_layout Enumerate
+talk about patterned sparse matrices, e.g., banded
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+spline bases? - perhaps discuss issues with RWC style and b-splines
+\end_layout
+
+\end_deeper
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Preliminaries
+\end_layout
+
+\begin_layout Subsection
+Goals
+\end_layout
+
+\begin_layout Standard
+Here's what I'd like you to get out of this unit:
+\end_layout
+
+\begin_layout Enumerate
+How to think about the computational order (number of computations involved)
+ of a problem
+\end_layout
+
+\begin_layout Enumerate
+How to choose a computational approach to a given linear algebra calculation
+ you need to do.
+ 
+\end_layout
+
+\begin_layout Enumerate
+An understanding of how issues with computer numbers (Unit 6) affect linear
+ algebra calculations.
+\end_layout
+
+\begin_layout Subsection
+Key principle
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+The form of a mathematical expression and how it should be evaluated on
+ a computer may be very different.
+
+\series default
+ Better computational approaches can increase speed and improve the numerical
+ properties of the calculation.
+ 
+\end_layout
+
+\begin_layout Standard
+Example 1: We do not compute 
+\begin_inset Formula $(X^{\top}X)^{-1}X^{\top}Y$
+\end_inset
+
+ by computing 
+\begin_inset Formula $X^{\top}X$
+\end_inset
+
+ and finding its inverse.
+ In fact, perhaps more surprisingly, we may never actually form 
+\begin_inset Formula $X^{\top}X$
+\end_inset
+
+ in some implementations.
+\end_layout
+
+\begin_layout Standard
+Example 2: Suppose I have a matrix 
+\begin_inset Formula $A$
+\end_inset
+
+, and I want to permute (switch) two rows.
+ I can do this with a permutation matrix, 
+\begin_inset Formula $P$
+\end_inset
+
+, which is mostly zeroes.
+ On a computer, in general I wouldn't need to even change the values of
+ 
+\begin_inset Formula $A$
+\end_inset
+
+ in memory in some cases (e.g., if I were to calculate 
+\begin_inset Formula $PAB$
+\end_inset
+
+).
+ Why not?
+\end_layout
+
+\begin_layout Subsection
+Computational complexity
+\end_layout
+
+\begin_layout Standard
+We can assess the computational complexity of a linear algebra calculation
+ by counting the number multiplys/divides and the number of adds/subtracts.
+ Sidenote: addition is a bit faster than multiplication, so some algorithms
+ attempt to trade multiplication for addition.
+ 
+\end_layout
+
+\begin_layout Standard
+In general we do not try to count the actual number of calculations, but
+ just their order, though in some cases in this unit we'll actually get
+ a more exact count.
+ In general, we denote this as 
+\begin_inset Formula $O(f(n))$
+\end_inset
+
+ which means that the number of calculations approaches 
+\begin_inset Formula $cf(n)$
+\end_inset
+
+ as 
+\begin_inset Formula $n\to\infty$
+\end_inset
+
+ (i.e., we know the calculation is approximately proportional to 
+\begin_inset Formula $f(n)$
+\end_inset
+
+).
+ Consider matrix multiplication, 
+\begin_inset Formula $AB$
+\end_inset
+
+, with matrices of size 
+\begin_inset Formula $a\times b$
+\end_inset
+
+ and 
+\begin_inset Formula $b\times c$
+\end_inset
+
+.
+ Each column of the second matrix is multiplied by all the rows of the first.
+ For any given inner product of a row by a column, we have 
+\begin_inset Formula $b$
+\end_inset
+
+ multiplies.
+ We repeat these operations for each column and then for each row, so we
+ have 
+\begin_inset Formula $abc$
+\end_inset
+
+ multiplies so 
+\begin_inset Formula $O(abc)$
+\end_inset
+
+ operations.
+ We could count the additions as well, but there's usually an addition for
+ each multiply, so we can usually just count the multiplys and then say
+ there are such and such {multiply and add}s.
+ This is Monahan's approach, but you may see other counting approaches where
+ one counts the multiplys and the adds separately.
+\end_layout
+
+\begin_layout Standard
+For two symmetric, 
+\begin_inset Formula $n\times n$
+\end_inset
+
+ matrices, this is 
+\begin_inset Formula $O(n^{3})$
+\end_inset
+
+.
+ Similarly, matrix factorization (e.g., the Cholesky decomposition) is 
+\begin_inset Formula $O(n^{3})$
+\end_inset
+
+ unless the matrix has special structure, such as being sparse.
+ As matrices get large, the speed of calculations decreases drastically
+ because of the scaling as 
+\begin_inset Formula $n^{3}$
+\end_inset
+
+ and memory use increases drastically.
+ In terms of memory use, to hold the result of the multiply indicated above,
+ we need to hold 
+\begin_inset Formula $ab+bc+ac$
+\end_inset
+
+ total elements, which for symmetric matrices sums to 
+\begin_inset Formula $3n^{2}$
+\end_inset
+
+.
+ So for a matrix with 
+\begin_inset Formula $n=10000$
+\end_inset
+
+, we have 
+\begin_inset Formula $3\cdot10000^{2}\cdot8/1e9=2.4$
+\end_inset
+
+Gb.
+\end_layout
+
+\begin_layout Standard
+When we have 
+\begin_inset Formula $O(n^{q})$
+\end_inset
+
+ this is known as polynomial time.
+ Much worse is 
+\begin_inset Formula $O(b^{n})$
+\end_inset
+
+ (exponential time), while much better is 
+\begin_inset Formula $O(\log n$
+\end_inset
+
+) (log time).
+ Computer scientists talk about NP-complete problems; these are essentially
+ problems for which there is not a polynomial time algorithm - it turns
+ out all such problems can be rewritten such that they are equivalent to
+ one another.
+ 
+\end_layout
+
+\begin_layout Standard
+In real calculations, it's possible to have the actual time ordering of
+ two approaches differ from what the order approximations tell us.
+ For example, something that involves 
+\begin_inset Formula $n^{2}$
+\end_inset
+
+ operations may be faster than one that involves 
+\begin_inset Formula $1000(n\log n+n)$
+\end_inset
+
+ even though the former is 
+\begin_inset Formula $O(n^{2})$
+\end_inset
+
+ and the latter 
+\begin_inset Formula $O(n\log n)$
+\end_inset
+
+.
+ The problem is that the constant, 
+\begin_inset Formula $c=1000$
+\end_inset
+
+, can matter (depending on how big 
+\begin_inset Formula $n$
+\end_inset
+
+ is), as can the extra calculations from the lower order term(s), in this
+ case 
+\begin_inset Formula $1000n$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+A note on terminology: 
+\emph on
+flops
+\emph default
+ stands for both floating point operations (the number of operations required)
+ and floating point operations per second, the speed of calculation.
+ 
+\end_layout
+
+\begin_layout Subsection
+Notation and dimensions
+\end_layout
+
+\begin_layout Standard
+I'll try to use capital letters for matrices, 
+\begin_inset Formula $A$
+\end_inset
+
+, and lower-case for vectors, 
+\begin_inset Formula $x$
+\end_inset
+
+.
+ Then 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+ is the ith element of 
+\begin_inset Formula $x$
+\end_inset
+
+, 
+\begin_inset Formula $A_{ij}$
+\end_inset
+
+ is the 
+\begin_inset Formula $i$
+\end_inset
+
+th row, 
+\begin_inset Formula $j$
+\end_inset
+
+th column element, and 
+\begin_inset Formula $A_{\cdot j}$
+\end_inset
+
+ is the 
+\begin_inset Formula $j$
+\end_inset
+
+th column and 
+\begin_inset Formula $A_{i\cdot}$
+\end_inset
+
+ the 
+\begin_inset Formula $i$
+\end_inset
+
+th row.
+ By default, we'll consider a vector, 
+\begin_inset Formula $x$
+\end_inset
+
+, to be a one-column matrix, and 
+\begin_inset Formula $x^{\top}$
+\end_inset
+
+ to be a one-row matrix.
+ Some of the textbook resources also use 
+\begin_inset Formula $a_{ij}$
+\end_inset
+
+ for 
+\begin_inset Formula $A_{ij}$
+\end_inset
+
+ and 
+\begin_inset Formula $a_{j}$
+\end_inset
+
+ for the 
+\begin_inset Formula $j$
+\end_inset
+
+th column.
+ 
+\end_layout
+
+\begin_layout Standard
+Throughout, we'll need to be careful that the matrices involved in an operation
+ are conformable: for 
+\begin_inset Formula $A+B$
+\end_inset
+
+ both matrices need to be of the same dimension, while for 
+\begin_inset Formula $AB$
+\end_inset
+
+ the number of columns of 
+\begin_inset Formula $A$
+\end_inset
+
+ must match the number of rows of 
+\begin_inset Formula $B$
+\end_inset
+
+.
+ Note that this allows for 
+\begin_inset Formula $B$
+\end_inset
+
+ to be a column vector, with only one column, 
+\begin_inset Formula $Ab$
+\end_inset
+
+.
+ Just checking dimensions is a good way to catch many errors.
+ Example: is 
+\begin_inset Formula $\mbox{Cov}(Ax)=A\mbox{Cov}(x)A^{\top}$
+\end_inset
+
+ or 
+\begin_inset Formula $\mbox{Cov}(Ax)=A^{\top}\mbox{Cov}(x)A$
+\end_inset
+
+? Well, if 
+\begin_inset Formula $A$
+\end_inset
+
+ is 
+\begin_inset Formula $m\times n$
+\end_inset
+
+, it must be the former, as the latter is not conformable.
+\end_layout
+
+\begin_layout Standard
+The inner product of two vectors is 
+\begin_inset Formula $\sum_{i}x_{i}y_{i}=x^{\top}y\equiv\langle x,y\rangle\equiv x\cdot y$
+\end_inset
+
+.
+ The outer product is 
+\begin_inset Formula $xy^{\top}$
+\end_inset
+
+, which comes from all pairwise products of the elements.
+ 
+\end_layout
+
+\begin_layout Standard
+When the indices of summation should be obvious, I'll sometimes leave them
+ implicit.
+ Ask me if it's not clear.
+\end_layout
+
+\begin_layout Subsection
+Norms
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\|x\|_{p}=(\sum_{i}|x_{i}|^{p})^{1/p}$
+\end_inset
+
+ and the standard (Euclidean) norm is 
+\begin_inset Formula $\|x\|_{2}=\sqrt{\sum x_{i}^{2}}=\sqrt{x^{\top}x}$
+\end_inset
+
+, just the length of the vector in Euclidean space, which we'll refer to
+ as 
+\begin_inset Formula $\|x\|$
+\end_inset
+
+, unless noted otherwise.
+ The standard norm for a matrix is the Frobenius norm, 
+\begin_inset Formula $\|A\|_{F}=(\sum_{i,j}a_{ij}^{2})^{1/2}$
+\end_inset
+
+.
+ There is also the induced matrix norm, corresponding to any chosen vector
+ norm,
+\begin_inset Formula 
+\[
+\|A\|=\sup_{x\ne0}\frac{\|Ax\|}{\|x\|}
+\]
+
+\end_inset
+
+So we have 
+\begin_inset Formula 
+\[
+\|A\|_{2}=\sup_{x\ne0}\frac{\|Ax\|_{2}}{\|x\|_{2}}=\sup_{\|x\|_{2}=1}\|Ax\|_{2}
+\]
+
+\end_inset
+
+A property of any legitimate matrix norm (including the induced norm) is
+ that 
+\begin_inset Formula $\|AB\|\leq\|A\|\|B\|$
+\end_inset
+
+.
+ Recall that norms must obey the triangle inequality, 
+\begin_inset Formula $\|A+B\|\leq\|A\|+\|B\|$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+A normalized vector is one with 
+\begin_inset Quotes eld
+\end_inset
+
+length
+\begin_inset Quotes erd
+\end_inset
+
+, i.e., Euclidean norm, of one.
+ We can easily normalize a vector: 
+\begin_inset Formula $\tilde{x}=x/\|x\|$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The angle between two vectors is
+\begin_inset Formula 
+\[
+\theta=\cos^{-1}\left(\frac{\langle x,y\rangle}{\sqrt{\langle x,x\rangle\langle y,y\rangle}}\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Orthogonality
+\end_layout
+
+\begin_layout Standard
+Two vectors are orthogonal if 
+\begin_inset Formula $x^{\top}y=0$
+\end_inset
+
+, in which case we say 
+\begin_inset Formula $x\perp y$
+\end_inset
+
+.
+ An orthogonal matrix is a matrix in which all of the columns are orthogonal
+ to each other and normalized.
+ Orthogonal matrices can be shown to have full rank.
+ Furthermore if 
+\begin_inset Formula $A$
+\end_inset
+
+ is orthogonal, 
+\begin_inset Formula $A^{\top}A=I$
+\end_inset
+
+, so 
+\begin_inset Formula $A^{-1}=A^{\top}$
+\end_inset
+
+.
+ Given all this, the determinant of orthogonal 
+\begin_inset Formula $A$
+\end_inset
+
+ is either 1 or -1.
+ Finally the product of two orthogonal matrices, 
+\begin_inset Formula $A$
+\end_inset
+
+ and 
+\begin_inset Formula $B$
+\end_inset
+
+, is also orthogonal since 
+\begin_inset Formula $(AB)^{\top}AB=B^{\top}A^{\top}AB=B^{\top}B=I$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Paragraph
+Permutations
+\end_layout
+
+\begin_layout Standard
+Sometimes we make use of matrices that permute two rows (or two columns)
+ of another matrix when multiplied.
+ Such a matrix is known as an elementary permutation matrix and is an orthogonal
+ matrix with a determinant of -1.
+ You can multiply such matrices to get more general permutation matrices
+ that are also orthogonal.
+ If you premultiply by 
+\begin_inset Formula $P$
+\end_inset
+
+, you permute rows, and if you postmultiply by 
+\begin_inset Formula $P$
+\end_inset
+
+ you permute columns.
+ Note that on a computer, you wouldn't need to actually do the multiply
+ (and if you did, you should use a sparse matrix routine), but rather one
+ can often just rework index values that indicate where relevant pieces
+ of the matrix are stored (more in the next section).
+\end_layout
+
+\begin_layout Subsection
+Some vector and matrix properties
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $AB\ne BA$
+\end_inset
+
+ but 
+\begin_inset Formula $A+B=B+A$
+\end_inset
+
+ and 
+\begin_inset Formula $A(BC)=(AB)C$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+In R, recall the syntax is
+\end_layout
+
+\begin_layout Chunk
+
+<<linalg-syntax, eval=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+You don't need the spaces, but they're nice for code readability.
+\end_layout
+
+\begin_layout Subsection
+Trace and determinant of square matrices
+\end_layout
+
+\begin_layout Standard
+The trace of a matrix is the sum of the diagonal elements.
+ For square matrices, 
+\begin_inset Formula $\mbox{tr}(A+B)=\mbox{tr}(A)+\mbox{tr}(B)$
+\end_inset
+
+, 
+\begin_inset Formula $\mbox{tr}(A)=\mbox{tr}(A^{\top})$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+We also have 
+\begin_inset Formula $\mbox{tr}(ABC)=\mbox{tr}(CAB)=\mbox{tr}(BCA)$
+\end_inset
+
+ - basically you can move a matrix from the beginning to the end or end
+ to beginning, provided they are conformable for this operation.
+ This is helpful for a couple reasons:
+\end_layout
+
+\begin_layout Enumerate
+We can find the ordering that reduces computation the most if the individual
+ matrices are not square.
+ 
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $x^{\top}Ax=\mbox{tr}(x^{\top}Ax)$
+\end_inset
+
+ since the quadratic form, 
+\begin_inset Formula $x^{\top}Ax$
+\end_inset
+
+, is a scalar, and this is equal to 
+\begin_inset Formula $\mbox{tr}(xx^{\top}A)$
+\end_inset
+
+ where 
+\begin_inset Formula $xx^{\top}A$
+\end_inset
+
+ is a matrix.
+ It can be helpful to be able to go back and forth between a scalar and
+ a trace in some statistical calculations.
+\end_layout
+
+\begin_layout Standard
+For square matrices, the determinant exists and we have 
+\begin_inset Formula $|AB|=|A||B|$
+\end_inset
+
+ and therefore, 
+\begin_inset Formula $|A^{-1}|=1/|A|$
+\end_inset
+
+ since 
+\begin_inset Formula $|I|=|AA^{-1}|=1$
+\end_inset
+
+.
+ Also 
+\begin_inset Formula $|A|=|A^{\top}|$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Paragraph
+Other matrix multiplications
+\end_layout
+
+\begin_layout Standard
+The Hadamard or direct product is simply multiplication of the correspoding
+ elements of two matrices by each other.
+ In R this is simply
+\family typewriter
+ A * B
+\family default
+.
+\begin_inset Newline newline
+\end_inset
+
+
+\series bold
+Challenge
+\series default
+: How can I find 
+\begin_inset Formula $\mbox{tr}(AB)$
+\end_inset
+
+ without using 
+\family typewriter
+A %*% B
+\family default
+ ?
+\end_layout
+
+\begin_layout Standard
+The Kronecker product is the product of each element of one matrix with
+ the entire other matrix
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+A\otimes B=\left(\begin{array}{ccc}
+A_{11}B & \cdots & A_{1m}B\\
+\vdots & \ddots & \vdots\\
+A_{n1}B & \cdots & A_{nm}B
+\end{array}\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The inverse of a Kronecker product is the Kronecker product of the inverses,
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+B^{-1}\otimes A^{-1}
+\]
+
+\end_inset
+
+which is obviously quite a bit faster because the inverse (i.e., solving a
+ system of equations) in this special case is 
+\begin_inset Formula $O(n^{3}+m^{3})$
+\end_inset
+
+ rather than the naive approach being 
+\begin_inset Formula $O((nm)^{3})$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsection
+Linear independence, rank, and basis vectors
+\end_layout
+
+\begin_layout Standard
+A set of vectors, 
+\begin_inset Formula $v_{1},\ldots v_{n}$
+\end_inset
+
+, is linearly independent (LIN) when none of the vectors can be represented
+ as a linear combination, 
+\begin_inset Formula $\sum c_{i}v_{i}$
+\end_inset
+
+, of the others for scalars, 
+\begin_inset Formula $c_{1},\ldots,c_{n}$
+\end_inset
+
+.
+ If we have vectors of length 
+\begin_inset Formula $n$
+\end_inset
+
+, we can have at most 
+\begin_inset Formula $n$
+\end_inset
+
+ linearly independent vectors.
+ The rank of a matrix is the number of linearly independent rows (or columns
+ - it's the same), and is at most the minimum of the number of rows and
+ number of columns.
+ We'll generally think about it in terms of the dimension of the column
+ space - so we can just think about the number of linearly independent columns.
+ 
+\end_layout
+
+\begin_layout Standard
+Any set of linearly independent vectors (say 
+\begin_inset Formula $v_{1},\ldots,v_{n}$
+\end_inset
+
+) span a space made up of all linear combinations of those vectors (
+\begin_inset Formula $\sum_{i=1}^{n}c_{i}v_{i}$
+\end_inset
+
+).
+ The spanning vectors are known as basis vectors.
+ We can express a vector 
+\begin_inset Formula $y$
+\end_inset
+
+ that is in the space with respect to (as a linear combination of) basis
+ vectors as 
+\begin_inset Formula $y=\sum_{i}c_{i}v_{i}$
+\end_inset
+
+, where if the basis vectors are normalized and orthogonal, we can find
+ the weights as 
+\begin_inset Formula $c_{i}=\langle y,v_{i}\rangle$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Consider a regression context.
+ We have 
+\begin_inset Formula $p$
+\end_inset
+
+ covariates (
+\begin_inset Formula $p$
+\end_inset
+
+ columns in the design matrix, 
+\begin_inset Formula $X$
+\end_inset
+
+), of which 
+\begin_inset Formula $q$
+\end_inset
+
+ are linearly independent covariates.
+ This means that 
+\begin_inset Formula $p-q$
+\end_inset
+
+ of the vectors can be written as linear combos of the 
+\begin_inset Formula $q$
+\end_inset
+
+ vectors.
+ The space spanned by the covariate vectors is of dimension 
+\begin_inset Formula $q$
+\end_inset
+
+, rather than 
+\begin_inset Formula $p$
+\end_inset
+
+, and 
+\begin_inset Formula $X^{\top}X$
+\end_inset
+
+ has 
+\begin_inset Formula $p-q$
+\end_inset
+
+ eigenvalues that are zero.
+ The 
+\begin_inset Formula $q$
+\end_inset
+
+ LIN vectors are basis vectors for the space - we can represent any point
+ in the space as a linear combination of the basis vectors.
+ You can think of the basis vectors as being like the axes of the space,
+ except that the basis vectors are not orthogonal.
+ So it's like denoting a point in 
+\begin_inset Formula $\Re^{q}$
+\end_inset
+
+ as a set of 
+\begin_inset Formula $q$
+\end_inset
+
+ numbers telling us where on each of the axes we are - this is the same
+ as a linear combination of axis-oriented vectors.
+ When we have 
+\begin_inset Formula $n\leq q$
+\end_inset
+
+, a vector of 
+\begin_inset Formula $n$
+\end_inset
+
+ observations can be represented exactly as a linear combination of the
+ 
+\begin_inset Formula $q$
+\end_inset
+
+ basis vectors, so there is no residual.
+ If 
+\begin_inset Formula $n=q$
+\end_inset
+
+, then we have a single unique solution, while if 
+\begin_inset Formula $n<q$
+\end_inset
+
+ we have multiple possible solutions and the system is ill-determined (under-det
+ermined).
+ Of course we usually have 
+\begin_inset Formula $n>q$
+\end_inset
+
+, so the system is overdetermined - there is no exact solution, but regression
+ is all about finding solutions that minimize some criterion about the differenc
+es between the observations and linear combinations of the columns of the
+ 
+\begin_inset Formula $X$
+\end_inset
+
+ matrix (such as least squares or penalized least squares).
+ In standard regression, we project the observation vector onto the space
+ spanned by the columns of the 
+\begin_inset Formula $X$
+\end_inset
+
+ matrix, so we find the point in the space closest to the observation vector.
+\end_layout
+
+\begin_layout Subsection
+Invertibility, singularity, rank, and positive definiteness
+\end_layout
+
+\begin_layout Standard
+For square matrices, let's consider how invertibility, singularity, rank
+ and positive (or non-negative) definiteness relate.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+insert code of example matrices and their eigendecompositions from linalg.q
+ in the demo code
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Square matrices that are 
+\begin_inset Quotes eld
+\end_inset
+
+regular
+\begin_inset Quotes erd
+\end_inset
+
+ have an eigendecomposition, 
+\begin_inset Formula $A=\Gamma\Lambda\Gamma^{-1}$
+\end_inset
+
+ where 
+\begin_inset Formula $\Gamma$
+\end_inset
+
+ is a matrix with the eigenvectors as the columns and 
+\begin_inset Formula $\Lambda$
+\end_inset
+
+ is a diagonal matrix of eigenvalues, 
+\begin_inset Formula $\Lambda_{ii}=\lambda_{i}$
+\end_inset
+
+.
+ Symmetric matrices and matrices with unique eigenvalues are regular, as
+ are some other matrices.
+ The number of non-zero eigenvalues is the same as the rank of the matrix.
+ Square matrices that have an inverse are also called nonsingular, and this
+ is equivalent to having full rank.
+ If the matrix is symmetric, the eigenvectors and eigenvalues are real and
+ 
+\begin_inset Formula $\Gamma$
+\end_inset
+
+ is orthogonal, so we have 
+\begin_inset Formula $A=\Gamma\Lambda\Gamma^{\top}$
+\end_inset
+
+.
+ The determinant of the matrix is the product of the eigenvalues (why?),
+ which is zero if it is less than full rank.
+ Note that if none of the eigenvalues are zero then 
+\begin_inset Formula $A^{-1}=\Gamma\Lambda^{-1}\Gamma^{\top}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Let's focus on symmetric matrices.
+ The symmetric matrices that tend to arise in statistics are either positive
+ definite (p.d.) or non-negative definite (n.n.d.).
+ If a matrix is positive definite, then by definition 
+\begin_inset Formula $x^{\top}Ax>0$
+\end_inset
+
+ for any 
+\begin_inset Formula $x$
+\end_inset
+
+.
+ Note that if 
+\begin_inset Formula $\mbox{Cov}(y)=A$
+\end_inset
+
+ then 
+\begin_inset Formula $x^{\top}Ax=x^{\top}\mbox{Cov}(y)x=\mbox{Cov}(x^{\top}y)=\mbox{Var}(x^{\top}y)$
+\end_inset
+
+ if so positive definiteness amounts to having linear combinations of random
+ variables (with the elements of 
+\begin_inset Formula $x$
+\end_inset
+
+ here being the weights) having positive variance.
+ So we must have that positive definite matrices are equivalent to variance-cova
+riance matrices (I'll just refer to this as a variance matrix or as a covariance
+ matrix).
+ If 
+\begin_inset Formula $A$
+\end_inset
+
+ is p.d.
+ then it has all positive eigenvalues and it must have an inverse, though
+ as we'll see, from a numerical perspective, we may not be able to compute
+ it if some of the eigenvalues are very close to zero.
+ In R, 
+\family typewriter
+eigen(A)$vectors
+\family default
+ is 
+\begin_inset Formula $\Gamma$
+\end_inset
+
+, with each column a vector, and 
+\family typewriter
+eigen(A)$values
+\family default
+ contains the ordered eigenvalues.
+\end_layout
+
+\begin_layout Standard
+Let's interpret the eigendecomposition in a generative context as a way
+ of generating random vectors.
+ We can generate 
+\begin_inset Formula $y$
+\end_inset
+
+ s.t.
+ 
+\begin_inset Formula $\mbox{Cov}(y)=A$
+\end_inset
+
+ if we generate 
+\begin_inset Formula $y=\Gamma\Lambda^{1/2}z$
+\end_inset
+
+ where 
+\begin_inset Formula $\mbox{Cov}(z)=I$
+\end_inset
+
+ and 
+\begin_inset Formula $\Lambda^{1/2}$
+\end_inset
+
+ is formed by taking the square roots of the eigenvalues.
+ So 
+\begin_inset Formula $\sqrt{\lambda_{i}}$
+\end_inset
+
+ is the standard deviation associated with the basis vector 
+\begin_inset Formula $\Gamma_{\cdot i}$
+\end_inset
+
+.
+ That is, the 
+\begin_inset Formula $z$
+\end_inset
+
+'s provide the weights on the basis vectors, with scaling based on the eigenvalu
+es.
+ So 
+\begin_inset Formula $y$
+\end_inset
+
+ is produced as a linear combination of eigenvectors as basis vectors, with
+ the variance attributable to the basis vectors determined by the eigenvalues.
+\end_layout
+
+\begin_layout Standard
+If 
+\begin_inset Formula $x^{\top}Ax\geq0$
+\end_inset
+
+ then 
+\begin_inset Formula $A$
+\end_inset
+
+ is nonnegative definite (also called positive semi-definite).
+ In this case one or more eigenvalues can be zero.
+ Let's interpret this a bit more in the context of generating random vectors
+ based on non-negative definite matrices, 
+\begin_inset Formula $y=\Gamma\Lambda^{1/2}z$
+\end_inset
+
+ where 
+\begin_inset Formula $\mbox{Cov}(z)=I$
+\end_inset
+
+.
+ Questions:
+\end_layout
+
+\begin_layout Enumerate
+What does it mean when one or more eigenvalue (i.e., 
+\begin_inset Formula $\lambda_{i}=\Lambda_{ii}$
+\end_inset
+
+) is zero? 
+\end_layout
+
+\begin_layout Enumerate
+Suppose I have an eigenvalue that is very small and I set it to zero? What
+ will be the impact upon 
+\begin_inset Formula $y$
+\end_inset
+
+ and 
+\begin_inset Formula $\mbox{Cov}(y)$
+\end_inset
+
+?
+\end_layout
+
+\begin_layout Enumerate
+Now let's consider the inverse of a covariance matrix, known as the precision
+ matrix, 
+\begin_inset Formula $A^{-1}=\Gamma\Lambda^{-1}\Gamma^{\top}$
+\end_inset
+
+.
+ What does it mean if a 
+\begin_inset Formula $(\Lambda^{-1})_{ii}$
+\end_inset
+
+ is very large? What if 
+\begin_inset Formula $(\Lambda^{-1})_{ii}$
+\end_inset
+
+ is very small?
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+What does it means statistically if a covariance matrix has one or more
+ zero eigenvalues?
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Consider an arbitrary 
+\begin_inset Formula $n\times p$
+\end_inset
+
+ matrix, 
+\begin_inset Formula $X$
+\end_inset
+
+.
+ Any crossproduct or sum of squares matrix, such as 
+\begin_inset Formula $X^{\top}X$
+\end_inset
+
+ is positive definite (non-negative definite if 
+\begin_inset Formula $p>n$
+\end_inset
+
+).
+ This makes sense as it's just a scaling of an empirical covariance matrix.
+ 
+\end_layout
+
+\begin_layout Subsection
+Generalized inverses
+\end_layout
+
+\begin_layout Standard
+Suppose I want to find 
+\begin_inset Formula $x$
+\end_inset
+
+ such that 
+\begin_inset Formula $Ax=b$
+\end_inset
+
+.
+ Mathematically the answer (provided 
+\begin_inset Formula $A$
+\end_inset
+
+ is invertible, i.e.
+ of full rank) is 
+\begin_inset Formula $x=A^{-1}b$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Generalized inverses arise in solving equations when 
+\begin_inset Formula $A$
+\end_inset
+
+ is not full rank.
+ A generalized inverse is a matrix, 
+\begin_inset Formula $A^{-}$
+\end_inset
+
+ s.t.
+ 
+\begin_inset Formula $AA^{-}A=A$
+\end_inset
+
+.
+ The Moore-Penrose inverse (the pseudo-inverse), 
+\begin_inset Formula $A^{+}$
+\end_inset
+
+, is a (unique) generalized inverse that also satisfies some additional
+ properties.
+ 
+\begin_inset Formula $x=A^{+}b$
+\end_inset
+
+ is the solution to the linear system, 
+\begin_inset Formula $Ax=b$
+\end_inset
+
+, that has the shortest length for 
+\begin_inset Formula $x$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+We can find the pseudo-inverse based on an eigendecomposition (or an SVD)
+ as 
+\begin_inset Formula $\Gamma\Lambda^{+}\Gamma^{\top}$
+\end_inset
+
+.
+ We obtain 
+\begin_inset Formula $\Lambda^{+}$
+\end_inset
+
+ from 
+\begin_inset Formula $\Lambda$
+\end_inset
+
+ as follows.
+ For values 
+\begin_inset Formula $\lambda_{i}>0$
+\end_inset
+
+, compute 
+\begin_inset Formula $1/\lambda_{i}$
+\end_inset
+
+.
+ All other values are set to 0.
+ Let's interpret this statistically.
+ Suppose we have a precision matrix with one or more zero eigenvalues and
+ we want to find the covariance matrix.
+ A zero eigenvalue means we have no precision, or infinite variance, for
+ some linear combination (i.e., for some basis vector).
+ We take the pseudo-inverse and assign that linear combination zero variance.
+ 
+\end_layout
+
+\begin_layout Standard
+Let's consider a specific example.
+ Autoregressive models are often used for smoothing (in time, in space,
+ and in covariates).
+ A first order autoregressive model for 
+\begin_inset Formula $y_{1},y_{2},\ldots,y_{T}$
+\end_inset
+
+ has 
+\begin_inset Formula $E(y_{i}|y_{-i})=\frac{1}{2}(y_{i-1}+y_{i+1})$
+\end_inset
+
+.
+ Another way of writing the model is in time-order: 
+\begin_inset Formula $y_{i}=y_{i-1}+\epsilon_{i}$
+\end_inset
+
+.
+ A second order autoregressive model has 
+\begin_inset Formula $E(y_{i}|y_{-i})=\frac{1}{6}(4y_{i-1}+4y_{i+1}-y_{i-2}-y_{i+2})$
+\end_inset
+
+.
+ These constructions basically state that each value should be a smoothed
+ version of its neighbors.
+ One can figure out that the 
+\series bold
+precision
+\series default
+ matrix for 
+\begin_inset Formula $y$
+\end_inset
+
+ in the first order model is 
+\begin_inset Formula 
+\[
+\left(\begin{array}{ccccc}
+\ddots &  & \vdots\\
+-1 & 2 & -1 & 0\\
+\cdots & -1 & 2 & -1 & \dots\\
+ & 0 & -1 & 2 & -1\\
+ &  & \vdots &  & \ddots
+\end{array}\right)
+\]
+
+\end_inset
+
+ and in the second order model is 
+\begin_inset Formula 
+\[
+\left(\begin{array}{ccccccc}
+\ddots &  &  & \vdots\\
+1 & -4 & 6 & -4 & 1\\
+\cdots & 1 & -4 & 6 & -4 & 1 & \cdots\\
+ &  & 1 & -4 & 6 & -4 & 1\\
+ &  &  & \vdots
+\end{array}\right).
+\]
+
+\end_inset
+
+If we look at the eigendecomposition of such matrices, we see that in the
+ first order case, the eigenvalue corresponding to the constant eigenvector
+ is zero.
+ 
+\end_layout
+
+\begin_layout Chunk
+
+<<geninv, tidy=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+This means we have no information about the overall level of 
+\begin_inset Formula $y$
+\end_inset
+
+.
+ So how would we generate sample 
+\begin_inset Formula $y$
+\end_inset
+
+ vectors? We can't put infinite variance on the constant basis vector and
+ still generate samples.
+ Instead we use the pseudo-inverse and assign ZERO variance to the constant
+ basis vector.
+ This corresponds to generating realizations under the constraint that 
+\begin_inset Formula $\sum y_{i}$
+\end_inset
+
+ has no variation, i.e., 
+\begin_inset Formula $\sum y_{i}=\bar{y}=0$
+\end_inset
+
+ - you can see this by seeing that 
+\begin_inset Formula $\mbox{Var}(\Gamma_{\cdot i}^{\top}y)=0$
+\end_inset
+
+ when 
+\begin_inset Formula $\lambda_{i}=0$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Chunk
+
+<<geninv-realiz>>=
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+In the second order case, we have two non-identifiabilities: for the sum
+ and for the linear component of the variation in 
+\begin_inset Formula $y$
+\end_inset
+
+ (linear in the indices of 
+\begin_inset Formula $y$
+\end_inset
+
+).
+ 
+\end_layout
+
+\begin_layout Standard
+I could parameterize a statistical model as 
+\begin_inset Formula $\mu+y$
+\end_inset
+
+ where 
+\begin_inset Formula $y$
+\end_inset
+
+ has covariance that is the generalized inverse discussed above.
+ Then I allow for both a non-zero mean and for smooth variation governed
+ by the autoregressive structure.
+ In the second-order case, I would need to add a linear component as well,
+ given the second non-identifiability.
+\end_layout
+
+\begin_layout Subsection
+Matrices arising in regression
+\end_layout
+
+\begin_layout Standard
+In regression, we work with 
+\begin_inset Formula $X^{\top}X$
+\end_inset
+
+.
+ Some properties of this matrix are that it is symmetric and non-negative
+ definite (hence our use of 
+\begin_inset Formula $(X^{\top}X)^{-1}$
+\end_inset
+
+ in the OLS estimator).
+ When is it not positive definite?
+\end_layout
+
+\begin_layout Standard
+Fitted values are 
+\begin_inset Formula $X\hat{\beta}=X(X^{\top}X)^{-1}X^{\top}Y=HY$
+\end_inset
+
+.
+ The 
+\begin_inset Quotes eld
+\end_inset
+
+hat
+\begin_inset Quotes erd
+\end_inset
+
+ matrix, 
+\begin_inset Formula $H$
+\end_inset
+
+, projects 
+\begin_inset Formula $Y$
+\end_inset
+
+ into the column space of 
+\begin_inset Formula $X$
+\end_inset
+
+.
+ 
+\begin_inset Formula $H$
+\end_inset
+
+ is idempotent: 
+\begin_inset Formula $HH=H$
+\end_inset
+
+, which makes sense - once you've projected into the space, any subsequent
+ projection just gives you the same thing back.
+ 
+\begin_inset Formula $H$
+\end_inset
+
+ is singular.
+ Why? Also, under what special circumstance would it not be singular?
+\end_layout
+
+\begin_layout Section
+Computational issues
+\end_layout
+
+\begin_layout Subsection
+Storing matrices
+\end_layout
+
+\begin_layout Standard
+We've discussed column-major and row-major storage of matrices.
+ First, retrieval of matrix elements from memory is quickest when multiple
+ elements are contiguous in memory.
+ So in a column-major language (e.g., R, Fortran), it is best to work with
+ values in a common column (or entire columns) while in a row-major language
+ (e.g., C) for values in a common row.
+\end_layout
+
+\begin_layout Standard
+In some cases, one can save space (and potentially speed) by overwriting
+ the output from a matrix calculation into the space occupied by an input.
+ This occurs in some clever implementations of matrix factorizations.
+\end_layout
+
+\begin_layout Subsection
+Algorithms
+\end_layout
+
+\begin_layout Standard
+Good algorithms can change the efficiency of an algorithm by one or more
+ orders of magnitude, and many of the improvements in computational speed
+ over recent decades have been in algorithms rather than in computer speed.
+\end_layout
+
+\begin_layout Standard
+Most matrix algebra calculations can be done in multiple ways.
+ For example, we could compute 
+\begin_inset Formula $b=Ax$
+\end_inset
+
+ in either of the following ways, denoted here in pseudocode.
+\end_layout
+
+\begin_layout Enumerate
+Stack the inner products of the rows of 
+\begin_inset Formula $A$
+\end_inset
+
+ with 
+\begin_inset Formula $x$
+\end_inset
+
+.
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{lstlisting}
+\end_layout
+
+\begin_layout Plain Layout
+
+for(i=1:n){ 
+\end_layout
+
+\begin_layout Plain Layout
+
+	b_i = 0
+\end_layout
+
+\begin_layout Plain Layout
+
+	for(j=1:m){
+\end_layout
+
+\begin_layout Plain Layout
+
+		b_i = b_i + a_{ij} x_j
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{lstlisting}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+Take the linear combination (based on 
+\begin_inset Formula $x$
+\end_inset
+
+) of the columns of 
+\begin_inset Formula $A$
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{lstlisting}
+\end_layout
+
+\begin_layout Plain Layout
+
+for(i=1:n){ 
+\end_layout
+
+\begin_layout Plain Layout
+
+	b_i = 0
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+for(j=1:m){
+\end_layout
+
+\begin_layout Plain Layout
+
+	for(i = 1:n){
+\end_layout
+
+\begin_layout Plain Layout
+
+		b_i = b_i + a_{ij} x_j	
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{lstlisting}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In this case the two approaches involve the same number of operations but
+ the first might be better for row-major matrices (so might be how we would
+ implement in C) and the second for column-major (so might be how we would
+ implement in Fortran).
+ 
+\series bold
+Challenge
+\series default
+: check whether the second approach is faster in R.
+ (Write the code just doing the outer loop and doing the inner loop using
+ vectorized calculation.)
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+X = matrix(rnorm(n*n),n) y = rnorm(n) b = rep(0,n) system.time(for(i in 1:n)
+ b[i] = sum(X[i,]*y)) b = rep(0,n) system.time(for(j in 1:n) b = b + y[i]*X[,i])
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+General computational issues
+\end_layout
+
+\begin_layout Standard
+The same caveats we discussed in terms of computer arithmetic hold naturally
+ for linear algebra, since this involves arithmetic with many elements.
+ Good implementations of algorithms are aware of the danger of catastrophic
+ cancellation and of the possibility of dividing by zero or by values that
+ are near zero.
+\end_layout
+
+\begin_layout Subsection
+Ill-conditioned problems
+\end_layout
+
+\begin_layout Paragraph
+Basics
+\end_layout
+
+\begin_layout Standard
+A problem is ill-conditioned if small changes to values in the computation
+ result in large changes in the result.
+ This is quantified by something called the 
+\emph on
+condition number
+\emph default
+ of a calculation.
+ For different operations there are different condition numbers.
+\end_layout
+
+\begin_layout Standard
+Ill-conditionedness arises most often in terms of matrix inversion, so the
+ standard condition number is the 
+\begin_inset Quotes eld
+\end_inset
+
+condition number with respect to inversion
+\begin_inset Quotes erd
+\end_inset
+
+, which when using the 
+\begin_inset Formula $L_{2}$
+\end_inset
+
+ norm is the ratio of the absolute values of the largest to smallest eigenvalue.
+ Here's an example: 
+\begin_inset Formula 
+\[
+A=\left(\begin{array}{cccc}
+10 & 7 & 8 & 7\\
+7 & 5 & 6 & 5\\
+8 & 6 & 10 & 9\\
+7 & 5 & 9 & 10
+\end{array}\right).
+\]
+
+\end_inset
+
+The solution of 
+\begin_inset Formula $Ax=b$
+\end_inset
+
+ for 
+\begin_inset Formula $b=(32,23,33,31)$
+\end_inset
+
+ is 
+\begin_inset Formula $x=(1,1,1,1)$
+\end_inset
+
+, while the solution for 
+\begin_inset Formula $b+\delta b=(32.1,22.9,33.1,30.9)$
+\end_inset
+
+ is 
+\begin_inset Formula $x+\delta x=(9.2,-12.6,4.5,-1.1)$
+\end_inset
+
+, where 
+\begin_inset Formula $\delta$
+\end_inset
+
+ is notation for a perturbation to the vector or matrix.
+ What's going on? 
+\end_layout
+
+\begin_layout Chunk
+
+<<ill-cond>>=
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+Some manipulations with inequalities involving the induced matrix norm (for
+ any chosen vector norm, but we might as well just think about the Euclidean
+ norm) (see Gentle-CS Sec.
+ 5.1) give
+\begin_inset Formula 
+\[
+\frac{\|\delta x\|}{\|x\|}\leq\|A\|\|A^{-1}\|\frac{\|\delta b\|}{\|b\|}
+\]
+
+\end_inset
+
+where we define the condition number w.r.t.
+ inversion as 
+\begin_inset Formula $\mbox{cond}(A)\equiv\|A\|\|A^{-1}\|$
+\end_inset
+
+.
+ We'll generally work with the 
+\begin_inset Formula $L_{2}$
+\end_inset
+
+ norm, and for a nonsingular square matrix the result is that the condition
+ number is the ratio of the absolute values of the largest and smallest
+ magnitude eigenvalues.
+ This makes sense since 
+\begin_inset Formula $\|A\|_{2}$
+\end_inset
+
+ is the absolute value of the largest magnitude eigenvalue of 
+\begin_inset Formula $A$
+\end_inset
+
+ and 
+\begin_inset Formula $\|A^{-1}\|_{2}$
+\end_inset
+
+ that of the inverse of the absolute value of the smallest magnitude eigenvalue
+ of 
+\begin_inset Formula $A$
+\end_inset
+
+.
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+ [why? do ||Ax||=xtAtAx with spectral decomp and choose x as 1,0,0...
+ in direction of largest eigenvector]
+\end_layout
+
+\end_inset
+
+ We see in the code above that the large disparity in eigenvalues of 
+\begin_inset Formula $A$
+\end_inset
+
+ leads to an effect predictable from our inequality above, with the condition
+ number helping us find an upper bound.
+\end_layout
+
+\begin_layout Standard
+The main use of these ideas for our purposes is in thinking about the numerical
+ accuracy of a linear system solution (Gentle-NLA Sec 3.4).
+ On a computer we have the system 
+\begin_inset Formula 
+\[
+(A+\delta A)(x+\delta x)=b+\delta b
+\]
+
+\end_inset
+
+where the 'perturbation' is from the inaccuracy of computer numbers.
+ Our exploration of computer numbers tells us that 
+\begin_inset Formula 
+\[
+\frac{\|\delta b\|}{\|b\|}\approx10^{-p};\,\,\,\frac{\|\delta A\|}{\|A\|}\approx10^{-p}
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $p=16$
+\end_inset
+
+ for standard double precision floating points.
+ Following Gentle, one gets the approximation
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\frac{\|\delta x\|}{\|x\|}\approx\mbox{cond}(A)10^{-p},
+\]
+
+\end_inset
+
+so if 
+\begin_inset Formula $\mbox{cond}(A)\approx10^{t}$
+\end_inset
+
+, we have accuracy of order 
+\begin_inset Formula $10^{t-p}$
+\end_inset
+
+ instead of 
+\begin_inset Formula $10^{-p}$
+\end_inset
+
+.
+ (Gentle cautions that this holds only if 
+\begin_inset Formula $10^{t-p}\ll1$
+\end_inset
+
+).
+ So we can think of the condition number as giving us the number of digits
+ of accuracy lost during a computation relative to the precision of numbers
+ on the computer.
+ E.g., a condition number of 
+\begin_inset Formula $10^{8}$
+\end_inset
+
+ means we lose 8 digits of accuracy relative to our original 16 on standard
+ systems.
+ One issue is that estimating the condition number is itself subject to
+ numerical error and requires computation of 
+\begin_inset Formula $A^{-1}$
+\end_inset
+
+ (albeit not in the case of 
+\begin_inset Formula $L_{2}$
+\end_inset
+
+ norm with square, nonsingular 
+\begin_inset Formula $A$
+\end_inset
+
+) but see Golub and van Loan (1996; p.
+ 76-78) for an algorithm.
+\end_layout
+
+\begin_layout Paragraph
+Improving conditioning
+\end_layout
+
+\begin_layout Standard
+Ill-conditioned problems in statistics often arise from collinearity of
+ regressors.
+ Often the best solution is not a numerical one, but re-thinking the modeling
+ approach, as this generally indicates statistical issues beyond just the
+ numerical difficulties.
+ 
+\end_layout
+
+\begin_layout Standard
+A general comment on improving conditioning is that we want to avoid large
+ differences in the magnitudes of numbers involved in a calculation.
+ In some contexts such as regression, we can center and scale the columns
+ to avoid such differences - this will improve the condition of the problem.
+ E.g., in simple quadratic regression with 
+\begin_inset Formula $x=\{1990,\ldots,2010\}$
+\end_inset
+
+ (e.g., regressing on calendar years), we see that centering and scaling the
+ matrix columns makes a huge difference on the condition number
+\end_layout
+
+\begin_layout Chunk
+
+<<improve-cond>>=
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Monahan gives an example where the condition number is 
+\begin_inset Formula $5\times10^{11}$
+\end_inset
+
+ for a naive implementation, 
+\begin_inset Formula $5\times10^{5}$
+\end_inset
+
+ after scaling the columns by their means, and 74 after simply centering
+ each column.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The basic story is that simple strategies often solve the problem, and that
+ you should be cognizant of the absolute and relative magnitudes involved
+ in your calculations.
+\end_layout
+
+\begin_layout Standard
+One rule of thumb is to try to work with numbers whose magnitude is around
+ 1.
+ We can often scale the values in our problem in order to do this.
+ I.e., change the units of your variables.
+ Instead of personal income in dollars, use personal income in thousands
+ or hundreds of thousands of dollars.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+If you're working with long spatial distances use distance in thousands
+ of km rather than in km.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Matrix factorizations (decompositions) and solving systems of linear equations
+\end_layout
+
+\begin_layout Standard
+Suppose we want to solve the following linear system:
+\begin_inset Formula 
+\begin{eqnarray*}
+Ax & = & b\\
+x & = & A^{-1}b
+\end{eqnarray*}
+
+\end_inset
+
+Numerically, this is never done by finding the inverse and multiplying.
+ Rather we solve the system using a matrix decomposition (or equivalent
+ set of steps).
+ One approach uses Gaussian elimination (equivalent to the LU decomposition),
+ while another uses the Cholesky decomposition.
+ There are also iterative methods that generate a sequence of approximations
+ to the solution but reduce computation (provided they are stopped
+\emph on
+ 
+\emph default
+before the exact solution is found).
+\end_layout
+
+\begin_layout Standard
+Gentle-CS has a nice table overviewing the various factorizations (Table
+ 5.1, page 219).
+\end_layout
+
+\begin_layout Subsection
+Triangular systems
+\end_layout
+
+\begin_layout Standard
+As a preface, let's figure out how to solve 
+\begin_inset Formula $Ax=b$
+\end_inset
+
+ if 
+\begin_inset Formula $A$
+\end_inset
+
+ is upper triangular.
+ The basic algorithm proceeds from the bottom up (and therefore is called
+ a 'backsolve'.
+ We solve for 
+\begin_inset Formula $x_{n}$
+\end_inset
+
+ trivially, and then move upwards plugging in the known values of 
+\begin_inset Formula $x$
+\end_inset
+
+ and solving for the remaining unknown in each row (each equation).
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $x_{n}=b_{n}/A_{nn}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+Now for 
+\begin_inset Formula $k<n$
+\end_inset
+
+, use the already computed 
+\begin_inset Formula $\{x_{n},x_{n-1},\ldots,x_{k+1}\}$
+\end_inset
+
+ to calculate 
+\begin_inset Formula $x_{k}=\frac{b_{k}-\sum_{j=k+1}^{n}x_{j}A_{kj}}{A_{kk}}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate
+Repeat for all rows.
+\end_layout
+
+\begin_layout Standard
+How many multiplies and adds are done? 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+\begin_inset Formula $n^{2}/2$
+\end_inset
+
+ mult for 
+\begin_inset Formula $O(n^{2})$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+ Solving lower triangular systems is very similar and involves the same
+ number of calculations.
+\end_layout
+
+\begin_layout Standard
+In R, 
+\emph on
+backsolve()
+\emph default
+ solves upper triangular systems and 
+\emph on
+forwardsolve()
+\emph default
+ solves lower triangular systems:
+\end_layout
+
+\begin_layout Chunk
+
+<<chunk3>>=
+\end_layout
+
+\begin_layout Chunk
+
+n <- 20
+\end_layout
+
+\begin_layout Chunk
+
+X <- crossprod(matrix(rnorm(n^2), n))
+\end_layout
+
+\begin_layout Chunk
+
+b <- rnorm(n)
+\end_layout
+
+\begin_layout Chunk
+
+U <- chol(crossprod(X)) # U is upper-triangular
+\end_layout
+
+\begin_layout Chunk
+
+L <- t(U) # L is lower-triangular
+\end_layout
+
+\begin_layout Chunk
+
+out1 <- backsolve(U, b) 
+\end_layout
+
+\begin_layout Chunk
+
+out2 <- forwardsolve(L, b) 
+\end_layout
+
+\begin_layout Chunk
+
+all.equal(out1, c(solve(U) %*% b)) 
+\end_layout
+
+\begin_layout Chunk
+
+all.equal(out2, c(solve(L) %*% b)) 
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+We can also solve 
+\begin_inset Formula $(U^{\top})^{-1}b$
+\end_inset
+
+ and 
+\begin_inset Formula $(L^{\top})^{-1}b$
+\end_inset
+
+ as
+\end_layout
+
+\begin_layout Chunk
+
+<<chunk4, eval=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+
+backsolve(U, b, transpose = TRUE) 
+\end_layout
+
+\begin_layout Chunk
+
+forwardsolve(L, b, transpose = TRUE)
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+To reiterate the distinction between matrix inversion and solving a system
+ of equations, when we write 
+\begin_inset Formula $U^{-1}b$
+\end_inset
+
+, what we mean on a computer is to carry out the above algorithm, not to
+ find the inverse and then multiply.
+\end_layout
+
+\begin_layout Subsection
+Gaussian elimination (LU decomposition)
+\end_layout
+
+\begin_layout Standard
+Gaussian elimination is a standard way of directly computing a solution
+ for 
+\begin_inset Formula $Ax=b$
+\end_inset
+
+.
+ It is equivalent to the LU decomposition.
+ LU is primarily done with square matrices, but not always.
+ Also LU decompositions do exist for some singular matrices.
+\end_layout
+
+\begin_layout Standard
+The idea of Gaussian elimination is to convert the problem to a triangular
+ system.
+ In class, we'll walk through Gaussian elimination in detail and see how
+ it relates to the LU decomposition.
+ I'll describe it more briefly here.
+ Following what we learned in algebra when we have multiple equations, we
+ preserve the solution, 
+\begin_inset Formula $x$
+\end_inset
+
+, when we add multiples of rows (i.e., add multiples of equations) together.
+ This amounts to doing 
+\begin_inset Formula $L_{1}Ax=L_{1}b$
+\end_inset
+
+ for a lower-triangular matrix 
+\begin_inset Formula $L_{1}$
+\end_inset
+
+ that produces all zeroes in the first column of 
+\begin_inset Formula $L_{1}A$
+\end_inset
+
+ except for the first row.
+ We proceed to zero out values below the diagonal for the other columns
+ of 
+\begin_inset Formula $A$
+\end_inset
+
+.
+ The result is 
+\begin_inset Formula $L_{n-1}\cdots L_{1}A\equiv U=L_{n-1}\cdots L_{1}b\equiv b^{*}$
+\end_inset
+
+ where 
+\begin_inset Formula $U$
+\end_inset
+
+ is upper triangular.
+ This is the forward reduction step of Gaussian elimination.
+ Then the backward elimination step solves 
+\begin_inset Formula $Ux=b^{*}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+If we're just looking for the solution of the system, we don't need the
+ lower-triangular factor 
+\begin_inset Formula $L=(L_{n-1}\cdots L_{1})^{-1}$
+\end_inset
+
+ in 
+\begin_inset Formula $A=LU$
+\end_inset
+
+, but it turns out to have a simple form that is computed as we go along,
+ it is unit lower triangular and the values below the diagonal are the negative
+ of the values below the diagonals in 
+\begin_inset Formula $L_{1},\ldots,L_{n-1}$
+\end_inset
+
+ (note that each 
+\begin_inset Formula $L_{j}$
+\end_inset
+
+ has non-zeroes below the diagonal only in the 
+\begin_inset Formula $j$
+\end_inset
+
+th column).
+ As a side note related to storage, it turns out that as we proceed, we
+ can store the elements of 
+\begin_inset Formula $L$
+\end_inset
+
+ and 
+\begin_inset Formula $U$
+\end_inset
+
+ in the original 
+\begin_inset Formula $A$
+\end_inset
+
+ matrix, except for the implicit 1s on the diagonal of 
+\begin_inset Formula $L$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+In class, we'll work out the computational complexity of the LU and see
+ that it is 
+\begin_inset Formula $O(n^{3})$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+If we look at 
+\emph on
+solve.default()
+\emph default
+ in R, we see that it uses 
+\emph on
+dgesv
+\emph default
+.
+ A Google search indicates that this is a Lapack routine that does the LU
+ decomposition with partial pivoting and row interchanges (see below on
+ what these are), so R is using the algorithm we've just discussed.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+For a problem set problem, you'll compute the computational order of the
+ LU decomposition and compare it to explicitly finding the inverse and multiplyi
+ng the inverse by one or more vectors.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Let's work out the computational complexity.
+ The backward elimination step takes 
+\begin_inset Formula $n^{2}/2$
+\end_inset
+
+ operations.
+ What about the forward reduction? It turns out this dominates, and the
+ full LU decomposition requires 
+\begin_inset Formula $n^{3}/3+O(n^{2})$
+\end_inset
+
+ flops
+\end_layout
+
+\begin_layout Plain Layout
+Would it ever make sense to explicitly compute the inverse, such as to solve
+ multiple right-hand sides? It turns out if we actually computed the inverse
+ of 
+\begin_inset Formula $A$
+\end_inset
+
+ from the factorization, this would require 
+\begin_inset Formula $\frac{2}{3}n^{3}+O(n^{2})$
+\end_inset
+
+ additional flops.
+ Furthermore, for every right-hand side, we have 
+\begin_inset Formula $n^{2}$
+\end_inset
+
+ flops.
+ This is the same number of operations as the backsolve and forwardsolve
+ involved in 
+\begin_inset Formula $U^{-1}(L^{-1}b)$
+\end_inset
+
+.
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+One additional complexity is that we want to avoid dividing by very small
+ values to avoid introducing numerical inaccuracy (we would get large values
+ that might overwhelm whatever they are being added to, and small errors
+ in the divisor willl have large effects on the result).
+ This can be done on the fly by interchanging equations to use the equation
+ (row) that produces the largest value to divide by.
+ For example in the first step, we would switch the first equation (first
+ row) for whichever of the remaining equations has the largest value in
+ the first column.
+ This is called partial pivoting.
+ The divisors are called pivots.
+ Complete pivoting also considers interchanging columns, and while theoretically
+ better, partial pivoting is generally sufficient and requires fewer computation
+s.
+ Note that partial pivoting can be expressed as multiplying along the way
+ by permutation matrices, 
+\begin_inset Formula $P_{1},\ldots P_{n-1}$
+\end_inset
+
+ that switch rows
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+see Monahan, who says this though it's not obvious since n the fac you have
+ LPLPLP..LPA
+\end_layout
+
+\end_inset
+
+.
+ Based on pivoting, we have 
+\begin_inset Formula $PA=LU$
+\end_inset
+
+, where 
+\begin_inset Formula $P=P_{n-1}\cdots P_{1}$
+\end_inset
+
+.
+ In the demo code, we'll see a toy example of the impact of pivoting.
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+[insert from old linalg.q]
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Finally 
+\begin_inset Formula $|PA|=|P||A|=|L||U|=|U|$
+\end_inset
+
+ (why?) so 
+\begin_inset Formula $|A|=|U|/|P|$
+\end_inset
+
+ and since the determinant of each permutation matrix, 
+\begin_inset Formula $P_{j}$
+\end_inset
+
+ is -1 (except when 
+\begin_inset Formula $P_{j}=I$
+\end_inset
+
+ because we don't need to switch rows), we just need to multiply by minus
+ one if there is an odd number of permutations.
+ Or if we know the matrix is non-negative definite, we just take the absolute
+ value of 
+\begin_inset Formula $|U|$
+\end_inset
+
+.
+ So Gaussian elimination provides a fast stable way to find the determinant.
+\end_layout
+
+\begin_layout Subsection
+Cholesky decomposition
+\end_layout
+
+\begin_layout Standard
+When 
+\begin_inset Formula $A$
+\end_inset
+
+ is p.d., we can use the Cholesky decomposition to solve a system of equations.
+ Positive definite matrices can be decomposed as 
+\begin_inset Formula $U^{\top}U=A$
+\end_inset
+
+ where 
+\begin_inset Formula $U$
+\end_inset
+
+ is upper triangular.
+ 
+\begin_inset Formula $U$
+\end_inset
+
+ is called a square root matrix and is unique (apart from the sign, which
+ we fix by requiring the diagonals to be positive).
+ One algorithm for computing 
+\begin_inset Formula $U$
+\end_inset
+
+ is:
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $U_{11}=\sqrt{A_{11}}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+For 
+\begin_inset Formula $j=2,\ldots,n$
+\end_inset
+
+, 
+\begin_inset Formula $U_{1j}=A_{1j}/U_{11}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+For 
+\begin_inset Formula $i=2,\ldots,n$
+\end_inset
+
+, 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+\begin_inset Formula $U_{ii}=\sqrt{A_{ii}-\sum_{k=1}^{i-1}U_{ki}^{2}}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+for 
+\begin_inset Formula $j=i+1,\ldots,n$
+\end_inset
+
+: 
+\begin_inset Formula $U_{ij}=(A_{ij}-\sum_{k=1}^{i-1}U_{ki}U_{kj})/U_{ii}$
+\end_inset
+
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+We can then solve a system of equations as: 
+\begin_inset Formula $U^{-1}(U^{\top-1}b)$
+\end_inset
+
+, which in R can be done in either of the following ways:
+\end_layout
+
+\begin_layout Chunk
+
+<<chunk5, eval=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+
+backsolve(U, backsolve(U, b, transpose = TRUE))
+\end_layout
+
+\begin_layout Chunk
+
+backsolve(U, forwardsolve(t(U), b)) # equivalent but less efficient
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+The Cholesky has some nice advantages over the LU: (1) while both are 
+\begin_inset Formula $O(n^{3})$
+\end_inset
+
+, the Cholesky involves only half as many computations, 
+\begin_inset Formula $n^{3}/6+O(n^{2})$
+\end_inset
+
+ and (2) the Cholesky factorization has only 
+\begin_inset Formula $(n^{2}+n)/2$
+\end_inset
+
+ unique values compared to 
+\begin_inset Formula $n^{2}+n$
+\end_inset
+
+ for the LU.
+ Of course the LU is more broadly applicable.
+ The Cholesky does require computation of square roots, but it turns out
+ this is not too intensive.
+ There is also a method for finding the Cholesky without square roots.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+The Cholesky decomposition is equivalent to regressing each column of the
+ matrix on the preceding columns.
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+Uses of the Cholesky
+\end_layout
+
+\begin_layout Standard
+The standard algorithm for generating 
+\begin_inset Formula $y\sim\mathcal{N}(0,A)$
+\end_inset
+
+ is:
+\end_layout
+
+\begin_layout Chunk
+
+<<chunk6, eval=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+
+U <- chol(A)
+\end_layout
+
+\begin_layout Chunk
+
+y <- crossprod(U, rnorm(n)) # i.e., t(U)%*%rnorm(n), but much faster
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Question
+\series default
+: where will most of the time in this two-step calculation be spent?
+\end_layout
+
+\begin_layout Standard
+If a regression design matrix, 
+\begin_inset Formula $X$
+\end_inset
+
+, is full rank, then 
+\begin_inset Formula $X^{\top}X$
+\end_inset
+
+ is positive definite, so we could find 
+\begin_inset Formula $\hat{\beta}=(X^{\top}X)^{-1}X^{\top}Y$
+\end_inset
+
+ using either the Cholesky or Gaussian elimination.
+ 
+\series bold
+Challenge
+\series default
+: write efficient R code to carry out the OLS solution using either LU or
+ Cholesky factorization.
+\end_layout
+
+\begin_layout Standard
+However, it turns out that the standard approach is to work with 
+\begin_inset Formula $X$
+\end_inset
+
+ using the QR decomposition rather than working with 
+\begin_inset Formula $X^{\top}X$
+\end_inset
+
+; working with 
+\begin_inset Formula $X$
+\end_inset
+
+ is more numerically stable, though in most situations without extreme collinear
+ity, either of the approaches will be fine.
+\end_layout
+
+\begin_layout Paragraph
+Numerical issues with eigendecompositions and Cholesky decompositions for
+ positive definite matrices 
+\end_layout
+
+\begin_layout Standard
+Monahan comments that in general Gaussian elimination and the Cholesky decomposi
+tion are very stable.
+ However, in the Cholesky case, if the matrix is very ill-conditioned we
+ can get 
+\begin_inset Formula $A_{ii}-\sum_{k}U_{ki}^{2}$
+\end_inset
+
+ being negative and then the algorithm stops when we try to take the square
+ root.
+ In this case, the Cholesky decomposition does not exist numerically although
+ it exists mathematically.
+ It's not all that hard to produce such a matrix, particularly when working
+ with high-dimensional covariance matrices with large correlations.
+ 
+\end_layout
+
+\begin_layout Chunk
+
+<<chunk8a, include=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+
+require(fields)
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Chunk
+
+\end_layout
+
+\begin_layout Chunk
+
+<<chunk8>>=
+\end_layout
+
+\begin_layout Chunk
+
+# require(fields)
+\end_layout
+
+\begin_layout Chunk
+
+locs <- runif(100)
+\end_layout
+
+\begin_layout Chunk
+
+rho <- .1
+\end_layout
+
+\begin_layout Chunk
+
+C <- exp(-rdist(locs)^2/rho^2)
+\end_layout
+
+\begin_layout Chunk
+
+e <- eigen(C)
+\end_layout
+
+\begin_layout Chunk
+
+e$values[96:100]
+\end_layout
+
+\begin_layout Chunk
+
+U <- chol(C)
+\end_layout
+
+\begin_layout Chunk
+
+vals <- abs(e$values)
+\end_layout
+
+\begin_layout Chunk
+
+max(vals)/min(vals)
+\end_layout
+
+\begin_layout Chunk
+
+U <- chol(C, pivot = TRUE)
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+We can think about the accuracy here as follows.
+ Suppose we have a matrix whose diagonal elements (i.e., the variances) are
+ order of magnitude 1 and that the true value of a 
+\begin_inset Formula $U_{ii}$
+\end_inset
+
+ is less than 
+\begin_inset Formula $1\times10^{-16}$
+\end_inset
+
+.
+ From the given 
+\begin_inset Formula $A_{ii}$
+\end_inset
+
+ we are subtracting 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\sum_{k}U_{ki}^{2}$
+\end_inset
+
+ and trying to calculate this very small number but we know that we can
+ only represent the values 
+\begin_inset Formula $A_{ii}$
+\end_inset
+
+ and 
+\begin_inset Formula $\sum_{k}U_{ki}^{2}$
+\end_inset
+
+ accurately to 16 places, so the difference is garbage starting in the 17th
+ position and could well be negative.
+ Now realize that 
+\begin_inset Formula $\sum_{k}U_{ki}^{2}$
+\end_inset
+
+ is the result of a potentially large set of arithmetic operations, and
+ is likely represented accurately to fewer than 16 places.
+ Now if the true value of 
+\begin_inset Formula $U_{ii}$
+\end_inset
+
+ is smaller than the accuracy to which 
+\begin_inset Formula $\sum_{k}U_{ki}^{2}$
+\end_inset
+
+ is represented, we can get a difference that is negative.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+When the condition number approaches 
+\begin_inset Formula $1\times10^{16}$
+\end_inset
+
+, we know that the relative accuracy of results deteriorates such that the
+ error approaches the actual values in magnitude.
+ So it shouldn't be too surprising that we end up with matrices that are
+ not numerically positive definite.
+ These matrices are close to not being positive definite; we can see this
+ in their having eigenvalues near zero.
+ As the conditioning gets worse, we eventually get the situation where we
+ have 
+\begin_inset Formula $A_{ii}-\sum_{k}U_{ki}^{2}$
+\end_inset
+
+ being numerically negative, though mathematically it is positive (but very
+ close to zero).
+\end_layout
+
+\end_inset
+
+Note that when the Cholesky fails, we can still compute an eigendecomposition,
+ but we have negative numeric eigenvalues.
+ Even if all the eigenvalues are numerically positive (or equivalently,
+ we're able to get the Cholesky), errors in small eigenvalues near machine
+ precision could have large effects when we work with the inverse of the
+ matrix.
+ This is what happens when we have columns of the 
+\begin_inset Formula $X$
+\end_inset
+
+ matrix nearly collinear.
+ We cannot statistically distinguish the effect of two (or more) covariates,
+ and this plays out numerically in terms of unstable results.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+[unclear how the Cholesky stuff relates to condition number - don't see
+ any info in various texts]
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+A strategy when working with mathematically but not numerically positive
+ definite 
+\begin_inset Formula $A$
+\end_inset
+
+ is to set eigenvalues or singular values to zero when they get very small,
+ which amounts to using a pseudo-inverse and setting to zero any linear
+ combinations with very small variance.
+ We can also use pivoting with the Cholesky and accumulate zeroes in the
+ last 
+\begin_inset Formula $n-q$
+\end_inset
+
+ rows (for cases where we try to take the square root of a negative number),
+ corresponding to the columns of 
+\begin_inset Formula $A$
+\end_inset
+
+ that are numerically linearly dependent.
+ See the 
+\emph on
+pivot
+\emph default
+ argument to R's 
+\emph on
+chol()
+\emph default
+.
+\end_layout
+
+\begin_layout Subsection
+QR decomposition
+\end_layout
+
+\begin_layout Subsubsection
+Introduction
+\end_layout
+
+\begin_layout Standard
+The QR decomposition is available for any matrix, 
+\begin_inset Formula $X=QR$
+\end_inset
+
+, with 
+\begin_inset Formula $Q$
+\end_inset
+
+ orthogonal and 
+\begin_inset Formula $R$
+\end_inset
+
+ upper triangular.
+ If 
+\begin_inset Formula $X$
+\end_inset
+
+ is non-square, 
+\begin_inset Formula $n\times p$
+\end_inset
+
+ with 
+\begin_inset Formula $n>p$
+\end_inset
+
+ then the leading 
+\begin_inset Formula $p$
+\end_inset
+
+ rows of 
+\begin_inset Formula $R$
+\end_inset
+
+ provide an upper triangular matrix (
+\begin_inset Formula $R_{1}$
+\end_inset
+
+) and the remaining rows are 0.
+ (I'm using 
+\begin_inset Formula $p$
+\end_inset
+
+ because the QR is generally applied to design matrices in regression).
+ In this case we really only need the first 
+\begin_inset Formula $p$
+\end_inset
+
+ columns of 
+\begin_inset Formula $Q$
+\end_inset
+
+, and we have 
+\begin_inset Formula $X=Q_{1}R_{1}$
+\end_inset
+
+, the 'skinny' QR (this is what R's QR provides).
+ For uniqueness, we can require the diagonals of 
+\begin_inset Formula $R$
+\end_inset
+
+ to be nonnegative, and then 
+\begin_inset Formula $R$
+\end_inset
+
+ will be the same as the upper-triangular Cholesky factor of  
+\begin_inset Formula $X^{\top}X$
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{eqnarray*}
+X^{\top}X & = & R^{\top}Q^{\top}QR\\
+ & = & R^{\top}R
+\end{eqnarray*}
+
+\end_inset
+
+There are three standard approaches for computing the QR, using (1) reflections
+ (Householder transformations), (2) rotations (Givens transformations),
+ or (3) Gram-Schmidt orthogonalization (see below for details).
+\end_layout
+
+\begin_layout Standard
+For 
+\begin_inset Formula $n\times n$
+\end_inset
+
+ 
+\begin_inset Formula $X$
+\end_inset
+
+, the QR (for the Householder approach) requires 
+\begin_inset Formula $2n^{3}/3$
+\end_inset
+
+ flops, so QR is less efficient than LU or Cholesky.
+ 
+\end_layout
+
+\begin_layout Standard
+We can also obtain the pseudo-inverse of 
+\begin_inset Formula $X$
+\end_inset
+
+ from the QR: 
+\begin_inset Formula $X^{+}=[R_{1}^{-1}\,0]Q^{\top}$
+\end_inset
+
+.
+ In the case that 
+\begin_inset Formula $X$
+\end_inset
+
+ is not full-rank, there is a version of the QR that will work (involving
+ pivoting) and we end up with some additional zeroes on the diagonal of
+ 
+\begin_inset Formula $R_{1}$
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+, with the same expression for the pseudo-inverse -- how could this be -
+ use pseudo for R1?
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsubsection
+Regression and the QR
+\end_layout
+
+\begin_layout Standard
+Often QR is used to fit linear models, including in R.
+ Consider the linear model in the form 
+\begin_inset Formula $Y=X\beta+\epsilon$
+\end_inset
+
+, finding 
+\begin_inset Formula $\hat{\beta}=(X^{\top}X)^{-1}X^{\top}Y$
+\end_inset
+
+.
+ Let's consider the skinny QR and note that 
+\begin_inset Formula $R^{\top}$
+\end_inset
+
+ is invertible.
+ Therefore, we can express the normal equations as 
+\begin_inset Formula 
+\begin{eqnarray*}
+X^{\top}X\beta & = & X^{\top}Y\\
+R^{\top}Q^{\top}QR\beta & = & R^{\top}Q^{\top}Y\\
+R\beta & = & Q^{\top}Y
+\end{eqnarray*}
+
+\end_inset
+
+and solving for 
+\begin_inset Formula $\beta$
+\end_inset
+
+ is just a backsolve since 
+\begin_inset Formula $R$
+\end_inset
+
+ is upper-triangular.
+ Furthermore the standard regression quantities, such as the hat matrix,
+ the SSE, the residuals, etc.
+ can be easily expressed in terms of 
+\begin_inset Formula $Q$
+\end_inset
+
+ and 
+\begin_inset Formula $R$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+\begin_inset Formula $A=QR$
+\end_inset
+
+ where 
+\begin_inset Formula $R=[R_{1}^{\top}\,\,0]^{\top}$
+\end_inset
+
+.
+ Now consider that the SSE, 
+\begin_inset Formula $\epsilon^{\top}\epsilon$
+\end_inset
+
+ can be written as
+\begin_inset Formula 
+\begin{eqnarray*}
+(Y-Ax)^{\top}(Y-Ax) & = & (Y-QRx)^{\top}(Y-QRx)\\
+ & = & (Y-QRx)^{\top}Q^{\top}Q(Y-QRx)\\
+ & = & (Q^{\top}Y-Rx)^{\top}(Q^{\top}Y-Rx)\\
+ & = & (c_{1}-R_{1}x)^{\top}(c_{1}-R_{1}x)+c_{2}^{\top}c_{2}
+\end{eqnarray*}
+
+\end_inset
+
+with 
+\begin_inset Formula $Q^{\top}Y=[c_{1}\, c_{2}]^{\top}$
+\end_inset
+
+ where 
+\begin_inset Formula $c_{1}$
+\end_inset
+
+ is length 
+\begin_inset Formula $m$
+\end_inset
+
+ and 
+\begin_inset Formula $c_{2}$
+\end_inset
+
+ is length 
+\begin_inset Formula $n-m$
+\end_inset
+
+, since the last 
+\begin_inset Formula $n-m$
+\end_inset
+
+ rows of 
+\begin_inset Formula $R$
+\end_inset
+
+ are zero.
+ Thus we see that 
+\begin_inset Formula $\hat{\beta}$
+\end_inset
+
+ occurs when 
+\begin_inset Formula $(c_{1}-R_{1}x)^{\top}(c_{1}-R_{1}x)=0$
+\end_inset
+
+ and therefore when 
+\begin_inset Formula $c_{1}=R_{1}x$
+\end_inset
+
+.
+ 
+\begin_inset Formula $R_{1}$
+\end_inset
+
+ is upper triangular, so the solution is easy (and 
+\begin_inset Formula $O(n^{2})$
+\end_inset
+
+ [right?]), 
+\begin_inset Formula $x=R_{1}^{-1}c_{1}$
+\end_inset
+
+.
+ Also note that the SSE is 
+\begin_inset Formula $c_{2}^{\top}c_{2}$
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Why use the QR instead of the Cholesky on 
+\begin_inset Formula $X^{\top}X$
+\end_inset
+
+? The condition number of 
+\begin_inset Formula $X$
+\end_inset
+
+ is the square root of that of 
+\begin_inset Formula $X^{\top}X$
+\end_inset
+
+, and the 
+\begin_inset Formula $QR$
+\end_inset
+
+ factorizes 
+\begin_inset Formula $X$
+\end_inset
+
+.
+ Monahan has a discussion of the condition of the regression problem, but
+ from a larger perspective, the situations where numerical accuracy is a
+ concern are generally cases where the OLS estimators are not particularly
+ helpful anyway (e.g., highly collinear predictors).
+ 
+\end_layout
+
+\begin_layout Standard
+What about computational order of the different approaches to least squares?
+ The Cholesky is 
+\begin_inset Formula $np^{2}+\frac{1}{3}p^{3}$
+\end_inset
+
+, an algorithm called sweeping is 
+\begin_inset Formula $np^{2}+p^{3}$
+\end_inset
+
+ , the Householder method for QR is 
+\begin_inset Formula $2np^{2}-\frac{2}{3}p^{3}$
+\end_inset
+
+, and the modified Gram-Schmidt approach for QR is 
+\begin_inset Formula $2np^{2}$
+\end_inset
+
+.
+ So if 
+\begin_inset Formula $n\gg p$
+\end_inset
+
+ then Cholesky (and sweeping) are faster than the QR approaches.
+ According to Monahan, modified Gram-Schmidt is most numerically stable
+ and sweeping least.
+ In general, regression is pretty quick unless 
+\begin_inset Formula $p$
+\end_inset
+
+ is large since it is linear in 
+\begin_inset Formula $n$
+\end_inset
+
+, so it may not be worth worrying too much about computational differences
+ of the sort noted here.
+\end_layout
+
+\begin_layout Subsubsection
+Regression and the QR in R
+\end_layout
+
+\begin_layout Standard
+Regression in R uses the QR decomposition via 
+\emph on
+qr()
+\emph default
+, which calls a Fortran function.
+ 
+\emph on
+qr()
+\emph default
+ (and the Fortran functions that are called) is specifically designed to
+ output quantities useful in fitting linear models.
+ Note that by default you get the skinny QR, namely only the first 
+\begin_inset Formula $p$
+\end_inset
+
+ rows of 
+\begin_inset Formula $R$
+\end_inset
+
+ and the first 
+\begin_inset Formula $p$
+\end_inset
+
+ columns of 
+\begin_inset Formula $Q$
+\end_inset
+
+, where the latter form an orthonormal basis for the column space of 
+\begin_inset Formula $X$
+\end_inset
+
+.
+ The remaining columns form an orthonormal basis for the null space of 
+\begin_inset Formula $X$
+\end_inset
+
+ (the space orthogonal to the column space of 
+\begin_inset Formula $X$
+\end_inset
+
+).
+ The analogy in regression is that we get the basis vectors for the regression,
+ while adding the remaining columns gives us the full 
+\begin_inset Formula $n$
+\end_inset
+
+-dimensional space of the observations.
+ 
+\end_layout
+
+\begin_layout Standard
+
+\emph on
+qr()
+\emph default
+ returns the result as a list meant for use by other tools.
+ R stores the 
+\begin_inset Formula $R$
+\end_inset
+
+ matrix in the upper triangle of 
+\emph on
+$qr
+\emph default
+, while the lower triangle of 
+\emph on
+$qr
+\emph default
+ and 
+\emph on
+$aux
+\emph default
+ store the information for constructing 
+\begin_inset Formula $Q$
+\end_inset
+
+ (this relates to the Householder-related vectors 
+\begin_inset Formula $u$
+\end_inset
+
+ below).
+ One can multiply by 
+\begin_inset Formula $Q$
+\end_inset
+
+ using 
+\emph on
+qr.qy()
+\emph default
+ and by 
+\begin_inset Formula $Q^{\top}$
+\end_inset
+
+ using 
+\emph on
+qr.qty()
+\emph default
+.
+ If you want to extract 
+\begin_inset Formula $R$
+\end_inset
+
+ and 
+\begin_inset Formula $Q$
+\end_inset
+
+, the following will work:
+\end_layout
+
+\begin_layout Chunk
+
+<<chunk11>>=
+\end_layout
+
+\begin_layout Chunk
+
+X.qr = qr(X)
+\end_layout
+
+\begin_layout Chunk
+
+Q = qr.Q(X.qr)
+\end_layout
+
+\begin_layout Chunk
+
+R = qr.R(X.qr) 
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+As a side note, there are QR-based functions that provide regression-related
+ quantities, such as 
+\emph on
+qr.resid()
+\emph default
+, 
+\emph on
+qr.fitted()
+\emph default
+ and 
+\emph on
+qr.coef()
+\emph default
+.
+ These functions (and their Fortran counterparts) exist because one can
+ work through the various regression quantities of interest and find their
+ expressions in terms of 
+\begin_inset Formula $Q$
+\end_inset
+
+ and 
+\begin_inset Formula $R$
+\end_inset
+
+, with nice properties resulting from 
+\begin_inset Formula $Q$
+\end_inset
+
+ being orthogonal and 
+\begin_inset Formula $R$
+\end_inset
+
+ triangular.
+\end_layout
+
+\begin_layout Subsubsection
+Computing the QR decomposition
+\end_layout
+
+\begin_layout Standard
+We'll work through some of the details of the different approaches to the
+ QR, in part because they involve some concepts that may be useful in other
+ contexts.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+[see demo code]
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+One approach involves reflections of vectors and a second rotations of vectors.
+ Reflections and rotations are transformations that are performed by orthogonal
+ matrices.
+ The determinant of a reflection matrix is -1 and the determinant of a rotation
+ matrix is 1.
+ We'll see some of the details in the demo code.
+\end_layout
+
+\begin_layout Paragraph
+Reflections
+\end_layout
+
+\begin_layout Standard
+If 
+\begin_inset Formula $u$
+\end_inset
+
+ and 
+\begin_inset Formula $v$
+\end_inset
+
+ are orthonormal vectors and 
+\begin_inset Formula $x$
+\end_inset
+
+ is in the space spanned by 
+\begin_inset Formula $u$
+\end_inset
+
+ and 
+\begin_inset Formula $v$
+\end_inset
+
+, 
+\begin_inset Formula $x=c_{1}u+c_{2}v$
+\end_inset
+
+, then 
+\begin_inset Formula $\tilde{x}=-c_{1}u+c_{2}v$
+\end_inset
+
+ is a reflection (a 
+\emph on
+Householder
+\emph default
+ reflection) along the 
+\begin_inset Formula $u$
+\end_inset
+
+ dimension (since we are using the negative of that basis vector).
+ We can think of this as reflecting across the plane perpendicular to 
+\begin_inset Formula $u$
+\end_inset
+
+.
+ This extends simply to higher dimensions with orthonormal vectors, 
+\begin_inset Formula $u,v_{1},v_{2},\ldots$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Suppose we want to formulate the reflection in terms of a 
+\begin_inset Quotes eld
+\end_inset
+
+Householder
+\begin_inset Quotes erd
+\end_inset
+
+ matrix, 
+\begin_inset Formula $Q$
+\end_inset
+
+.
+ It turns out that 
+\begin_inset Formula 
+\[
+Qx=\tilde{x}
+\]
+
+\end_inset
+
+if 
+\begin_inset Formula $Q=I-2uu^{\top}$
+\end_inset
+
+.
+ 
+\begin_inset Formula $Q$
+\end_inset
+
+ has the following properties: (1) 
+\begin_inset Formula $Qu=-u$
+\end_inset
+
+, (2) 
+\begin_inset Formula $Qv=v$
+\end_inset
+
+ for 
+\begin_inset Formula $u^{\top}v=0$
+\end_inset
+
+, (3) 
+\begin_inset Formula $Q$
+\end_inset
+
+ is orthogonal and symmetric.
+\end_layout
+
+\begin_layout Standard
+One way to create the QR decomposition is by a series of Householder transformat
+ions that create an upper triangular 
+\begin_inset Formula $R$
+\end_inset
+
+ from 
+\begin_inset Formula $X$
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{eqnarray*}
+R & = & Q_{p}\cdots Q_{1}X\\
+Q & = & (Q_{p}\cdots Q_{1})^{\top}
+\end{eqnarray*}
+
+\end_inset
+
+where we make use of the symmetry in defining 
+\begin_inset Formula $Q$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Basically 
+\begin_inset Formula $Q_{1}$
+\end_inset
+
+ reflects the first column of 
+\begin_inset Formula $X$
+\end_inset
+
+ with respect to a carefully chosen 
+\begin_inset Formula $u$
+\end_inset
+
+, so that the result is all zeroes except for the first element.
+ We want 
+\begin_inset Formula $Q_{1}x=\tilde{x}=(||x||,0,\ldots,0)$
+\end_inset
+
+.
+ This can be achieved with 
+\begin_inset Formula $u=\frac{x-\tilde{x}}{||x-\tilde{x}||}$
+\end_inset
+
+.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+[ see sheet] 
+\end_layout
+
+\end_inset
+
+Then 
+\begin_inset Formula $Q_{2}$
+\end_inset
+
+ makes the last 
+\begin_inset Formula $n-2$
+\end_inset
+
+ rows of the second column equal to zero.
+ We'll work through this a bit in class.
+\end_layout
+
+\begin_layout Standard
+In the regression context, as we work through the individual transformations,
+ 
+\begin_inset Formula $Q_{j}=I-2u_{j}u_{j}^{\top}$
+\end_inset
+
+, we apply them to 
+\begin_inset Formula $X$
+\end_inset
+
+ and 
+\begin_inset Formula $Y$
+\end_inset
+
+ to create 
+\begin_inset Formula $R$
+\end_inset
+
+ (note this would not involve doing the full matrix multiplication - think
+ about what calculations are actually needed) and 
+\begin_inset Formula $QY=Q^{\top}Y$
+\end_inset
+
+, and then solve 
+\begin_inset Formula $R\beta=Q^{\top}Y$
+\end_inset
+
+.
+ To find 
+\begin_inset Formula $\mbox{Cov}(\hat{\beta})\propto(X^{\top}X)^{-1}=(R^{\top}R)^{-1}=R^{-1}R^{-\top}$
+\end_inset
+
+ we do need to invert 
+\begin_inset Formula $R$
+\end_inset
+
+, but it's upper-triangular and of dimension 
+\begin_inset Formula $p\times p$
+\end_inset
+
+.
+ It turns out that 
+\begin_inset Formula $Q^{\top}Y$
+\end_inset
+
+ can be partitioned into the first 
+\begin_inset Formula $p$
+\end_inset
+
+ and the last 
+\begin_inset Formula $n-p$
+\end_inset
+
+ elements, 
+\begin_inset Formula $z^{(1)}$
+\end_inset
+
+ and 
+\begin_inset Formula $z^{(2)}$
+\end_inset
+
+.
+ The SSR is 
+\begin_inset Formula $\|z^{(1)}\|^{2}$
+\end_inset
+
+ and SSE is 
+\begin_inset Formula $\|z^{(2)}\|^{2}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Paragraph
+Rotations
+\end_layout
+
+\begin_layout Standard
+A 
+\emph on
+Givens
+\emph default
+ rotation matrix rotates a vector in a two-dimensional subspace to be axis
+ oriented with respect to one of the two dimensions by changing the value
+ of the other dimension.
+ E.g.
+ we can create 
+\begin_inset Formula $\tilde{x}=(x_{1},\ldots,\tilde{x}_{p},\ldots,0,\ldots x_{n})$
+\end_inset
+
+ from 
+\begin_inset Formula $x=(x_{1,}\ldots,x_{p},\ldots,x_{q},\ldots,x_{n})$
+\end_inset
+
+ using a matrix multiplication: 
+\begin_inset Formula $\tilde{x}=Qx$
+\end_inset
+
+.
+ 
+\begin_inset Formula $Q$
+\end_inset
+
+ is orthogonal but not symmetric.
+ 
+\end_layout
+
+\begin_layout Standard
+We can use a series of Givens rotations to do the QR but unless it is done
+ carefully, more computations are needed than with Householder reflections.
+ The basic story is that we apply a series of Givens rotations to 
+\begin_inset Formula $X$
+\end_inset
+
+ such that we zero out the lower triangular elements.
+ 
+\begin_inset Formula 
+\begin{eqnarray*}
+R & = & Q_{pn}\cdots Q_{23}Q_{1n}\cdots Q_{13}Q_{12}X\\
+Q & = & (Q_{pn}\cdots Q_{12})^{\top}
+\end{eqnarray*}
+
+\end_inset
+
+Note that we create the 
+\begin_inset Formula $n-p$
+\end_inset
+
+ zero rows in 
+\begin_inset Formula $R$
+\end_inset
+
+ (because the calculations affect the upper triangle of 
+\begin_inset Formula $R$
+\end_inset
+
+), but we can then ignore those rows and the corresponding columns of 
+\begin_inset Formula $Q$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Paragraph
+Gram-Schmidt Orthogonalization
+\end_layout
+
+\begin_layout Standard
+Gram-Schmidt involves finding a set of orthonormal vectors to span the same
+ space as a set of LIN vectors, 
+\begin_inset Formula $x_{1},\ldots,x_{p}$
+\end_inset
+
+.
+ If we take the LIN vectors to be the columns of 
+\begin_inset Formula $X$
+\end_inset
+
+, so that we are discussing the column space of 
+\begin_inset Formula $X$
+\end_inset
+
+, then G-S yields the QR decomposition.
+ Here's the algorithm:
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $\tilde{x}_{1}=\frac{x_{1}}{\|x_{1}\|}$
+\end_inset
+
+ (normalize the first vector)
+\end_layout
+
+\begin_layout Enumerate
+Orthogonalize the remaining vectors with respect to 
+\begin_inset Formula $\tilde{x}_{1}$
+\end_inset
+
+:
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+\begin_inset Formula $\tilde{x}_{2}=\frac{x_{2}-\tilde{x}_{1}^{\top}x_{2}\tilde{x}_{1}}{\|x_{2}-\tilde{x}_{1}^{\top}x_{2}\tilde{x}_{1}\|}$
+\end_inset
+
+, which orthogonalizes with respect to 
+\begin_inset Formula $\tilde{x}_{1}$
+\end_inset
+
+ and normalizes.
+ Note that 
+\begin_inset Formula $\tilde{x}_{1}^{\top}x_{2}\tilde{x}_{1}=\langle\tilde{x}_{1},x_{2}\rangle\tilde{x}_{1}$
+\end_inset
+
+.
+ So we are finding a scaling, 
+\begin_inset Formula $c\tilde{x}_{1}$
+\end_inset
+
+, where 
+\begin_inset Formula $c$
+\end_inset
+
+ is based on the inner product, to remove the variation in the 
+\begin_inset Formula $x_{1}$
+\end_inset
+
+ direction from 
+\begin_inset Formula $x_{2}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Enumerate
+For 
+\begin_inset Formula $k>2$
+\end_inset
+
+, find interim vectors, 
+\begin_inset Formula $x_{k}^{(2)}$
+\end_inset
+
+, by orthogonalizing with respect to 
+\begin_inset Formula $\tilde{x}_{1}$
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Proceed for 
+\begin_inset Formula $k=3,\ldots$
+\end_inset
+
+, in turn orthogonalizing and normalizing the first of the remaining vectors
+ w.r.t.
+ 
+\begin_inset Formula $\tilde{x}_{k-1}$
+\end_inset
+
+ and orthogonalizing the remaining vectors w.r.t.
+ 
+\begin_inset Formula $\tilde{x}_{k-1}$
+\end_inset
+
+ to get new interim vectors
+\end_layout
+
+\begin_layout Standard
+Mathematically, we could instead orthogonalize 
+\begin_inset Formula $x_{2}$
+\end_inset
+
+ w.r.t.
+ 
+\begin_inset Formula $\tilde{x}_{1}$
+\end_inset
+
+, then orthogonalize 
+\begin_inset Formula $x_{3}$
+\end_inset
+
+ w.r.t.
+ 
+\begin_inset Formula $\{\tilde{x}_{1},\tilde{x}_{2}\}$
+\end_inset
+
+, etc.
+ The algorithm above is the 
+\emph on
+modified
+\emph default
+ G-S, and is known to be more numerically stable if the columns of 
+\begin_inset Formula $X$
+\end_inset
+
+ are close to collinear, giving vectors that are closer to orthogonal.
+ The resulting 
+\begin_inset Formula $\tilde{x}$
+\end_inset
+
+ vectors are the columns of 
+\begin_inset Formula $Q$
+\end_inset
+
+.
+ The elements of 
+\begin_inset Formula $R$
+\end_inset
+
+ are obtained as we proceed: the diagonal values are the the normalization
+ values in the denominators, while the off-diagonals are the inner products
+ with the already-computed columns of 
+\begin_inset Formula $Q$
+\end_inset
+
+ that are computed as part of the numerators.
+\end_layout
+
+\begin_layout Standard
+Another way to think about this is that 
+\begin_inset Formula $R=Q^{\top}X$
+\end_inset
+
+, which is the same as regressing the columns of 
+\begin_inset Formula $X$
+\end_inset
+
+ on 
+\begin_inset Formula $Q,$
+\end_inset
+
+ since 
+\begin_inset Formula $(Q^{\top}Q)^{-1}Q^{\top}X=Q^{\top}X$
+\end_inset
+
+.
+ By construction, the first column of 
+\begin_inset Formula $X$
+\end_inset
+
+ is a scaling of the first column of 
+\begin_inset Formula $Q$
+\end_inset
+
+, the second column of 
+\begin_inset Formula $X$
+\end_inset
+
+ is a linear combination of the first two columns of 
+\begin_inset Formula $Q$
+\end_inset
+
+, etc., so 
+\begin_inset Formula $R$
+\end_inset
+
+ being upper triangular makes sense.
+\end_layout
+
+\begin_layout Subsubsection
+The 
+\begin_inset Quotes eld
+\end_inset
+
+tall-skinny
+\begin_inset Quotes erd
+\end_inset
+
+ QR
+\end_layout
+
+\begin_layout Standard
+Suppose you have a very large regression problem, with 
+\begin_inset Formula $n$
+\end_inset
+
+ very large, and 
+\begin_inset Formula $n\gg p$
+\end_inset
+
+.
+ There is a variant of the QR, called the tall-skinny QR (see 
+\begin_inset CommandInset href
+LatexCommand href
+target "http://arxiv.org/pdf/0808.2664v1.pdf"
+
+\end_inset
+
+ for details) that allows us to find the decomposition in a parallel fashion.
+ The basic idea is to do a nested set of QR decompositions on blocks of
+ rows of 
+\begin_inset Formula $X$
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{eqnarray*}
+X & = & \left(\begin{array}{c}
+X_{0}\\
+X_{1}\\
+X_{2}\\
+X_{3}
+\end{array}\right)=\left(\begin{array}{c}
+Q_{0}R_{0}\\
+Q_{1}R_{1}\\
+Q_{2}R_{2}\\
+Q_{3}R_{3}
+\end{array}\right),
+\end{eqnarray*}
+
+\end_inset
+
+followed by 'reduction' steps (this can be done in a map-reduce context)
+ that do the 
+\begin_inset Formula $QR$
+\end_inset
+
+ of pairs of the 
+\begin_inset Formula $R$
+\end_inset
+
+ factors:
+\begin_inset Formula 
+\[
+\left(\begin{array}{c}
+R_{0}\\
+R_{1}\\
+R_{2}\\
+R_{3}
+\end{array}\right)=\left(\begin{array}{c}
+\left(\begin{array}{c}
+R_{0}\\
+R_{1}
+\end{array}\right)\\
+\left(\begin{array}{c}
+R_{2}\\
+R_{3}
+\end{array}\right)
+\end{array}\right)=\left(\begin{array}{c}
+Q_{01}R_{01}\\
+Q_{23}R_{23}
+\end{array}\right)
+\]
+
+\end_inset
+
+and 
+\begin_inset Formula 
+\[
+\left(\begin{array}{c}
+R_{01}\\
+R_{23}
+\end{array}\right)=Q_{0123}R_{0123}.
+\]
+
+\end_inset
+
+The full decomposition is then 
+\begin_inset Formula 
+\[
+X=\left(\begin{array}{cccc}
+Q_{0} & 0 & 0 & 0\\
+0 & Q_{1} & 0 & 0\\
+0 & 0 & Q_{2} & 0\\
+0 & 0 & 0 & Q_{3}
+\end{array}\right)\left(\begin{array}{cc}
+Q_{01} & 0\\
+0 & Q_{23}
+\end{array}\right)Q_{0123}R_{0123}=QR.
+\]
+
+\end_inset
+
+The computation can be done in parallel (in particular it can be done with
+ map-reduce) and the 
+\begin_inset Formula $Q$
+\end_inset
+
+ matrix for big problems would generally not be computed explicitly but
+ would be stored in its constituent pieces.
+\end_layout
+
+\begin_layout Standard
+Alternatively, there is a variant on the algorithm that processes the row-blocks
+ of 
+\begin_inset Formula $X$
+\end_inset
+
+ serially, allowing you to do QR on a large tall-skinny matrix that you
+ can't fit in memory (or possibly even on disk).
+ First you do 
+\begin_inset Formula $QR$
+\end_inset
+
+ on 
+\begin_inset Formula $X_{0}$
+\end_inset
+
+ to get 
+\begin_inset Formula $Q_{0}R_{0}$
+\end_inset
+
+.
+ Then you stack 
+\begin_inset Formula $R_{0}$
+\end_inset
+
+ on top of 
+\begin_inset Formula $X_{1}$
+\end_inset
+
+ and do QR to get 
+\begin_inset Formula $R_{01}$
+\end_inset
+
+.
+ Then stack 
+\begin_inset Formula $R_{01}$
+\end_inset
+
+ on top of 
+\begin_inset Formula $X_{2}$
+\end_inset
+
+ to get 
+\begin_inset Formula $R_{012}$
+\end_inset
+
+, etc.
+\end_layout
+
+\begin_layout Subsection
+Determinants
+\end_layout
+
+\begin_layout Standard
+The absolute value of the determinant of a square matrix can be found from
+ the product of the diagonals of the triangular matrix in any factorization
+ that gives a triangular (including diagonal) matrix times an orthogonal
+ matrix (or matrices) since the determinant of an orthogonal matrix is either
+ one or minus one.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $|A|=|QR|=|Q||R|=\pm|R|$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $|A^{\top}A|=|(QR)^{\top}QR|=|R^{\top}R|=|R_{1}^{\top}R_{1}|=|R_{1}|^{2}$
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+In R, the following will do it (on the log scale), since 
+\begin_inset Formula $R$
+\end_inset
+
+ is stored in the upper triangle of the 
+\emph on
+$qr
+\emph default
+ element.
+\end_layout
+
+\begin_layout Chunk
+
+<<chunk12, eval=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+
+myqr = qr(A)
+\end_layout
+
+\begin_layout Chunk
+
+magn = sum(log(abs(diag(myqr$qr)))) 
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+An alternative is the product of the diagonal elements of 
+\begin_inset Formula $D$
+\end_inset
+
+ (the singular values) in the SVD factorization, 
+\begin_inset Formula $A=UDV^{\top}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+For non-negative definite matrices, we know the determinant is non-negative,
+ so the uncertainty about the sign is not an issue.
+ For positive definite matrices, a good approach is to use the product of
+ the diagonal elements of the Cholesky decomposition.
+ 
+\end_layout
+
+\begin_layout Standard
+One can also use the product of the eigenvalues: 
+\begin_inset Formula $|A|=|\Gamma\Lambda\Gamma^{-1}|=|\Gamma||\Gamma^{-1}||\Lambda|=|\Lambda|$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+Computation
+\end_layout
+
+\begin_layout Standard
+Computing from any of these diagonal or triangular matrices as the product
+ of the diagonals is prone to overflow and underflow, so we 
+\series bold
+always
+\series default
+ work on the log scale as the sum of the log of the values.
+ When some of these may be negative, we can always keep track of the number
+ of negative values and take the log of the absolute values.
+\end_layout
+
+\begin_layout Standard
+Often we will have the factorization as a result of other parts of the computati
+on, so we get the determinant for free.
+\end_layout
+
+\begin_layout Standard
+R's 
+\emph on
+determinant()
+\emph default
+ uses the LU decomposition.
+ Supposedly 
+\emph on
+det()
+\emph default
+ just wraps 
+\emph on
+determinant()
+\emph default
+, but I can't seem to pass the 
+\emph on
+logarithm
+\emph default
+ argument into 
+\emph on
+det()
+\emph default
+, so 
+\emph on
+determinant() 
+\emph default
+seems more useful.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Subsection
+Sweeping
+\end_layout
+
+\begin_layout Plain Layout
+Challenge: write a simple sweep operator in R without any looping.
+ How many operations for a single sweep?
+\end_layout
+
+\begin_layout Plain Layout
+mention also sweeping for multivariate normal
+\end_layout
+
+\begin_layout Subsection
+Sweeping
+\end_layout
+
+\begin_layout Plain Layout
+Challenge: write a simple sweep operator in R without any looping.
+ How many operations for a single sweep?
+\end_layout
+
+\begin_layout Plain Layout
+mention also sweeping for multivariate normal
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Eigendecomposition and SVD
+\end_layout
+
+\begin_layout Subsection
+Eigendecomposition 
+\end_layout
+
+\begin_layout Standard
+The eigendecomposition (spectral decomposition) is useful in considering
+ convergence of algorithms and of course for statistical decompositions
+ such as PCA.
+ We think of decomposing the components of variation into orthogonal patterns
+ (the eigenvectors) with variances (eigenvalues) associated with each pattern.
+\end_layout
+
+\begin_layout Standard
+Square symmetric matrices have real eigenvectors and eigenvalues, with the
+ factorization into orthogonal 
+\begin_inset Formula $\Gamma$
+\end_inset
+
+ and diagonal 
+\begin_inset Formula $\Lambda$
+\end_inset
+
+, 
+\begin_inset Formula $A=\Gamma\Lambda\Gamma^{\top}$
+\end_inset
+
+, where the eigenvalues on the diagonal of 
+\begin_inset Formula $\Lambda$
+\end_inset
+
+ are ordered in decreasing value.
+ Of course this is equivalent to the definition of an eigenvalue/eigenvector
+ pair as a pair such that 
+\begin_inset Formula $Ax=\lambda x$
+\end_inset
+
+ where 
+\begin_inset Formula $x$
+\end_inset
+
+ is the eigenvector and 
+\begin_inset Formula $\lambda$
+\end_inset
+
+ is a scalar, the eigenvalue.
+ The inverse of the eigendecomposition is simply 
+\begin_inset Formula $\Gamma\Lambda^{-1}\Gamma^{\top}$
+\end_inset
+
+.
+ On a similar note, we can create a square root matrix, 
+\begin_inset Formula $\Gamma\Lambda^{1/2}$
+\end_inset
+
+, by taking the square roots of the eigenvalues.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Positive definite matrices have positive eigenvalues, while non-negative
+ definite (positive semi-definite) matrices have non-negative values, with
+ each zero eigenvalue corresponding to a rank deficiency.
+ Statistically, we can think of this as constraints induced by the covariance
+ structure - i.e., linear combinations that are fixed and therefore known
+ with certainty.
+ The pseudo-inverse is 
+\begin_inset Formula $\Gamma\Lambda^{+}\Gamma^{\top}$
+\end_inset
+
+ where 
+\begin_inset Formula $\lambda_{i}^{+}=1/\lambda_{i}$
+\end_inset
+
+ except when 
+\begin_inset Formula $\lambda_{i}=0$
+\end_inset
+
+ in which case 
+\begin_inset Formula $\lambda_{i}^{+}=0$
+\end_inset
+
+.
+ If we think of 
+\begin_inset Formula $A$
+\end_inset
+
+ as a precision matrix with zero precision (infinite variance) for certain
+ linear combinations, then 
+\begin_inset Formula $A^{+}$
+\end_inset
+
+ is the covariance matrix that forces those combinations to have zero variance.
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The spectral radius of 
+\begin_inset Formula $A$
+\end_inset
+
+, denoted 
+\begin_inset Formula $\rho(A)$
+\end_inset
+
+, is the maximum of the absolute values of the eigenvalues.
+ As we saw when talking about ill-conditionedness, for symmetric matrices,
+ this maximum is the induced norm, so we have 
+\begin_inset Formula $\rho(A)=\|A\|_{2}$
+\end_inset
+
+.
+ It turns out that 
+\begin_inset Formula $\rho(A)\leq\|A\|$
+\end_inset
+
+ for any induced matrix norm.
+ The spectral radius comes up in determining the rate of convergence of
+ some iterative algorithms.
+\end_layout
+
+\begin_layout Paragraph
+Computation
+\end_layout
+
+\begin_layout Standard
+There are several methods for eigenvalues; a common one for doing the full
+ eigendecomposition is the 
+\emph on
+QR algorithm
+\emph default
+.
+ The first step is to reduce 
+\begin_inset Formula $A$
+\end_inset
+
+ to upper Hessenburg form, which is an upper triangular matrix except that
+ the first subdiagonal in the lower triangular part can be non-zero.
+ For symmetric matrices, the result is actually tridiagonal.
+ We can do the reduction using Householder reflections or Givens rotations.
+ At this point the QR decomposition (using Givens rotations) is applied
+ iteratively (to a version of the matrix in which the diagonals are shifted),
+ and the result converges to a diagonal matrix, which provides the eigenvalues.
+ It's more work to get the eigenvectors, but they are obtained as a product
+ of Householder matrices (required for the initial reduction) multiplied
+ by the product of the 
+\begin_inset Formula $Q$
+\end_inset
+
+ matrices from the successive QR decompositions.
+\end_layout
+
+\begin_layout Standard
+We won't go into the algorithm in detail, but note that it involves manipulation
+s and ideas we've seen already.
+\end_layout
+
+\begin_layout Standard
+If only the largest (or the first few largest) eigenvalues and their eigenvector
+s are needed, which can come up in time series and Markov chain contexts,
+ the problem is easier and can be solved by the 
+\emph on
+power method
+\emph default
+.
+ E.g., in a Markov chain context, steady state is reached through 
+\begin_inset Formula $x_{t}=A^{t}x_{0}$
+\end_inset
+
+.
+ One can find the largest eigenvector by multiplying by 
+\begin_inset Formula $A$
+\end_inset
+
+ many times, normalizing at each step.
+ 
+\begin_inset Formula $v^{(k)}=Az^{(k-1)}$
+\end_inset
+
+ and 
+\begin_inset Formula $z^{(k)}=v^{(k)}/\|v^{(k)}\|$
+\end_inset
+
+.
+ There is an extension to find the 
+\begin_inset Formula $p$
+\end_inset
+
+ largest eigenvalues and their vectors.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+[insert demo code]
+\end_layout
+
+\end_inset
+
+See the demo code for an implementation.
+\end_layout
+
+\begin_layout Subsection
+Singular value decomposition
+\end_layout
+
+\begin_layout Standard
+Let's consider an 
+\begin_inset Formula $n\times m$
+\end_inset
+
+ matrix, 
+\begin_inset Formula $A$
+\end_inset
+
+, with 
+\begin_inset Formula $n\geq m$
+\end_inset
+
+ (if 
+\begin_inset Formula $m>n$
+\end_inset
+
+, we can always work with 
+\begin_inset Formula $A^{\top})$
+\end_inset
+
+.
+ This often is a matrix representing 
+\begin_inset Formula $m$
+\end_inset
+
+ features of 
+\begin_inset Formula $n$
+\end_inset
+
+ observations.
+ We could have 
+\begin_inset Formula $n$
+\end_inset
+
+ documents and 
+\begin_inset Formula $m$
+\end_inset
+
+ words, or 
+\begin_inset Formula $n$
+\end_inset
+
+ gene expression levels and 
+\begin_inset Formula $m$
+\end_inset
+
+ experimental conditions, etc.
+ 
+\begin_inset Formula $A$
+\end_inset
+
+ can always be decomposed as
+\begin_inset Formula 
+\[
+A=UDV^{\top}
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $U$
+\end_inset
+
+ and 
+\begin_inset Formula $V$
+\end_inset
+
+ are matrices with orthonormal columns (left and right eigenvectors) and
+ 
+\begin_inset Formula $D$
+\end_inset
+
+ is diagonal with non-negative values (which correspond to eigenvalues in
+ the case of square 
+\begin_inset Formula $A$
+\end_inset
+
+ and to squared eigenvalues of 
+\begin_inset Formula $A^{\top}A$
+\end_inset
+
+).
+ 
+\end_layout
+
+\begin_layout Standard
+The SVD can be represented in more than one way.
+ One representation is 
+\begin_inset Formula 
+\[
+A_{n\times m}=U_{n\times k}D_{k\times k}V_{k\times m}^{\top}=\sum_{j=1}^{k}D_{jj}u_{j}v_{j}^{\top}
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $u_{j}$
+\end_inset
+
+ and 
+\begin_inset Formula $v_{j}$
+\end_inset
+
+ are the columns of 
+\begin_inset Formula $U$
+\end_inset
+
+ and 
+\begin_inset Formula $V$
+\end_inset
+
+ and where 
+\begin_inset Formula $k$
+\end_inset
+
+ is the rank of 
+\begin_inset Formula $A$
+\end_inset
+
+ (which is at most the minimum of 
+\begin_inset Formula $n$
+\end_inset
+
+ and 
+\begin_inset Formula $m$
+\end_inset
+
+ of course).
+ The diagonal elements of 
+\begin_inset Formula $D$
+\end_inset
+
+ are the singular values.
+ 
+\end_layout
+
+\begin_layout Standard
+If 
+\begin_inset Formula $A$
+\end_inset
+
+ is positive semi-definite, the eigendecomposition is an SVD.
+ Furthermore, 
+\begin_inset Formula $A^{\top}A=VD^{2}V^{\top}$
+\end_inset
+
+ and 
+\begin_inset Formula $AA^{\top}=UD^{2}U^{\top}$
+\end_inset
+
+, so we can find the eigendecomposition of such matrices using the SVD of
+ 
+\begin_inset Formula $A$
+\end_inset
+
+.
+ Note that the squares of the singular values of 
+\begin_inset Formula $A$
+\end_inset
+
+ are the eigenvalues of 
+\begin_inset Formula $A^{\top}A$
+\end_inset
+
+ and 
+\begin_inset Formula $AA^{\top}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+We can also fill out the matrices to get
+\begin_inset Formula 
+\[
+A=U_{n\times n}D_{n\times m}V_{m\times m}^{\top}
+\]
+
+\end_inset
+
+where the added rows and columns of 
+\begin_inset Formula $D$
+\end_inset
+
+ are zero with the upper left block the 
+\begin_inset Formula $D_{k\times k}$
+\end_inset
+
+ from above.
+\end_layout
+
+\begin_layout Paragraph
+Uses
+\end_layout
+
+\begin_layout Standard
+The SVD is an excellent way to determine a matrix rank and to construct
+ a pseudo-inverse (
+\begin_inset Formula $A^{+}=VD^{+}U^{\top})$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+We can use the SVD to approximate 
+\begin_inset Formula $A$
+\end_inset
+
+ by taking 
+\begin_inset Formula $A\approx\tilde{A}=\sum_{j=1}^{p}D_{jj}u_{j}v_{j}^{\top}$
+\end_inset
+
+ for 
+\begin_inset Formula $p<m$
+\end_inset
+
+.
+ This approximation holds in terms of the Frobenius norm for 
+\begin_inset Formula $A-\tilde{A}$
+\end_inset
+
+.
+ As an example if we have a large image of dimension 
+\begin_inset Formula $n\times m$
+\end_inset
+
+, we could hold a compressed version by a rank-
+\begin_inset Formula $p$
+\end_inset
+
+ approximation using the SVD.
+ The SVD is used a lot in clustering problems.
+ For example, the Netflix prize was won based on a variant of SVD (in fact
+ all of the top methods used variants on SVD, I believe).
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Ridge regression application in Lange p.
+ 134.
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+Computation
+\end_layout
+
+\begin_layout Standard
+The basic algorithm (Golub-Reinsch) is similar to the QR method for the
+ eigendecomposition.
+ We use a series of Householder transformations on the left and right to
+ reduce 
+\begin_inset Formula $A$
+\end_inset
+
+ to an upper bidiagonal matrix, 
+\begin_inset Formula $A^{(0)}$
+\end_inset
+
+.
+ The post-multiplications (the transformations on the right) generate the
+ zeros in the upper triangle.
+ (An upper bidiagonal matrix is one with non-zeroes only on the diagonal
+ and first subdiagonal above the diagonal).
+ Then the algorithm produces a series of upper bidiagonal matrices, 
+\begin_inset Formula $A^{(0)}$
+\end_inset
+
+, 
+\begin_inset Formula $A^{(1)},$
+\end_inset
+
+ etc.
+ that converge to a diagonal matrix, 
+\begin_inset Formula $D$
+\end_inset
+
+ .
+ Each step is carried out by a sequence of Givens transformations:
+\begin_inset Formula 
+\begin{eqnarray*}
+A^{(j+1)} & = & R_{m-2}^{\top}R_{m-3}^{\top}\cdots R_{0}^{\top}A^{(j)}T_{0}T_{1}\cdots T_{m-2}\\
+ & = & RA^{(j)}T
+\end{eqnarray*}
+
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Note that the multiplication on the right is required to produce zeroes
+ in the 
+\begin_inset Formula $k$
+\end_inset
+
+th column and the 
+\begin_inset Formula $k$
+\end_inset
+
+th row.
+ [NOT SURE WHAT I MEANT BY THIS]
+\end_layout
+
+\end_inset
+
+ This eventually gives 
+\begin_inset Formula $A^{(...)}=D$
+\end_inset
+
+ and by construction, 
+\begin_inset Formula $U$
+\end_inset
+
+ (the product of the pre-multiplied Householder matrices and the 
+\begin_inset Formula $R$
+\end_inset
+
+ matrices) and 
+\begin_inset Formula $V$
+\end_inset
+
+ (the product of the post-multiplied Householder matrices and the 
+\begin_inset Formula $T$
+\end_inset
+
+ matrices) are orthogonal.
+ The result is then transformed by a diagonal matrix to make the elements
+ of 
+\begin_inset Formula $D$
+\end_inset
+
+ non-negative and by permutation matrices to order the elements of 
+\begin_inset Formula $D$
+\end_inset
+
+ in nonincreasing order.
+ 
+\end_layout
+
+\begin_layout Paragraph
+Computation for large tall-skinny matrices
+\end_layout
+
+\begin_layout Standard
+The SVD can also be generated from a QR decomposition.
+ Take 
+\begin_inset Formula $X=QR$
+\end_inset
+
+ and then do an SVD on the 
+\begin_inset Formula $R$
+\end_inset
+
+ matrix to get 
+\begin_inset Formula $X=QUDV^{\top}=U^{*}DV^{\top}$
+\end_inset
+
+.
+ This is particularly helpful for the case when 
+\begin_inset Formula $X$
+\end_inset
+
+ is tall and skinny (suppose 
+\begin_inset Formula $X$
+\end_inset
+
+ is 
+\begin_inset Formula $n\times p$
+\end_inset
+
+ with 
+\begin_inset Formula $n\gg p$
+\end_inset
+
+), because we can do the tall-skinny QR, and the resulting SVD on 
+\begin_inset Formula $R$
+\end_inset
+
+ is easy computationally if 
+\begin_inset Formula $p$
+\end_inset
+
+ is manageable.
+\end_layout
+
+\begin_layout Section
+Computation
+\end_layout
+
+\begin_layout Subsection
+Linear algebra in R
+\end_layout
+
+\begin_layout Standard
+Speedups and storage savings can be obtained by working with matrices stored
+ in special formats when the matrices have special structure.
+ E.g., we might store a symmetric matrix as a full matrix but only use the
+ upper or lower triangle.
+ Banded matrices and block diagonal matrices are other common formats.
+ Banded matrices are all zero except for 
+\begin_inset Formula $A_{i,i+c_{k}}$
+\end_inset
+
+ for some small number of integers, 
+\begin_inset Formula $c_{k}$
+\end_inset
+
+.
+ Viewed as an image, these have bands.
+ The bands are known as co-diagonals.
+\end_layout
+
+\begin_layout Standard
+Note that for many matrix decompositions, you can change whether all of
+ the aspects of the decomposition are returned, or just some, which may
+ speed calculations.
+\end_layout
+
+\begin_layout Standard
+Some useful packages in R for matrices are 
+\emph on
+Matrix
+\emph default
+, 
+\emph on
+spam
+\emph default
+, and 
+\emph on
+bdsmatrix
+\emph default
+.
+ 
+\emph on
+Matrix
+\emph default
+ can represent a variety of rectangular matrices, including triangular,
+ orthogonal, diagonal, etc.
+ and provides methods for various matrix calculations that are specific
+ to the matrix type.
+ 
+\emph on
+spam
+\emph default
+ handles general sparse matrices with fast matrix calculations, in particular
+ a fast Cholesky decomposition.
+ 
+\emph on
+bdsmatrix
+\emph default
+ focuses on block-diagonal matrices, which arise frequently in contexts
+ where there is clustering that induces within-cluster correlation and cross-clu
+ster independence.
+\end_layout
+
+\begin_layout Standard
+In general, matrix operations in R go to compiled C or Fortran code without
+ much intermediate R code, so they can actually be pretty efficient and
+ are based on the best algorithms developed by numerical experts.
+ The core libraries that are used are LAPACK and BLAS (the Linear Algebra
+ PACKage and the Basic Linear Algebra Subroutines).
+ As we've discussed in the parallelization unit, one way to speed up code
+ that relies heavily on linear algebra is to make sure you have a BLAS library
+ tuned to your machine.
+ These include OpenBLAS (free; formerly called GotoBLAS), Intel's MKL, AMD's
+ ACML, and Apple's vecLib.
+ These can be installed and R can be linked to the shared object library
+ file (
+\emph on
+.so
+\emph default
+ file or 
+\emph on
+.dylib
+\emph default
+ on a Mac) for the fast BLAS.
+ These BLAS libraries are also available in threaded versions that farm
+ out the calculations across multiple cores or processors that share memory.
+ 
+\end_layout
+
+\begin_layout Standard
+BLAS routines do vector operations (level 1), matrix-vector operations (level
+ 2), and dense matrix-matrix operations (level 3).
+ Often the name of the routine has as its first letter 
+\begin_inset Quotes eld
+\end_inset
+
+d
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+s
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+c
+\begin_inset Quotes erd
+\end_inset
+
+ to indicate the routine is double precision, single precision, or complex.
+ LAPACK builds on BLAS to implement standard linear algebra routines such
+ as eigendecomposition, solutions of linear systems, a variety of factorizations
+, etc.
+\end_layout
+
+\begin_layout Subsection
+Sparse matrices
+\end_layout
+
+\begin_layout Standard
+As an example of exploiting sparsity, here's how the 
+\emph on
+spam
+\emph default
+ package in R stores a sparse matrix.
+ Consider the matrix to be row-major and store the non-zero elements in
+ order in a vector called 
+\emph on
+value
+\emph default
+.
+ Then create a vector called 
+\emph on
+rowptr
+\emph default
+ that stores the position of the first element of each row.
+ Finally, have a vector, 
+\emph on
+colindices
+\emph default
+ that tells the column identity of each element.
+ Here's an example in the spam package in R:
+\end_layout
+
+\begin_layout Chunk
+
+<<spam-format>>=
+\end_layout
+
+\begin_layout Chunk
+
+require(spam)
+\end_layout
+
+\begin_layout Chunk
+
+mat = matrix(c(0,0,1,0,10,0,0,0,100,0,rep(0,5),1000,rep(0,4)), nrow = 4,
+ byrow = TRUE)
+\end_layout
+
+\begin_layout Chunk
+
+mat = as.spam(mat)
+\end_layout
+
+\begin_layout Chunk
+
+mat@entries 
+\end_layout
+
+\begin_layout Chunk
+
+mat@rowpointers 
+\end_layout
+
+\begin_layout Chunk
+
+mat@colindices 
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+We can do a fast matrix multiply, 
+\begin_inset Formula $Ab$
+\end_inset
+
+, as follows in pseudo-code:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{lstlisting}
+\end_layout
+
+\begin_layout Plain Layout
+
+for(i in 1:nrows(A)){
+\end_layout
+
+\begin_layout Plain Layout
+
+	x[i] = 0
+\end_layout
+
+\begin_layout Plain Layout
+
+    # should also check that row is not empty...
+\end_layout
+
+\begin_layout Plain Layout
+
+	for(j in (rowptr[i]:(rowptr[i+1]-1)) {
+\end_layout
+
+\begin_layout Plain Layout
+
+		x[i] = x[i] + value[j] * b[colindices[j]]
+\end_layout
+
+\begin_layout Plain Layout
+
+	}	
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{lstlisting}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+How many computations have we done? Only 
+\begin_inset Formula $k$
+\end_inset
+
+ multiplies and 
+\begin_inset Formula $O(k)$
+\end_inset
+
+ additions where 
+\begin_inset Formula $k$
+\end_inset
+
+ is the number of non-zero elements of 
+\begin_inset Formula $A$
+\end_inset
+
+.
+ Compare this to the usual 
+\begin_inset Formula $O(n^{2})$
+\end_inset
+
+ for dense multiplication.
+\end_layout
+
+\begin_layout Standard
+Note that for the Cholesky of a sparse matrix, if the sparsity pattern is
+ fixed, but the entries change, one can precompute an optimal re-ordering
+ that retains as much sparsity in 
+\begin_inset Formula $U$
+\end_inset
+
+ as possible.
+ Then multiple Cholesky decompositions can be done more quickly as the entries
+ change.
+ 
+\end_layout
+
+\begin_layout Paragraph
+Banded matrices
+\end_layout
+
+\begin_layout Standard
+Suppose we have a banded matrix 
+\begin_inset Formula $A$
+\end_inset
+
+ where the lower bandwidth is 
+\begin_inset Formula $p$
+\end_inset
+
+, namely 
+\begin_inset Formula $A_{ij}=0$
+\end_inset
+
+ for 
+\begin_inset Formula $i>j+p$
+\end_inset
+
+ and the upper bandwidth is 
+\begin_inset Formula $q$
+\end_inset
+
+ (
+\begin_inset Formula $A_{ij}=0$
+\end_inset
+
+ for 
+\begin_inset Formula $j>i+q$
+\end_inset
+
+).
+ An alternative to reducing to 
+\begin_inset Formula $Ux=b^{*}$
+\end_inset
+
+ is to compute 
+\begin_inset Formula $A=LU$
+\end_inset
+
+ and then do two solutions, 
+\begin_inset Formula $U^{-1}(L^{-1}b)$
+\end_inset
+
+.
+ One can show that the computational complexity of the LU factorization
+ is 
+\begin_inset Formula $O(npq)$
+\end_inset
+
+ for banded matrices, while solving the two triangular systems is 
+\begin_inset Formula $O(np+nq)$
+\end_inset
+
+, so for small 
+\begin_inset Formula $p$
+\end_inset
+
+ and 
+\begin_inset Formula $q$
+\end_inset
+
+, the speedup can be dramatic.
+ 
+\end_layout
+
+\begin_layout Standard
+Banded matrices come up in time series analysis.
+ E.g., MA models produce banded covariance structures because the covariance
+ is zero after a certain number of lags.
+\end_layout
+
+\begin_layout Subsection
+Low rank updates
+\end_layout
+
+\begin_layout Standard
+A transformation of the form 
+\begin_inset Formula $A-uv^{\top}$
+\end_inset
+
+ is a rank-one update because 
+\begin_inset Formula $uv^{\top}$
+\end_inset
+
+ is of rank one.
+ 
+\end_layout
+
+\begin_layout Standard
+More generally a low rank update of 
+\begin_inset Formula $A$
+\end_inset
+
+ is 
+\begin_inset Formula $\tilde{A}=A-UV^{\top}$
+\end_inset
+
+ where 
+\begin_inset Formula $U$
+\end_inset
+
+ and 
+\begin_inset Formula $V$
+\end_inset
+
+ are 
+\begin_inset Formula $n\times m$
+\end_inset
+
+ with 
+\begin_inset Formula $n\geq m$
+\end_inset
+
+.
+ The Sherman-Morrison-Woodbury formula tells us that 
+\begin_inset Formula 
+\[
+\tilde{A}^{-1}=A^{-1}+A^{-1}U(I_{m}-V^{\top}A^{-1}U)^{-1}V^{\top}A^{-1}
+\]
+
+\end_inset
+
+so if we know 
+\begin_inset Formula $x_{0}=A^{-1}b$
+\end_inset
+
+, then the solution to 
+\begin_inset Formula $\tilde{A}x=b$
+\end_inset
+
+ is 
+\begin_inset Formula $x+A^{-1}U(I_{m}-V^{\top}A^{-1}U)^{-1}V^{\top}x$
+\end_inset
+
+.
+ Provided 
+\begin_inset Formula $m$
+\end_inset
+
+ is not too large, and particularly if we already have a factorization of
+ 
+\begin_inset Formula $A$
+\end_inset
+
+, then 
+\begin_inset Formula $A^{-1}U$
+\end_inset
+
+ is not too bad computationally, and 
+\begin_inset Formula $I_{m}-V^{\top}A^{-1}U$
+\end_inset
+
+ is 
+\begin_inset Formula $m\times m$
+\end_inset
+
+.
+ As a result 
+\begin_inset Formula $A^{-1}(U(\cdots)^{-1}V^{\top}x)$
+\end_inset
+
+ isn't too bad.
+\end_layout
+
+\begin_layout Standard
+This also comes up in working with precision matrices in Bayesian problems
+ where we may have 
+\begin_inset Formula $A^{-1}$
+\end_inset
+
+ but not 
+\begin_inset Formula $A$
+\end_inset
+
+ (we often add precision matrices to find conditional normal distributions).
+ An alternative expression for the formula is 
+\begin_inset Formula $\tilde{A}=A+UCV^{\top}$
+\end_inset
+
+, and the identity tells us
+\begin_inset Formula 
+\[
+\tilde{A}^{-1}=A^{-1}-A^{-1}U(C^{-1}+V^{\top}A^{-1}U)^{-1}V^{\top}A^{-1}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Basically Sherman-Morrison-Woodbury gives us matrix identities that we can
+ use in combination with our knowledge of smart ways of solving systems
+ of equations.
+\end_layout
+
+\begin_layout Section
+Iterative solutions of linear systems
+\end_layout
+
+\begin_layout Paragraph
+Gauss-Seidel
+\end_layout
+
+\begin_layout Standard
+Suppose we want to iteratively solve 
+\begin_inset Formula $Ax=b$
+\end_inset
+
+.
+ Here's the algorithm, which sequentially updates each element of 
+\begin_inset Formula $x$
+\end_inset
+
+ in turn.
+ 
+\end_layout
+
+\begin_layout Itemize
+Start with an initial approximation, 
+\begin_inset Formula $x^{(0)}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Itemize
+Hold all but 
+\begin_inset Formula $x_{1}^{(0)}$
+\end_inset
+
+ constant and solve to find 
+\begin_inset Formula $x_{1}^{(1)}=\frac{1}{a_{11}}(b_{1}-\sum_{j=2}^{n}a_{1j}x_{j}^{(0)})$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+Repeat for the other rows of 
+\begin_inset Formula $A$
+\end_inset
+
+ (i.e., the other elements of 
+\begin_inset Formula $x$
+\end_inset
+
+), finding 
+\begin_inset Formula $x^{(1)}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Itemize
+Now iterate to get 
+\begin_inset Formula $x^{(2)}$
+\end_inset
+
+, 
+\begin_inset Formula $x^{(3)}$
+\end_inset
+
+, etc.
+ until a convergence criterion is achieved, such as 
+\begin_inset Formula $\|x^{(k)}-x^{(k-1)}\|\leq\epsilon$
+\end_inset
+
+ or 
+\begin_inset Formula $\|r^{(k)}-r^{(k-1)}\|\leq\epsilon$
+\end_inset
+
+ for 
+\begin_inset Formula $r^{(k)}=b-Ax^{(k)}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Let's consider how many operations are involved in a single update: 
+\begin_inset Formula $O(n)$
+\end_inset
+
+ for each element, so 
+\begin_inset Formula $O(n^{2})$
+\end_inset
+
+ for each update.
+ Thus if we can stop well before 
+\begin_inset Formula $n$
+\end_inset
+
+ iterations, we've saved computation relative to exact methods.
+\end_layout
+
+\begin_layout Standard
+If we decompose 
+\begin_inset Formula $A=L+D+U$
+\end_inset
+
+ where 
+\begin_inset Formula $L$
+\end_inset
+
+ is strictly lower triangular, 
+\begin_inset Formula $U$
+\end_inset
+
+ is strictly upper triangular, then Gauss-Seidel is equivalent to solving
+\begin_inset Formula 
+\[
+(L+D)x^{(k+1)}=b-Ux^{(k)}
+\]
+
+\end_inset
+
+and we know that solving the lower triangular system is 
+\begin_inset Formula $O(n^{2})$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+It turns out that the rate of convergence depends on the spectral radius
+ of 
+\begin_inset Formula $(L+D)^{-1}U$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Gauss-Seidel amounts to optimizing by moving in axis-oriented directions,
+ so it can be slow in some cases.
+\end_layout
+
+\begin_layout Paragraph
+Conjugate gradient
+\end_layout
+
+\begin_layout Standard
+For positive definite 
+\begin_inset Formula $A$
+\end_inset
+
+, conjugate gradient (CG) reexpresses the solution to 
+\begin_inset Formula $Ax=b$
+\end_inset
+
+ as an optimization problem, minimizing
+\begin_inset Formula 
+\[
+f(x)=\frac{1}{2}x^{\top}Ax-x^{\top}b,
+\]
+
+\end_inset
+
+ since the derivative of 
+\begin_inset Formula $f(x)$
+\end_inset
+
+ is 
+\begin_inset Formula $Ax-b$
+\end_inset
+
+ and at the minimum this gives 
+\begin_inset Formula $Ax-b=0$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Instead of finding the minimum by following the gradient at each step (so-called
+ steepest descent, which can give slow convergence - we'll see a demonstration
+ of this in the optimization unit), CG chooses directions that are mutually
+ conjugate w.r.t.
+ 
+\begin_inset Formula $A$
+\end_inset
+
+, 
+\begin_inset Formula $d_{i}^{\top}Ad_{j}=0$
+\end_inset
+
+ for 
+\begin_inset Formula $i\ne j$
+\end_inset
+
+.
+ The method successively chooses vectors giving the direction, 
+\begin_inset Formula $d_{k}$
+\end_inset
+
+, in which to move down towards the minimum and a scaling of how much to
+ move, 
+\begin_inset Formula $\alpha_{k}$
+\end_inset
+
+.
+ If we start at 
+\begin_inset Formula $x_{(0)}$
+\end_inset
+
+, the 
+\begin_inset Formula $k$
+\end_inset
+
+th point we move to is 
+\begin_inset Formula $x_{(k)}=x_{(k-1)}+\alpha_{k}d_{k}$
+\end_inset
+
+ so we have 
+\begin_inset Formula 
+\[
+x_{(k)}=x_{(0)}+\sum_{j\leq k}\alpha_{j}d_{j}
+\]
+
+\end_inset
+
+and we use a convergence criterion such as given above for Gauss-Seidel.
+ The directions are chosen to be the residuals, 
+\begin_inset Formula $b-Ax_{(k)}$
+\end_inset
+
+.
+ Here's the basic algorithm:
+\end_layout
+
+\begin_layout Itemize
+Choose 
+\begin_inset Formula $x_{(0)}$
+\end_inset
+
+ and define the residual, 
+\begin_inset Formula $r_{(0)}=b-Ax_{(0)}$
+\end_inset
+
+ (the error on the scale of 
+\begin_inset Formula $b$
+\end_inset
+
+) and the direction, 
+\begin_inset Formula $d_{0}=r_{(0)}$
+\end_inset
+
+ and set
+\begin_inset Formula $k=0$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+Then iterate
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+\begin_inset Formula $\alpha_{k}=\frac{r_{(k)}^{\top}r_{(k)}}{d_{k}^{\top}Ad_{k}}$
+\end_inset
+
+ (choose step size so next error will be orthogonal to current direction
+ - which we can express in terms of the residual, which is easily computable)
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $x_{(k+1)}=x_{(k)}+\alpha_{k}d_{k}$
+\end_inset
+
+ (update current value)
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $r_{(k+1)}=r_{(k)}-\alpha_{k}Ad_{k}$
+\end_inset
+
+ (update current residual)
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $d_{k+1}=r_{(k+1)}+\frac{r_{(k+1)}^{\top}r_{(k+1)}}{r_{(k)}^{\top}r_{(k)}}d_{k}$
+\end_inset
+
+ (choose next direction by conjugate Gram-Schmidt, starting with 
+\begin_inset Formula $r_{(k+1)}$
+\end_inset
+
+ and removing components that are not 
+\begin_inset Formula $A$
+\end_inset
+
+-orthogonal to previous directions, but it turns out that 
+\begin_inset Formula $r_{(k+1)}$
+\end_inset
+
+ is already 
+\begin_inset Formula $A$
+\end_inset
+
+-orthogonal to all but 
+\begin_inset Formula $d_{k}$
+\end_inset
+
+).
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Stop when 
+\begin_inset Formula $\|r^{(k+1)}\|$
+\end_inset
+
+ is sufficiently small.
+\end_layout
+
+\begin_layout Standard
+The convergence of the algorithm depends in a complicated way on the eigenvalues
+, but in general convergence is faster when the condition number is smaller
+ (the eigenvalues are not too spread out).
+ CG will in principle give the exact answer in 
+\begin_inset Formula $n$
+\end_inset
+
+ steps (where 
+\begin_inset Formula $A$
+\end_inset
+
+ is 
+\begin_inset Formula $n\times n$
+\end_inset
+
+).
+ However, computationally we lose accuracy and interest in the algorithm
+ is really as an iterative approximation where we stop before 
+\begin_inset Formula $n$
+\end_inset
+
+ steps.
+ The approach basically amounts to moving in axis-oriented directions in
+ a space stretched by 
+\begin_inset Formula $A$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+In general, CG is used for large sparse systems.
+\end_layout
+
+\begin_layout Standard
+See the 
+\begin_inset CommandInset href
+LatexCommand href
+name "extensive description from Shewchuk"
+target "http://www.cs.cmu.edu/~quake-papers/painless-conjugate-gradient.pdf"
+
+\end_inset
+
+ for more details and for the figures shown in class, as well as the use
+ of CG when 
+\begin_inset Formula $A$
+\end_inset
+
+ is not positive definite.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+[Need to puzzle through intuition for htis - something to do with projecting
+ b onto A without solve AtA]
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+Updating a solution
+\end_layout
+
+\begin_layout Standard
+Sometimes we have solved a system, 
+\begin_inset Formula $Ax=b$
+\end_inset
+
+ and then need to solve 
+\begin_inset Formula $Ax=c$
+\end_inset
+
+.
+ If we have solved the initial system using a factorization, we can reuse
+ that factorization and solve the new system in 
+\begin_inset Formula $O(n^{2})$
+\end_inset
+
+.
+ Iterative approaches can do a nice job if 
+\begin_inset Formula $c=b+\delta b$
+\end_inset
+
+.
+ Start with the solution 
+\begin_inset Formula $x$
+\end_inset
+
+ for 
+\begin_inset Formula $Ax=b$
+\end_inset
+
+ as 
+\begin_inset Formula $x^{(0)}$
+\end_inset
+
+ and use one of the methods above.
+ 
+\end_layout
+
+\end_body
+\end_document

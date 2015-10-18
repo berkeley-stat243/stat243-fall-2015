@@ -30,7 +30,7 @@ AWS_SECRET_ACCESS_KEY=$(grep -i "^AWS_SECRET_ACCESS_KEY" ~/stat243-fall-2015-cre
 
 # login to cluster
 # as root
-./spark-ec2 -k ec2star -i ~/.ssh/stat243-fall-2015-ssh_key.pem --region=us-west-2 \
+./spark-ec2 -k chris_paciorek@yahoo.com:stat243-fall-2015 -i ~/.ssh/stat243-fall-2015-ssh_key.pem --region=us-west-2 \
    login ${mycluster}
 # or you can ssh in directly if you know the URL
 # ssh -i ~/.ssh/stat243-fall-2015-ssh_key.pem root@ec2-54-71-204-234.us-west-2.compute.amazonaws.com
@@ -59,7 +59,7 @@ echo "http://${MASTER_IP}:50070/"
 
 # when you are done and want to shutdown the cluster:
 #  IMPORTANT to avoid extra charges!!!
-./spark-ec2 --region=us-west-2 destroy ${mycluster}
+./spark-ec2 --region=us-west-2 --delete-groups destroy ${mycluster}
 
 ## @knitr spark-hdfs
 
@@ -71,10 +71,16 @@ hadoop fs -mkdir /data/airline
 
 df -h
 mkdir /mnt/airline
-scp paciorek@smeagol.berkeley.edu:/scratch/users/paciorek/243/AirlineData/[12]*bz2 \ 
-   /mnt/airline
+cd /mnt/airline
 # for in-class demo:
-# scp paciorek@smeagol.berkeley.edu:/scratch/users/paciorek/243/AirlineData/198*bz2 /mnt/airline
+scp paciorek@smeagol.berkeley.edu:/scratch/users/paciorek/243/AirlineData/198*bz2 .
+# scp paciorek@smeagol.berkeley.edu:/scratch/users/paciorek/243/AirlineData/[12]*bz2 .
+
+# for students:
+# wget http://www.stat.berkeley.edu/share/paciorek/1987-2008.csvs.tgz
+# tar -xvzf 1987-2008.csvs.tgz
+# or individual files, e.g., data for 1987
+# wget http://www.stat.berkeley.edu/share/paciorek/1987.csv.bz2
 
 hadoop fs -copyFromLocal /mnt/airline/*bz2 /data/airline
 
@@ -83,7 +89,7 @@ hadoop fs -ls /data/airline
 
 # get numpy installed
 # there is a glitch in the EC2 setup that Spark provides -- numpy is not installed on the version of Python that Spark uses (Python 2.7). To install numpy on both the master and worker nodes, do the following as root on the master node.
-yum install python27-pip python27-devel
+yum install -y python27-pip python27-devel
 pip-2.7 install 'numpy==1.9.2'  # 1.10.1 has an issue with a warning in median()
 /root/spark-ec2/copy-dir /usr/local/lib64/python2.7/site-packages/numpy
 
@@ -97,11 +103,12 @@ pyspark
 from operator import add
 import numpy as np
 
-lines = sc.textFile('/data/airline').cache()
-numLines = lines.count()
+lines = sc.textFile('/data/airline')
 
 # particularly for in-class demo - good to repartition the 3 files to more partitions
 # lines = lines.repartition(96).cache()
+
+numLines = lines.count()
 
 # mapper
 def stratify(line):
@@ -175,7 +182,7 @@ def medianFun(input):
         return((input[0], -9999, -9999))
 
 
-output = lines.map(computeKeyValue).groupByKey().cache()
+output = lines.map(computeKeyValue).groupByKey()
 medianResults = output.map(medianFun).collect()
 medianResults[0:5]
 # [(u'DL-8-PHL-LAX', 85.0, 108.0), (u'OO-12-IAH-CLL', -6.0, 0.0), (u'AA-4-LAS-JFK', 2.0, 0.0), (u'WN-8-SEA-GEG', 0.0, 0.0), (u'MQ-1-ORD-MDT', 3.0, 1.0)]
@@ -203,7 +210,6 @@ import numpy as np
 from operator import add
 
 P = 8
-bc = sc.broadcast(P)
 
 #######################
 # calc xtx and xty
@@ -280,6 +286,9 @@ batches = lines.mapPartitions(readPointPartition).cache()
 def denomSumSqPartition(mat):
     return((mat*mat).sum(axis=0))
 
+# notice I do use global variables in here
+# one may be able to avoid this by using
+# nested functions, if one wanted to
 def getNumPartition(mat):
     beta[p] = 0
     sumXb = mat[:, 0:P].dot(beta)
@@ -301,9 +310,6 @@ crit = 1e16
 while crit > tol and it <= maxIts:
 #for it in range(1,6):
     for p in xrange(P):
-        # distribute current beta and current coordinate
-        bc = sc.broadcast(beta)
-        bc = sc.broadcast(p)
         # get numerator as product of residual and X for coordinate
         sumNum = batches.map(getNumPartition).reduce(add)
         beta[p] = sumNum / sumx2[p]   
@@ -335,9 +341,6 @@ beta = np.array([0.0] * P)
 beta[0] = batches.map(sumVals).reduce(add) / n
 oldBeta = beta.copy()
 
-bc = sc.broadcast(P)
-bc = sc.broadcast(beta)
-
 def getGradBatch(mat):
     sumXb = mat[:, 0:P].dot(beta)
     return( ((sumXb - mat[:,P])*((mat[:, 0:P]).T)).sum(1) )
@@ -358,7 +361,6 @@ while crit > tol and it < maxIts:
     gradVec = batches.map(getGradBatch).reduce(add)
     beta = beta - alpha*gradVec / n
     crit = sum(abs(beta - oldBeta))
-    bc = sc.broadcast(beta)
     objValue = batches.map(ssqObj).reduce(add)
     oldBeta = beta.copy()
     storeVals[it, 0] = pow(objValue/n,0.5)
