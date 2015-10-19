@@ -2,10 +2,10 @@ These instructions are for use on the BCE VM (e.g., running in VirtualBox on you
 
 0) As noted in (7) below, it's important that you delete your cluster when you're not actively using it. Don't leave it running overnight or while you go off for a few hours, as you'll use up the credits we have for the course.
 
-1) To download Spark, go to https://spark.apache.org/downloads.html, choose 
+1) To download Spark, go to https://spark.apache.org/downloads.html, choose
 * 1.5.1
 * source code
-* direct download 
+* direct download
 
 Click on link in #4 entry. Download to the VM and untar/zip the file.
 
@@ -24,7 +24,7 @@ export NUMBER_OF_WORKERS=3
 Occasionally you'll get some error messages and things won't start up correctly.  Just kill the cluster and try again. You might increase the number after the "-w" to increase the wait time that the Spark script uses to allow the Amazon instances to start up.
 
 5) Once it has finished (it will take 10-20 minutes), you can login as follows:
-./spark-ec2 -k <your_berkeley_username>@berkeley.edu:stat243-fall-2015 -i stat243-fall-2015-ssh_key.pem --region=us-west-2 login sparkvm-<your_berkeley_username>
+./spark-ec2 -k <your_berkeley_username>@berkeley.edu:stat243-fall-2015 -i ~/.ssh/stat243-fall-2015-ssh_key.pem --region=us-west-2 login sparkvm-<your_berkeley_username>
 
 6) Now you can follow the template provided in the Unit 7 class notes to use Spark
 
