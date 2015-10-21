@@ -17,7 +17,7 @@ export AWS_SECRET_ACCESS_KEY=`grep aws_secret_access_key stat243-fall-2015-crede
 3) Put your private SSH key file on the VM, ideally in ~/.ssh. Change permissions on the file:
 chmod 400 ~/.ssh/stat243-fall-2015-ssh_key.pem
 
-4) Navigate to spark-1.5.1/ec2 and start a spark cluster, specifying the number of worker nodes you want in your Spark cluster. When first experimenting at getting a cluster going, just use a few workers but for the problem set, try using 112 workers.
+4) Navigate to spark-1.5.1/ec2 and start a spark cluster, specifying the number of worker nodes you want in your Spark cluster. When first experimenting at getting a cluster going, just use a few workers but for the problem set, try using 12 workers.
 export NUMBER_OF_WORKERS=3
 ./spark-ec2 -k <your_berkeley_username>@berkeley.edu:stat243-fall-2015 -i ~/.ssh/stat243-fall-2015-ssh_key.pem --region=us-west-2 -s ${NUMBER_OF_WORKERS} -v 1.5.1 launch sparkvm-<your_berkeley_username>
 
