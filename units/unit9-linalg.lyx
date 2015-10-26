@@ -81,17 +81,14 @@ Unit 9: Numerical linear algebra
 \end_layout
 
 \begin_layout Chunk
-
 <<read-chunk, echo=FALSE, include=FALSE>>= 
 \end_layout
 
 \begin_layout Chunk
-
 read_chunk('unit9-linalg.R') 
 \end_layout
 
 \begin_layout Chunk
-
 @
 \end_layout
 
@@ -888,12 +885,10 @@ In R, recall the syntax is
 \end_layout
 
 \begin_layout Chunk
-
 <<linalg-syntax, eval=FALSE>>=
 \end_layout
 
 \begin_layout Chunk
-
 @
 \end_layout
 
@@ -1668,12 +1663,10 @@ If we look at the eigendecomposition of such matrices, we see that in the
 \end_layout
 
 \begin_layout Chunk
-
 <<geninv, tidy=FALSE>>=
 \end_layout
 
 \begin_layout Chunk
-
 @
 \end_layout
 
@@ -1712,12 +1705,10 @@ This means we have no information about the overall level of
 \end_layout
 
 \begin_layout Chunk
-
 <<geninv-realiz>>=
 \end_layout
 
 \begin_layout Chunk
-
 @
 \end_layout
 
@@ -2116,12 +2107,10 @@ The solution of
 \end_layout
 
 \begin_layout Chunk
-
 <<ill-cond>>=
 \end_layout
 
 \begin_layout Chunk
-
 @
 \end_layout
 
@@ -2293,12 +2282,10 @@ A general comment on improving conditioning is that we want to avoid large
 \end_layout
 
 \begin_layout Chunk
-
 <<improve-cond>>=
 \end_layout
 
 \begin_layout Chunk
-
 @
 \end_layout
 
@@ -2472,57 +2459,46 @@ forwardsolve()
 \end_layout
 
 \begin_layout Chunk
-
 <<chunk3>>=
 \end_layout
 
 \begin_layout Chunk
-
 n <- 20
 \end_layout
 
 \begin_layout Chunk
-
 X <- crossprod(matrix(rnorm(n^2), n))
 \end_layout
 
 \begin_layout Chunk
-
 b <- rnorm(n)
 \end_layout
 
 \begin_layout Chunk
-
 U <- chol(crossprod(X)) # U is upper-triangular
 \end_layout
 
 \begin_layout Chunk
-
 L <- t(U) # L is lower-triangular
 \end_layout
 
 \begin_layout Chunk
-
 out1 <- backsolve(U, b) 
 \end_layout
 
 \begin_layout Chunk
-
 out2 <- forwardsolve(L, b) 
 \end_layout
 
 \begin_layout Chunk
-
 all.equal(out1, c(solve(U) %*% b)) 
 \end_layout
 
 \begin_layout Chunk
-
 all.equal(out2, c(solve(L) %*% b)) 
 \end_layout
 
 \begin_layout Chunk
-
 @
 \end_layout
 
@@ -2539,22 +2515,18 @@ We can also solve
 \end_layout
 
 \begin_layout Chunk
-
 <<chunk4, eval=FALSE>>=
 \end_layout
 
 \begin_layout Chunk
-
 backsolve(U, b, transpose = TRUE) 
 \end_layout
 
 \begin_layout Chunk
-
 forwardsolve(L, b, transpose = TRUE)
 \end_layout
 
 \begin_layout Chunk
-
 @
 \end_layout
 
@@ -2618,7 +2590,7 @@ The idea of Gaussian elimination is to convert the problem to a triangular
 
 .
  The result is 
-\begin_inset Formula $L_{n-1}\cdots L_{1}A\equiv U=L_{n-1}\cdots L_{1}b\equiv b^{*}$
+\begin_inset Formula $L_{n-1}\cdots L_{1}Ax\equiv Ux=L_{n-1}\cdots L_{1}b\equiv b^{*}$
 \end_inset
 
  where 
@@ -2940,22 +2912,18 @@ We can then solve a system of equations as:
 \end_layout
 
 \begin_layout Chunk
-
 <<chunk5, eval=FALSE>>=
 \end_layout
 
 \begin_layout Chunk
-
 backsolve(U, backsolve(U, b, transpose = TRUE))
 \end_layout
 
 \begin_layout Chunk
-
 backsolve(U, forwardsolve(t(U), b)) # equivalent but less efficient
 \end_layout
 
 \begin_layout Chunk
-
 @
 \end_layout
 
@@ -3012,22 +2980,18 @@ The standard algorithm for generating
 \end_layout
 
 \begin_layout Chunk
-
 <<chunk6, eval=FALSE>>=
 \end_layout
 
 \begin_layout Chunk
-
 U <- chol(A)
 \end_layout
 
 \begin_layout Chunk
-
 y <- crossprod(U, rnorm(n)) # i.e., t(U)%*%rnorm(n), but much faster
 \end_layout
 
 \begin_layout Chunk
-
 @
 \end_layout
 
@@ -3101,17 +3065,14 @@ tion are very stable.
 \end_layout
 
 \begin_layout Chunk
-
 <<chunk8a, include=FALSE>>=
 \end_layout
 
 \begin_layout Chunk
-
 require(fields)
 \end_layout
 
 \begin_layout Chunk
-
 @
 \end_layout
 
@@ -3120,62 +3081,50 @@ require(fields)
 \end_layout
 
 \begin_layout Chunk
-
 <<chunk8>>=
 \end_layout
 
 \begin_layout Chunk
-
 # require(fields)
 \end_layout
 
 \begin_layout Chunk
-
 locs <- runif(100)
 \end_layout
 
 \begin_layout Chunk
-
 rho <- .1
 \end_layout
 
 \begin_layout Chunk
-
 C <- exp(-rdist(locs)^2/rho^2)
 \end_layout
 
 \begin_layout Chunk
-
 e <- eigen(C)
 \end_layout
 
 \begin_layout Chunk
-
 e$values[96:100]
 \end_layout
 
 \begin_layout Chunk
-
 U <- chol(C)
 \end_layout
 
 \begin_layout Chunk
-
 vals <- abs(e$values)
 \end_layout
 
 \begin_layout Chunk
-
 max(vals)/min(vals)
 \end_layout
 
 \begin_layout Chunk
-
 U <- chol(C, pivot = TRUE)
 \end_layout
 
 \begin_layout Chunk
-
 @
 \end_layout
 
@@ -3798,27 +3747,22 @@ qr.qty()
 \end_layout
 
 \begin_layout Chunk
-
 <<chunk11>>=
 \end_layout
 
 \begin_layout Chunk
-
 X.qr = qr(X)
 \end_layout
 
 \begin_layout Chunk
-
 Q = qr.Q(X.qr)
 \end_layout
 
 \begin_layout Chunk
-
 R = qr.R(X.qr) 
 \end_layout
 
 \begin_layout Chunk
-
 @
 \end_layout
 
@@ -4624,22 +4568,18 @@ $qr
 \end_layout
 
 \begin_layout Chunk
-
 <<chunk12, eval=FALSE>>=
 \end_layout
 
 \begin_layout Chunk
-
 myqr = qr(A)
 \end_layout
 
 \begin_layout Chunk
-
 magn = sum(log(abs(diag(myqr$qr)))) 
 \end_layout
 
 \begin_layout Chunk
-
 @
 \end_layout
 
@@ -5529,43 +5469,35 @@ colindices
 \end_layout
 
 \begin_layout Chunk
-
 <<spam-format>>=
 \end_layout
 
 \begin_layout Chunk
-
 require(spam)
 \end_layout
 
 \begin_layout Chunk
-
 mat = matrix(c(0,0,1,0,10,0,0,0,100,0,rep(0,5),1000,rep(0,4)), nrow = 4,
  byrow = TRUE)
 \end_layout
 
 \begin_layout Chunk
-
 mat = as.spam(mat)
 \end_layout
 
 \begin_layout Chunk
-
 mat@entries 
 \end_layout
 
 \begin_layout Chunk
-
 mat@rowpointers 
 \end_layout
 
 \begin_layout Chunk
-
 mat@colindices 
 \end_layout
 
 \begin_layout Chunk
-
 @
 \end_layout
 
