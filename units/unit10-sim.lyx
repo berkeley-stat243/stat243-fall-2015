@@ -75,7 +75,7 @@ knitr
 \begin_body
 
 \begin_layout Title
-Unit 12: Simulation 
+Unit 10: Simulation 
 \end_layout
 
 \begin_layout Chunk
@@ -170,9 +170,9 @@ The basic strategy generally involves simulating data and then using the
 Most simulation studies aim to approximate an integral, generally an expected
  value (mean, bias, variance, MSE, probability, etc.).
  In low dimensions, methods such as Gaussian quadrature are best for estimating
- an integral but these methods don't scale well [we'll discuss this in the
- next unit on integration/differentiation], so in higher dimensions we often
- use Monte Carlo techniques.
+ an integral but these methods don't scale well (we'll discuss this in Unit
+ 12 on integration/differentiation), so in higher dimensions we often use
+ Monte Carlo techniques.
 \end_layout
 
 \begin_layout Section
