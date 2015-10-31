@@ -1,0 +1,2281 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\begin_preamble
+\usepackage[unicode=true]{hyperref}
+\usepackage{/accounts/gen/vis/paciorek/latex/paciorek-asa,times,graphics}
+\input{/accounts/gen/vis/paciorek/latex/paciorekMacros}
+%\renewcommand{\baselinestretch}{1.5}
+\hypersetup{unicode=true, pdfusetitle,bookmarks=true,bookmarksnumbered=false,bookmarksopen=false,breaklinks=false,pdfborder={0 0 1},backref=false,colorlinks=true,}
+\end_preamble
+\use_default_options false
+\begin_modules
+knitr
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 12
+\spacing onehalf
+\use_hyperref false
+\papersize letterpaper
+\use_geometry true
+\use_amsmath 1
+\use_esint 0
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 1in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Unit 12: Simulation 
+\end_layout
+
+\begin_layout Chunk
+
+<<read-chunk, echo=FALSE, include=FALSE>>= 
+\end_layout
+
+\begin_layout Chunk
+
+read_chunk('unit10-sim.R') 
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+References: 
+\end_layout
+
+\begin_layout Itemize
+Gentle: Computational Statistics
+\end_layout
+
+\begin_layout Itemize
+Monahan: Numerical Methods of Statistics
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+done: G-RNG, F,GH, PS; G-CS, M, C, RC]
+\end_layout
+
+\begin_layout Enumerate
+simulating RVs - maybe not (GH, Liu)
+\end_layout
+
+\begin_layout Enumerate
+design (G-CS, Appdx)
+\end_layout
+
+\begin_layout Enumerate
+reporting, incl.
+ MC error and graphical/tabular formatting
+\end_layout
+
+\begin_layout Enumerate
+Monte Carlo considerations, incl.
+ simulation standard errors (see G-RNG)
+\end_layout
+
+\begin_layout Enumerate
+replicate()? foreach()? efficiency
+\end_layout
+
+\begin_layout Enumerate
+Good practice: keep track of what you do, save seeds, save exact code and
+ input, create a package
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Many (most?) statistical papers include a simulation (i.e., Monte Carlo) study.
+ The basic idea is that closed-form analysis of the properties of a statistical
+ method/model is often hard to do.
+ Even if possible, it usually involves approximations or simplifications.
+ A canonical situation is that we have an asymptotic result and we want
+ to know what happens in finite samples, but often we do not even have the
+ asymptotic result.
+ Instead, we can estimate mathematical expressions using random numbers.
+ So we design a simulation study to evaluate the method/model or compare
+ multiple methods.
+ The result is that the statistician carries out an experiment, generally
+ varying different factors to see what has an effect on the outcome of interest.
+\end_layout
+
+\begin_layout Standard
+The basic strategy generally involves simulating data and then using the
+ method(s) on the simulated data, summarizing the results to assess/compare
+ the method(s).
+\end_layout
+
+\begin_layout Standard
+Most simulation studies aim to approximate an integral, generally an expected
+ value (mean, bias, variance, MSE, probability, etc.).
+ In low dimensions, methods such as Gaussian quadrature are best for estimating
+ an integral but these methods don't scale well [we'll discuss this in the
+ next unit on integration/differentiation], so in higher dimensions we often
+ use Monte Carlo techniques.
+\end_layout
+
+\begin_layout Section
+Monte Carlo considerations
+\end_layout
+
+\begin_layout Subsection
+Motivating example
+\end_layout
+
+\begin_layout Standard
+Suppose we've come up with a fabulous new estimator for the mean of a distributi
+on.
+ The estimator is to take the middle value of the sorted observations as
+ our estimate of the mean of the entire distribution.
+ We work out some theory to show that this estimator is robust to outlying
+ observations and we come up with a snazzy new name for our estimator.
+ We call it the 'median'.
+ Let's denote it as 
+\begin_inset Formula $\tilde{X}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Unfortunately, we have no good way of estimating 
+\begin_inset Formula $\mbox{Var}(\tilde{X})=E((\tilde{X}-E(\tilde{X}))^{2})$
+\end_inset
+
+ analytically.
+ We decide to use a Monte Carlo estimate 
+\begin_inset Formula 
+\[
+\frac{1}{m}\sum_{i=1}^{m}(\tilde{X}_{i}-\bar{\tilde{X}})^{2}
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $\bar{\tilde{X}}=\frac{1}{m}\sum\tilde{X}_{i}$
+\end_inset
+
+.
+ Each 
+\begin_inset Formula $\tilde{X}_{i}$
+\end_inset
+
+ in this case is generated by generating a dataset and calculating the median.
+ In evaluating the variance of the median and comparing it to our standard
+ estimator, the sample mean, what decisions do we have to make in our Monte
+ Carlo procedure?
+\end_layout
+
+\begin_layout Standard
+Next let's think about Monte Carlo methods in general.
+\end_layout
+
+\begin_layout Subsection
+Monte Carlo basics
+\end_layout
+
+\begin_layout Standard
+The basic idea is that we often want to estimate 
+\begin_inset Formula $\mu\equiv E_{f}(h(X))$
+\end_inset
+
+ for 
+\begin_inset Formula $X\sim f$
+\end_inset
+
+.
+ Note that if 
+\begin_inset Formula $h$
+\end_inset
+
+ is an indicator function, this includes estimation of probabilities, e.g.,
+ 
+\begin_inset Formula $p=P(X\leq x)=F(x)=\int_{-\infty}^{x}f(t)dt=\int I(t\leq x)f(t)dt=E_{f}(I(X\leq x))$
+\end_inset
+
+.
+ We would estimate variances or MSEs by having 
+\begin_inset Formula $h$
+\end_inset
+
+ involve squared terms.
+\end_layout
+
+\begin_layout Standard
+We get an MC estimate of 
+\begin_inset Formula $\mu$
+\end_inset
+
+ based on an iid sample of a large number of values of 
+\begin_inset Formula $X$
+\end_inset
+
+ from 
+\begin_inset Formula $f$
+\end_inset
+
+:
+\begin_inset Formula 
+\[
+\hat{\mu}=\frac{1}{m}\sum_{i=1}^{m}h(X_{i}),
+\]
+
+\end_inset
+
+which is justified by the Law of Large Numbers.
+ The simulation variance of 
+\begin_inset Formula $\hat{\mu}$
+\end_inset
+
+ is 
+\begin_inset Formula $\mbox{Var}(\hat{\mu})=\sigma^{2}/m$
+\end_inset
+
+, with 
+\begin_inset Formula $\sigma^{2}=\mbox{Var}(h(X))$
+\end_inset
+
+.
+ An estimator of 
+\begin_inset Formula $\sigma^{2}=E_{f}((h(X)-\mu)^{2})$
+\end_inset
+
+ is 
+\begin_inset Formula $\hat{\sigma}^{2}=\frac{1}{m-1}\sum(h(X_{i})-\hat{\mu})^{2}$
+\end_inset
+
+.
+ So our MC simulation error is based on 
+\begin_inset Formula 
+\[
+\widehat{\mbox{Var}}(\hat{\mu})=\frac{1}{m(m-1)}\sum_{i=1}^{m}(h(X_{i})-\hat{\mu})^{2}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Sometimes the 
+\begin_inset Formula $X_{i}$
+\end_inset
+
+ are generated in a dependent fashion (e.g., sequential MC or MCMC), in which
+ case this variance estimator does not hold because the samples are not
+ IID, but the estimator 
+\begin_inset Formula $\hat{\mu}$
+\end_inset
+
+ is still correct.
+ [As a sidenote, a common misperception with MCMC is that you should thin
+ your chains because of dependence of the samples.
+ This is not correct - the only reason to thin a chain is if you want to
+ save on computer storage or processing.]
+\end_layout
+
+\begin_layout Standard
+Note that in this case the randomness in the system is very well-defined
+ (as it is in survey sampling, but unlike in most other applications of
+ statistics), because it comes from the RNG that we perform as part of our
+ attempt to estimate 
+\begin_inset Formula $\mu$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Happily, we are in control of 
+\begin_inset Formula $m$
+\end_inset
+
+, so in principle we can reduce the simulation error to as little as we
+ desire.
+ Unhappily, as usual, the standard error goes down with the square root
+ of 
+\begin_inset Formula $m$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+[what conditions do we need for this to work - Fishman notation is a bit
+ confusing]
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Variance reduction
+\end_layout
+
+\begin_layout Standard
+There are some tools for variance reduction in MC settings.
+ One is importance sampling (see Section 3).
+ Others are the use of control variates and antithetic sampling.
+ I haven't personally run across these latter in practice, so I'm not sure
+ how widely used they are and won't go into them here.
+\end_layout
+
+\begin_layout Standard
+In some cases we can set up natural strata, for which we know the probability
+ of being in each stratum.
+ Then we would estimate 
+\begin_inset Formula $\mu$
+\end_inset
+
+ for each stratum and combine the estimates based on the probabilities.
+ The intuition is that we remove the variability in sampling amongst the
+ strata from our simulation.
+\end_layout
+
+\begin_layout Standard
+Another strategy that comes up in MCMC contexts is 
+\emph on
+Rao-Blackwellization
+\emph default
+.
+ Suppose we want to know 
+\begin_inset Formula $E(h(X))$
+\end_inset
+
+ where 
+\begin_inset Formula $X=\{X_{1},X_{2}\}$
+\end_inset
+
+.
+ Iterated expectation tells us that 
+\begin_inset Formula $E(h(X))=E(E(h(X)|X_{2})$
+\end_inset
+
+.
+ If we can compute 
+\begin_inset Formula $E(h(X)|X_{2})=\int h(x_{1},x_{2})f(x_{1}|x_{2})dx_{1}$
+\end_inset
+
+ then we should avoid introducing stochasticity related to the 
+\begin_inset Formula $X_{1}$
+\end_inset
+
+ draw (since we can analytically integrate over that) and only average over
+ stochasticity from the 
+\begin_inset Formula $X_{2}$
+\end_inset
+
+ draw by estimating 
+\begin_inset Formula $E_{X_{2}}(E(h(X)|X_{2})$
+\end_inset
+
+.
+ The estimator is
+\begin_inset Formula 
+\[
+\hat{\mu}_{RB}=\frac{1}{m}\sum_{i=1}^{m}E(h(X)|X_{2,i})
+\]
+
+\end_inset
+
+where we either draw from the marginal distribution of 
+\begin_inset Formula $X_{2}$
+\end_inset
+
+, or equivalently, draw 
+\begin_inset Formula $X$
+\end_inset
+
+, but only use 
+\begin_inset Formula $X_{2}$
+\end_inset
+
+.
+ Our MC estimator averages over the simulated values of 
+\begin_inset Formula $X_{2}$
+\end_inset
+
+.
+ This is called Rao-Blackwellization because it relates to the idea of condition
+ing on a sufficient statistic.
+ It has lower variance because the variance of each term in the sum of the
+ Rao-Blackwellized estimator is 
+\begin_inset Formula $\mbox{Var}(E(h(X)|X_{2})$
+\end_inset
+
+, which is less than the variance in the usual MC estimator, 
+\begin_inset Formula $\mbox{Var}(h(X))$
+\end_inset
+
+, based on the usual iterated variance formula: 
+\begin_inset Formula $V(X)=E(V(X|Y))+V(E(X|Y))\Rightarrow V(E(X|Y))<V(X)$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Section
+Random number generation (RNG)
+\end_layout
+
+\begin_layout Standard
+At the core of simulations is the ability to generate random numbers, and
+ based on that, random variables.
+ On a computer, our goal is to generate sequences of pseudo-random numbers
+ that behave like random numbers but are replicable.
+ The reason that replicability is important is so that we can reproduce
+ the simulation.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+[M, and G-CS have details I may want to go back to]
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Generating random uniforms on a computer
+\end_layout
+
+\begin_layout Standard
+Generating a sequence of random standard uniforms is the basis for all generatio
+n of random variables, since random uniforms (either a single one or more
+ than one) can be used to generate values from other distributions.
+ Most random numbers on a computer are pseudo-random.
+ The numbers are chosen from a deterministic stream of numbers that behave
+ like random numbers but are actually a finite sequence (recall that both
+ integers and real numbers on a computer are actually discrete and there
+ are finitely many distinct values), so it's actually possible to get repeats.
+ The seed of a RNG is the place within that sequence where you start to
+ use the pseudo-random numbers.
+\end_layout
+
+\begin_layout Standard
+Many RNG methods are sequential congruential methods.
+ The basic idea is that the next value is
+\begin_inset Formula 
+\[
+u_{k}=f(u_{k-1},\ldots,u_{k-j})\mbox{mod}\, m
+\]
+
+\end_inset
+
+for some function, 
+\begin_inset Formula $f$
+\end_inset
+
+, and some positive integer 
+\begin_inset Formula $m$
+\end_inset
+
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+[before I had positive #; presumably it should be na integer?]
+\end_layout
+
+\end_inset
+
+.
+ Often 
+\begin_inset Formula $j=1$
+\end_inset
+
+.
+ 
+\emph on
+mod
+\emph default
+ just means to take the remainder after dividing by 
+\begin_inset Formula $m$
+\end_inset
+
+.
+ One then generates the random standard uniform value as 
+\begin_inset Formula $u_{k}/m$
+\end_inset
+
+, which by construction is in 
+\begin_inset Formula $[0,1]$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Given the construction, such sequences are periodic if the subsequence ever
+ reappears, which is of course guaranteed because there is a finite number
+ of possible values given that all the values are remainders of divisions
+ by a fixed number 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+[given the mod m operation]
+\end_layout
+
+\end_inset
+
+.
+ One key to a good random number generator (RNG) is to have a very long
+ period.
+\end_layout
+
+\begin_layout Standard
+An example of a sequential congruential method is a basic linear congruential
+ generator:
+\begin_inset Formula 
+\[
+u_{k}=(au_{k-1})\mbox{mod}\, m
+\]
+
+\end_inset
+
+with integer 
+\begin_inset Formula $a$
+\end_inset
+
+, 
+\begin_inset Formula $m$
+\end_inset
+
+, and 
+\begin_inset Formula $u_{i}$
+\end_inset
+
+ values.
+ Here the periodicity can't exceed 
+\begin_inset Formula $m-1$
+\end_inset
+
+ (the method is set up so that we never get 
+\begin_inset Formula $u_{k}=0$
+\end_inset
+
+ as this causes the algorithm to break), so we only have 
+\begin_inset Formula $m-1$
+\end_inset
+
+ possible values.
+ The seed is the initial state, 
+\begin_inset Formula $u_{0}$
+\end_inset
+
+ - i.e., the point in the sequence at which we start.
+ By setting the seed you guarantee reproducibility since given a starting
+ value, the sequence is deterministic.
+ In general 
+\begin_inset Formula $a$
+\end_inset
+
+ and 
+\begin_inset Formula $m$
+\end_inset
+
+ are chosen to be large, but of course they can't be too large if they are
+ to be represented as computer integers.
+ The standard values of 
+\begin_inset Formula $m$
+\end_inset
+
+ are Mersenne primes, which have the form 
+\begin_inset Formula $2^{p}-1$
+\end_inset
+
+ (but these are not prime for all 
+\begin_inset Formula $p$
+\end_inset
+
+), with 
+\begin_inset Formula $m=2^{31}-1$
+\end_inset
+
+ common.
+ Here's an example of a linear congruential sampler:
+\end_layout
+
+\begin_layout Chunk
+
+<<linear-cong, fig.width=5, fig.height=5>>=
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+A wide variety of different RNG have been proposed.
+ Many have turned out to have substantial defects based on tests designed
+ to assess if the behavior of the RNG mimics true randomness.
+ Some of the behavior we want to ensure is uniformity of each individual
+ random deviate, independence of sequences of deviates, and multivariate
+ uniformity of subsequences.
+ One test of a RNG that many RNGs don't perform well on is to assess the
+ properties of 
+\begin_inset Formula $k$
+\end_inset
+
+-tuples - subsequences of length 
+\begin_inset Formula $k$
+\end_inset
+
+, which should be independently distributed in the 
+\begin_inset Formula $k$
+\end_inset
+
+-dimensional unit hypercube.
+ Unfortunately, linear congruential methods produce values that lie on a
+ simple lattice in 
+\begin_inset Formula $k$
+\end_inset
+
+-space, i.e., the points are not selected from 
+\begin_inset Formula $q^{k}$
+\end_inset
+
+ uniformly spaced points, where 
+\begin_inset Formula $q$
+\end_inset
+
+ is the the number of unique values.
+ Instead, points often lie on parallel lines in the hypercube.
+\end_layout
+
+\begin_layout Standard
+Combining generators can yield better generators.
+ The Wichmann-Hill is an option in R and is a combination of three linear
+ congruential generators with 
+\begin_inset Formula $a=\{171,172,170\}$
+\end_inset
+
+, 
+\begin_inset Formula $m=\{30269,30307,30323\}$
+\end_inset
+
+, and 
+\begin_inset Formula $u_{i}=(x_{i}/30269+y_{i}/30307+z_{i}/30323)\mbox{mod}\,1$
+\end_inset
+
+ where 
+\begin_inset Formula $x$
+\end_inset
+
+, 
+\begin_inset Formula $y$
+\end_inset
+
+, and 
+\begin_inset Formula $z$
+\end_inset
+
+ are generated from the three individual generators.
+ Let's mimic the Wichmann-Hill manually:
+\end_layout
+
+\begin_layout Chunk
+
+<<Wichmann>>=
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+By default R uses something called the Mersenne twister, which is in the
+ class of generalized feedback shift registers (GFSR).
+ The basic idea of a GFSR is to come up with a deterministic generator of
+ bits (i.e., a way to generate sequences of 0s and 1s), 
+\begin_inset Formula $B_{i}$
+\end_inset
+
+, 
+\begin_inset Formula $i=1,2,3,\ldots$
+\end_inset
+
+.
+ The pseudo-random numbers are then determined as sequential subsequences
+ of length 
+\begin_inset Formula $L$
+\end_inset
+
+ from 
+\begin_inset Formula $\{B_{i}\}$
+\end_inset
+
+, considered as a base-2 number and dividing by 
+\begin_inset Formula $2^{L}$
+\end_inset
+
+ to get a number in 
+\begin_inset Formula $(0,1)$
+\end_inset
+
+.
+ In general the sequence of bits is generated by taking 
+\begin_inset Formula $B_{i}$
+\end_inset
+
+ to be the 
+\emph on
+exclusive or
+\emph default
+ [i.e., 0+0 = 0; 0 + 1 = 1; 1 + 0 = 1; 1 + 1 = 0] summation of two previous
+ bits further back in the sequence where the lengths of the lags are carefully
+ chosen.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+[more in G-RNG p.
+ 38, Fishman]
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+Additional notes
+\end_layout
+
+\begin_layout Standard
+Generators should give you the same sequence of random numbers, starting
+ at a given seed, whether you ask for a bunch of numbers at once, or sequentiall
+y ask for individual numbers.
+ 
+\end_layout
+
+\begin_layout Standard
+When one invokes a RNG without a seed, they generally have a method for
+ choosing a seed, often based on the system clock.
+ 
+\end_layout
+
+\begin_layout Standard
+There have been some attempts to generate truly random numbers based on
+ physical randomness.
+ One that is based on quantum physics is 
+\begin_inset CommandInset href
+LatexCommand href
+name "http://www.idquantique.com/true-random-number-generator/quantis-usb-pcie-pci.html"
+target "http://www.idquantique.com/true-random-number-generator/quantis-usb-pcie-pci.html"
+
+\end_inset
+
+.
+ Another approach is based on lava lamps!
+\end_layout
+
+\begin_layout Subsection
+RNG in R
+\end_layout
+
+\begin_layout Standard
+We can change the RNG in R using 
+\emph on
+RNGkind()
+\emph default
+.
+ We can set the seed with 
+\emph on
+set.seed()
+\emph default
+.
+ The seed is stored in 
+\emph on
+.Random.seed
+\emph default
+.
+ The first element indicates the type of RNG (and the type of normal RV
+ generator).
+ The remaining values are specific to the RNG.
+ In the demo code, we've seen that for Wichmann-Hill, the remaining three
+ numbers are the current values of 
+\begin_inset Formula $\{x,y,z\}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+In R the default RNG is the Mersenne twister (
+\family typewriter
+?RNGkind
+\family default
+), which is considered to be state-of-the-art -- it has some theoretical
+ support, has performed reasonably on standard tests of pseudorandom numbers
+ and has been used without evidence of serious failure.
+ Plus it's fast (because bitwise operations are fast).
+ In fact this points out one of the nice features of R, which is that for
+ something as important as this, the default is generally carefully chosen
+ by R's developers.
+ The particular Mersenne twister used has a periodicity of 
+\begin_inset Formula $2^{19937}-1\approx10^{6000}$
+\end_inset
+
+.
+ Practically speaking this means that if we generated one random uniform
+ per nanosecond for 10 billion years, then we would generate 
+\begin_inset Formula $10^{25}$
+\end_inset
+
+ numbers, well short of the period.
+ So we don't need to worry about the periodicity! The seed for the Mersenne
+ twister is a set of 624 32-bit integers plus a position in the set, where
+ the position is 
+\family typewriter
+.Random.seed[2]
+\family default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+We can set the seed by passing an integer to 
+\emph on
+set.seed()
+\emph default
+, which then sets as many actual seeds as required for a given generator.
+ Here I'll refer to the integer passed to 
+\emph on
+set.seed()
+\emph default
+ as 
+\emph on
+the
+\emph default
+ seed.
+ Ideally, nearby seeds generally should not correspond to getting sequences
+ from the stream that are closer to each other than far away seeds.
+ According to Gentle (CS, p.
+ 327) the input to 
+\emph on
+set.seed()
+\emph default
+ should be an integer, 
+\begin_inset Formula $i\in\{0,\ldots,1023\}$
+\end_inset
+
+ , and each of these 1024 values produces positions in the RNG sequence
+ that are 
+\begin_inset Quotes eld
+\end_inset
+
+far away
+\begin_inset Quotes erd
+\end_inset
+
+ from each other.
+ I don't see any mention of this in the R documentation for 
+\emph on
+set.seed()
+\emph default
+ and furthermore, you can pass integers larger than 1023 to 
+\emph on
+set.seed()
+\emph default
+, so I'm not sure how much to trust Gentle's claim.
+ More on generating parallel streams of random numbers below.
+\end_layout
+
+\begin_layout Standard
+So we get replicability by setting the seed to a specific value at the beginning
+ of our simulation.
+ We can then set the seed to that same value when we want to replicate the
+ simulation.
+ 
+\end_layout
+
+\begin_layout Chunk
+
+<<seed>>=
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+We can also save the state of the RNG and pick up where we left off.
+ So this code will pick where you had left off, ignoring what happened in
+ between saving to 
+\emph on
+savedSeed
+\emph default
+ and resetting.
+\end_layout
+
+\begin_layout Chunk
+
+<<seed-save>>=
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+In some cases you might want to reset the seed upon exit from a function
+ so that a user's random number stream is unaffected:
+\end_layout
+
+\begin_layout Chunk
+
+<<seed-restore, eval=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+Note the need to reassign to the global variable 
+\emph on
+.Random.seed
+\emph default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+
+\emph on
+RNGversion()
+\emph default
+ allows you to revert to RNG from previous versions of R, which is very
+ helpful for reproducibility.
+\end_layout
+
+\begin_layout Standard
+The RNGs in R generally return 32-bit (4-byte) integers converted to doubles,
+ so there are at most 
+\begin_inset Formula $2^{32}$
+\end_inset
+
+ distinct values.
+ This means you could get duplicated values in long runs, but this does
+ not violate the comment about the periodicity because the two values after
+ the two duplicated numbers will not be duplicates of each other -- note
+ there is a distinction between the values as presented to the user and
+ the values as generated by the RNG algorithm.
+\end_layout
+
+\begin_layout Standard
+One way to proceed if you're using both R and C is to have C use the R RNG,
+ calling the C functions that R uses under the hood, which are located in
+ the 
+\emph on
+Rmath
+\emph default
+ library.
+ This way you have a consistent source of random numbers and don't need
+ to worry about issues with RNG in C.
+ If you call C from R, this should approach should also work (see details
+ in 
+\begin_inset CommandInset href
+LatexCommand href
+name "http://statistics.berkeley.edu/computing/cpp"
+target "http://statistics.berkeley.edu/computing/cpp"
+
+\end_inset
+
+); you could also generate all the random numbers you need in R and pass
+ them to the C function.
+\end_layout
+
+\begin_layout Standard
+Note that whenever a random number is generated, the software needs to retain
+ information about what has been generated, so this is an example where
+ a function must have a side effect not observed by the user.
+ R frowns upon this sort of thing, but it's necessary in this case.
+\end_layout
+
+\begin_layout Subsection
+Random slippage
+\end_layout
+
+\begin_layout Standard
+If the exact floating point representations of a random number sequence
+ differ, even in the 14th, 15th, 16th decimal places, if you run a simulation
+ long enough, such a difference can be enough to change the result of some
+ conditional calculation.
+ Suppose your code involves:
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+> if(x>0) { do one thing } else{ do something different }
+\end_layout
+
+\begin_layout Standard
+As soon as a small difference changes the result of testing 
+\emph on
+x>0
+\emph default
+, the remainder of the simulation can change entirely.
+ This happened to me in my thesis as a result of the difference of an AMD
+ and Intel processor, and took a while to figure out.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+So to be reproducible, we generally need to document the generator used
+ and the exact initial state of the generator (generally via the seed).
+ You can check the state of the generator after each of two runs, provided
+ you have saved the final state, and this is confirmation that the simulation
+ is exactly replicable.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+RNG in parallel
+\end_layout
+
+\begin_layout Standard
+We can generally rely on the RNG in R to give a reasonable set of values.
+ One time when we want to think harder is when doing work with RNG in parallel
+ on multiple processors.
+ The worst thing that could happen is that one sets things up in such a
+ way that every process is using the same sequence of random numbers.
+ This could happen if you mistakenly set the same seed in each process,
+ e.g., using 
+\emph on
+set.seed(mySeed)
+\emph default
+ in R on every process.
+ More details on parallel RNG are given in the Section 5 of the tutorial
+ on basic paralell processing (
+\begin_inset CommandInset href
+LatexCommand href
+target "https://github.com/berkeley-scf/tutorial-parallel-basics"
+
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Section
+Generating random variables
+\end_layout
+
+\begin_layout Standard
+There are a variety of methods for generating from common distributions
+ (normal, gamma, beta, Poisson, t, etc.).
+ Since these tend to be built into R and presumably use good algorithms,
+ we won't go into them.
+ A variety of statistical computing and Monte Carlo books describe the various
+ methods.
+ Many are built on the relationships between different distributions - e.g.,
+ a beta random variable (RV) can be generated from two gamma RVs.
+\end_layout
+
+\begin_layout Standard
+Also note that you can call the C functions that implement the R distribution
+ functions as a library (
+\emph on
+Rmath
+\emph default
+), so if you're coding in C or another language, you should be able to make
+ use of the standard functions: 
+\emph on
+{r,p,q,d}{norm,t,gamma,binom,pois,etc.}
+\emph default
+ (as well as a variety of other R math functions, which can be seen in 
+\emph on
+Rmath.h
+\emph default
+).
+ Phil Spector has a writeup on this (
+\begin_inset CommandInset href
+LatexCommand href
+target "http://www.stat.berkeley.edu/classes/s243/rmath.html"
+
+\end_inset
+
+) and material can also be found in the 
+\emph on
+Writing R Extensions
+\emph default
+ manual on CRAN (section 6.16).
+\end_layout
+
+\begin_layout Subsection
+Multivariate distributions
+\end_layout
+
+\begin_layout Standard
+The 
+\emph on
+mvtnorm
+\emph default
+ package supplies code for working with the density and CDF of multivariate
+ normal and t distributions.
+\end_layout
+
+\begin_layout Standard
+To generate a multivariate normal, we've seen the standard method based
+ on the Cholesky decomposition:
+\end_layout
+
+\begin_layout Chunk
+
+<<mvnorm, eval=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+For a singular covariance matrix we can use the Cholesky with pivoting,
+ setting as many rows to zero as the rank deficiency.
+ Then when we generate the multivariate normals, they respect the constraints
+ implicit in the rank deficiency.
+ However, you'll need to reorder the resulting vector because of the reordering
+ involved in the pivoted Cholesky.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+talk about copulas for mulivar? G-CS p.
+ 316
+\end_layout
+
+\begin_layout Plain Layout
+Suppose we have a copula 
+\begin_inset Formula $C(F_{1},F_{2})$
+\end_inset
+
+ where the copula by definition has uniform marginals and we have marginal
+ CDFs, 
+\begin_inset Formula $F_{1},$
+\end_inset
+
+
+\begin_inset Formula $F_{2}$
+\end_inset
+
+.
+ An algorithm is to generate 
+\begin_inset Formula $U_{1}$
+\end_inset
+
+ and 
+\begin_inset Formula $U_{2}$
+\end_inset
+
+ uniform, then set 
+\begin_inset Formula $V=C_{u}^{-1}(U_{2})$
+\end_inset
+
+ where 
+\begin_inset Formula $C_{u}=\frac{\partial C}{\partial x_{1}}$
+\end_inset
+
+.
+ Then we can generate 
+\begin_inset Formula $X_{1}=F_{1}^{-1}(U)$
+\end_inset
+
+, 
+\begin_inset Formula $X_{2}=F_{2}^{-1}(V)$
+\end_inset
+
+.
+ [why?] An alternative is to generate multivariate normals and then transform
+ each margin to uniform individually.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Inverse CDF
+\end_layout
+
+\begin_layout Standard
+Most of you know the inverse CDF method.
+ To generate 
+\begin_inset Formula $X\sim F$
+\end_inset
+
+ where 
+\begin_inset Formula $F$
+\end_inset
+
+ is a CDF and is an invertible function, first generate 
+\begin_inset Formula $Z\sim\mathcal{U}(0,1)$
+\end_inset
+
+, then 
+\begin_inset Formula $x=F^{-1}(z)$
+\end_inset
+
+.
+ For discrete CDFs, one can work with a discretized version.
+ For multivariate distributions, one can work with a univariate marginal
+ and then a sequence of univariate conditionals: 
+\begin_inset Formula $f(x_{1})f(x_{2}|x_{1})\cdots f(x_{k}|x_{k-1},\ldots,x_{1})$
+\end_inset
+
+, when the distribution allows this analytic decomposition.
+\end_layout
+
+\begin_layout Subsection
+Rejection sampling
+\end_layout
+
+\begin_layout Standard
+The basic idea of rejection sampling (RS) relies on the introduction of
+ an auxiliary variable, 
+\begin_inset Formula $u$
+\end_inset
+
+.
+ Suppose 
+\begin_inset Formula $X\sim F$
+\end_inset
+
+.
+ Then we can write 
+\begin_inset Formula $f(x)=\int_{0}^{f(x)}du$
+\end_inset
+
+.
+ Thus 
+\begin_inset Formula $f$
+\end_inset
+
+ is the marginal density of 
+\begin_inset Formula $X$
+\end_inset
+
+ in the joint density, 
+\begin_inset Formula $(X,U)\sim\mathcal{U}\{(x,u):0<u<f(x)\}$
+\end_inset
+
+.
+ Now we'd like to use this in a way that relies only on evaluating 
+\begin_inset Formula $f(x)$
+\end_inset
+
+ without having to draw from 
+\begin_inset Formula $f$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+To implement this we draw from a larger set and then only keep draws for
+ which 
+\begin_inset Formula $u<f(x)$
+\end_inset
+
+.
+ We choose a density, 
+\begin_inset Formula $g$
+\end_inset
+
+, that is easy to draw from and that can 
+\emph on
+majorize
+\emph default
+ 
+\begin_inset Formula $f$
+\end_inset
+
+, which means there exists a constant 
+\begin_inset Formula $c$
+\end_inset
+
+ s.t.
+ , 
+\begin_inset Formula $cg(x)\geq f(x)$
+\end_inset
+
+ 
+\begin_inset Formula $\forall x$
+\end_inset
+
+.
+ In other words we have that 
+\begin_inset Formula $cg(x)$
+\end_inset
+
+ is an upper envelope for 
+\begin_inset Formula $f(x)$
+\end_inset
+
+.
+ The algorithm is
+\end_layout
+
+\begin_layout Enumerate
+generate 
+\begin_inset Formula $x\sim g$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+generate 
+\begin_inset Formula $u\sim\mathcal{U}(0,1)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+if 
+\begin_inset Formula $u\leq f(x)/cg(x)$
+\end_inset
+
+ then use 
+\begin_inset Formula $x$
+\end_inset
+
+; otherwise go back to step 1
+\end_layout
+
+\begin_layout Standard
+The intuition here is graphical: we generate from under a curve that is
+ always above 
+\begin_inset Formula $f(x)$
+\end_inset
+
+ and accept only when 
+\begin_inset Formula $u$
+\end_inset
+
+ puts us under 
+\begin_inset Formula $f(x)$
+\end_inset
+
+ relative to the majorizing density.
+ A key here is that the majorizing density have fatter tails than the density
+ of interest, so that the constant 
+\begin_inset Formula $c$
+\end_inset
+
+ can exist.
+ So we could use a 
+\begin_inset Formula $t$
+\end_inset
+
+ to generate from a normal but not the reverse.
+ We'd like 
+\begin_inset Formula $c$
+\end_inset
+
+ to be small to reduce the number of rejections because it turns out that
+ 
+\begin_inset Formula $\frac{1}{c}=\frac{\int f(x)dx}{\int cg(x)dx}$
+\end_inset
+
+ is the acceptance probability.
+ This approach works in principle for multivariate densities but as the
+ dimension increases, the proportion of rejections grows, because more of
+ the volume under 
+\begin_inset Formula $cg(x)$
+\end_inset
+
+ is above 
+\begin_inset Formula $f(x)$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+If 
+\begin_inset Formula $f$
+\end_inset
+
+ is costly to evaluate, we can sometimes reduce calculation using a lower
+ bound on 
+\begin_inset Formula $f$
+\end_inset
+
+.
+ In this case we accept if 
+\begin_inset Formula $u\leq f_{\mbox{low}}(y)/cg_{Y}(y)$
+\end_inset
+
+.
+ If it is not, then we need to evaluate the ratio in the usual rejection
+ sampling algorithm.
+ This is called squeezing.
+\end_layout
+
+\begin_layout Standard
+One example of RS is to sample from a truncated normal.
+ Of course we can just sample from the normal and then reject, but this
+ can be inefficient, particularly if the truncation is far in the tail (a
+ case in which inverse CDF suffers from numerical difficulties).
+ Suppose the truncation point is greater than zero.
+ Working with the standardized version of the normal, you can use an translated
+ exponential with lower end point equal to the truncation point as the majorizin
+g density (Robert 1995; Statistics and Computing, and see calculations in
+ the demo code).
+ For truncation less than zero, just make the values negative.
+\end_layout
+
+\begin_layout Subsection
+Adaptive rejection sampling
+\end_layout
+
+\begin_layout Standard
+The difficulty of RS is finding a good enveloping function.
+ Adaptive rejection sampling refines the envelope as the draws occur, in
+ the case of a continuous, differentiable, log-concave density.
+ The basic idea considers the log of the density and involves using tangents
+ or secants to define an upper envelope and secants to define a lower envelope
+ for a set of points in the support of the distribution.
+ The result is that we have piecewise exponentials (since we are exponentiating
+ from straight lines on the log scale) as the bounds.
+ We can sample from the upper envelope based on sampling from a discrete
+ distribution and then the appropriate exponential.
+ The lower envelope is used for squeezing.
+ We add points to the set that defines the envelopes whenever we accept
+ a point that requires us to evaluate 
+\begin_inset Formula $f(x)$
+\end_inset
+
+ (the points that are accepted based on squeezing are not added to the set).
+ We'll talk this through some in class.
+\end_layout
+
+\begin_layout Subsection
+Importance sampling
+\end_layout
+
+\begin_layout Standard
+Importance sampling (IS) allows us to estimate expected values, with some
+ commonalities with rejection sampling.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+E_{f}(h(X))=\int h(x)\frac{f(x)}{g(x)}g(x)dx
+\]
+
+\end_inset
+
+so 
+\begin_inset Formula $\hat{\mu}=\frac{1}{m}\sum_{i}h(x_{i})\frac{f(x_{i})}{g(x_{i})}$
+\end_inset
+
+ for 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+ drawn from 
+\begin_inset Formula $g(x)$
+\end_inset
+
+, where 
+\begin_inset Formula $w_{i}^{*}=f(x_{i})/g(x_{i})$
+\end_inset
+
+ act as weights.
+ Often in Bayesian contexts, we know 
+\begin_inset Formula $f(x)$
+\end_inset
+
+ only up to a normalizing constant.
+ In this case we need to use 
+\begin_inset Formula $w_{i}=w_{i}^{*}/\sum_{i}w_{i}^{*}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Here we don't require the majorizing property, just that the densities have
+ common support, but things can be badly behaved if we sample from a density
+ with lighter tails than the density of interest.
+ So in general we want 
+\begin_inset Formula $g$
+\end_inset
+
+ to have heavier tails.
+ More specifically for a low variance estimator of 
+\begin_inset Formula $\mu$
+\end_inset
+
+, we would want that 
+\begin_inset Formula $f(x_{i})/g(x_{i})$
+\end_inset
+
+ is large only when 
+\begin_inset Formula $h(x_{i})$
+\end_inset
+
+ is very small, to avoid having overly influential points.
+ 
+\end_layout
+
+\begin_layout Standard
+This suggests we can reduce variance in an IS context by oversampling 
+\begin_inset Formula $x$
+\end_inset
+
+ for which 
+\begin_inset Formula $h(x)$
+\end_inset
+
+ is large and undersampling when it is small, since 
+\begin_inset Formula $\mbox{Var}(\hat{\mu})=\frac{1}{m}\mbox{Var}(h(X)\frac{f(X)}{g(X)})$
+\end_inset
+
+.
+ An example is that if 
+\begin_inset Formula $h$
+\end_inset
+
+ is an indicator function that is 1 only for rare events, we should oversample
+ rare events and then the IS estimator corrects for the oversampling.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+A measure of the effective sample size (ESS) is 
+\begin_inset Formula $m/(1+\hat{cv}^{2}(w))$
+\end_inset
+
+ where we take the square of coefficient of variation of the weights.
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+What if we actually want a sample from 
+\begin_inset Formula $f$
+\end_inset
+
+ as opposed to estimating the expected value above? We can draw 
+\begin_inset Formula $x$
+\end_inset
+
+ from the unweighted sample, 
+\begin_inset Formula $\{x_{i}\}$
+\end_inset
+
+, with weights 
+\begin_inset Formula $\{w_{i}\}$
+\end_inset
+
+.
+ This is called sampling importance resampling (SIR).
+\end_layout
+
+\begin_layout Subsection
+Ratio of uniforms
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+see M [good for discrete]
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If 
+\begin_inset Formula $U$
+\end_inset
+
+ and 
+\begin_inset Formula $V$
+\end_inset
+
+ are uniform in 
+\begin_inset Formula $C=\{(u,v):\,0\leq u\leq\sqrt{f(v/u)}$
+\end_inset
+
+ then 
+\begin_inset Formula $X=V/U$
+\end_inset
+
+ has density proportion to 
+\begin_inset Formula $f$
+\end_inset
+
+.
+ The basic algorithm is to choose a rectangle that encloses 
+\begin_inset Formula $C$
+\end_inset
+
+ and sample until we find 
+\begin_inset Formula $u\leq f(v/u)$
+\end_inset
+
+.
+ Then we use 
+\begin_inset Formula $x=v/u$
+\end_inset
+
+ as our RV.
+ The larger region enclosing 
+\begin_inset Formula $C$
+\end_inset
+
+ is the majorizing region and a simple approach (if 
+\begin_inset Formula $f(x)$
+\end_inset
+
+and 
+\begin_inset Formula $x^{2}f(x)$
+\end_inset
+
+ are bounded in 
+\begin_inset Formula $C$
+\end_inset
+
+) is to choose the rectangle, 
+\begin_inset Formula $0\leq u\leq\sup_{x}\sqrt{f(x)}$
+\end_inset
+
+, 
+\begin_inset Formula $\inf_{x}x\sqrt{f(x)}\leq v\leq\sup_{x}x\sqrt{f(x)}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+One can also consider truncating the rectangular region, depending on the
+ features of 
+\begin_inset Formula $f$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Monahan recommends the ratio of uniforms, particularly a version for discrete
+ distributions (p.
+ 323 of the 2nd edition).
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+[may want to figure out the discrete stuff in Monahan and give some intuition
+ for how this works]
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Design of simulation studies
+\end_layout
+
+\begin_layout Standard
+Let's pose a concrete example.
+ This is based on a JASA paper that you'll look at more carefully in a problem
+ set.
+ Suppose one is modeling data as being from a mixture of normal distributions:
+\begin_inset Formula 
+\[
+f(y;\theta)=\sum_{h=1}^{m}w_{k}f(y;\mu_{h},\sigma_{h})
+\]
+
+\end_inset
+
+ where 
+\begin_inset Formula $f(y;\mu_{h},\sigma_{h})$
+\end_inset
+
+ is a normal density with mean 
+\begin_inset Formula $\mu_{h}$
+\end_inset
+
+ and s.d.
+ 
+\begin_inset Formula $\sigma_{h}$
+\end_inset
+
+.
+ A statistician has developed methodology for carrying out a hypothesis
+ test for 
+\begin_inset Formula $H_{0}:\, m=m_{0}$
+\end_inset
+
+ vs.
+ 
+\begin_inset Formula $H_{a}:\, m>m_{0}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+First, what are the key issues that need to be assessed to evaluate their
+ methodology? What do we want to know to assess a hypothesis test?
+\end_layout
+
+\begin_layout Standard
+Second, what do we need to consider in carrying out a simulation study to
+ address those issues?
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+We have developed a statistical method that predicts whether someone will
+ get cancer over the next 10 years based on gene expression data.
+ A number of other methods for such classification also exist and we want
+ to compare performance in a simulation study.
+ What do we need to decide in terms of carrying out the study?
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Basic steps of a simulation study
+\end_layout
+
+\begin_layout Enumerate
+Specify what makes up an individual experiment: sample size, distributions,
+ parameters, statistic of interest, etc.
+\end_layout
+
+\begin_layout Enumerate
+Determine what inputs, if any, to vary; e.g., sample sizes, parameters, data
+ generating mechanisms
+\end_layout
+
+\begin_layout Enumerate
+Write code to carry out the individual experiment and return the quantity
+ of interest
+\end_layout
+
+\begin_layout Enumerate
+For each combination of inputs, repeat the experiment 
+\begin_inset Formula $m$
+\end_inset
+
+ times.
+ Note this is an embarrassingly parallel calculation (in both the data generatin
+g dimension and the inputs dimension(s).
+\end_layout
+
+\begin_layout Enumerate
+Summarize the results for each combination of interest, quantifying simulation
+ uncertainty
+\end_layout
+
+\begin_layout Enumerate
+Report the results in graphical or tabular form
+\end_layout
+
+\begin_layout Subsection
+Overview
+\end_layout
+
+\begin_layout Standard
+Since a simulation study is an experiment, we should use the same principles
+ of design and analysis we would recommend when advising a practicioner
+ on setting up an experiment.
+\end_layout
+
+\begin_layout Standard
+These include efficiency, reporting of uncertainty, reproducibility and
+ documentation.
+\end_layout
+
+\begin_layout Standard
+In generating the data for a simulation study, we want to think about what
+ structure real data would have that we want to mimic in the simulation
+ study: distributional assumptions, parameter values, dependence structure,
+ outliers, random effects, sample size (
+\begin_inset Formula $n$
+\end_inset
+
+), etc.
+\end_layout
+
+\begin_layout Standard
+All of these may become input variables in a simulation study.
+ Often we compare two or more statistical methods conditioning on the data
+ context and then assess whether the differences between methods vary with
+ the data context choices.
+ E.g., if we compare an MLE to a robust estimator, which is better under a
+ given set of choices about the data generating mechanism and how sensitive
+ is the comparison to changing the features of the data generating mechanism?
+ So the 
+\begin_inset Quotes eld
+\end_inset
+
+treatment variable
+\begin_inset Quotes erd
+\end_inset
+
+ is the choice of statistical method.
+ We're then interested in sensitivity to the conditions.
+\end_layout
+
+\begin_layout Standard
+Often we can have a large number of replicates (
+\begin_inset Formula $m$
+\end_inset
+
+) because the simulation is fast on a computer, so we can sometimes reduce
+ the simulation error to essentially zero and thereby avoid reporting uncertaint
+y.
+ To do this, we need to calculate the simulation standard error, generally,
+ 
+\begin_inset Formula $s/\sqrt{m}$
+\end_inset
+
+ and see how it compares to the effect sizes.
+ This is particularly important when reporting on the bias of a statistical
+ method.
+\end_layout
+
+\begin_layout Standard
+We might denote the data, which could be the statistical estimator under
+ each of two methods as 
+\begin_inset Formula $Y_{ijklq}$
+\end_inset
+
+, where 
+\begin_inset Formula $i$
+\end_inset
+
+ indexes treatment, 
+\begin_inset Formula $j,k,l$
+\end_inset
+
+ index different additional input variables, and 
+\begin_inset Formula $q\in\{1,\ldots,m\}$
+\end_inset
+
+ indexes the replicate.
+ E.g., 
+\begin_inset Formula $j$
+\end_inset
+
+ might index whether the data are from a t or normal, 
+\begin_inset Formula $k$
+\end_inset
+
+ the value of a parameter, and 
+\begin_inset Formula $l$
+\end_inset
+
+ the dataset sample size (i.e., different levels of 
+\begin_inset Formula $n$
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Standard
+One can think about choosing 
+\begin_inset Formula $m$
+\end_inset
+
+ based on a basic power calculation, though since we can always generate
+ more replicates, one might just proceed sequentially and stop when the
+ precision of the results is sufficient.
+\end_layout
+
+\begin_layout Standard
+When comparing methods, it's best to use the same simulated datasets for
+ each level of the treatment variable and to do an analysis that controls
+ for the dataset (i.e., for the random numbers used), thereby removing some
+ variability from the error term.
+ A simple example is to do a paired analysis, where we look at differences
+ between the outcome for two statistical methods, pairing based on the simulated
+ dataset.
+\end_layout
+
+\begin_layout Standard
+One can even use the 
+\begin_inset Quotes eld
+\end_inset
+
+same
+\begin_inset Quotes erd
+\end_inset
+
+ random number generation for the replicates under different conditions.
+ E.g., in assessing sensitivity to a 
+\begin_inset Formula $t$
+\end_inset
+
+ vs.
+ normal data generating mechanism, we might generate the normal RVs and
+ then for the 
+\begin_inset Formula $t$
+\end_inset
+
+ use the same random numbers, in the sense of using the same quantiles of
+ the 
+\begin_inset Formula $t$
+\end_inset
+
+ as were generated for the normal - this is pretty easy, as seen below.
+ This helps to control for random differences between the datasets.
+\end_layout
+
+\begin_layout Chunk
+
+<<tvsnormal, fig.width=3.5, fig.height=3>>=
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Subsection
+Experimental Design
+\end_layout
+
+\begin_layout Standard
+A typical context is that one wants to know the effect of multiple input
+ variables on some outcome.
+ Often, scientists, and even statisticians doing simulation studies will
+ vary one input variable at a time.
+ As we know from standard experimental design, this is inefficient.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+We may have a focal variable and other variables that can be considered
+ blocking variables - they have an effect on the outcome but are not of
+ substantive interest, so we vary the focal variable within fixed levels
+ of the blocking variables.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The standard strategy is to discretize the inputs, each into a small number
+ of levels.
+ If we have a small enough number of inputs and of levels, we can do a full
+ factorial design (potentially with replication).
+ For example if we have three inputs and three levels each, we have 
+\begin_inset Formula $3^{3}$
+\end_inset
+
+ different treatment combinations.
+ Choosing the levels in a reasonable way is obviously important.
+\end_layout
+
+\begin_layout Standard
+As the number of inputs and/or levels increases to the point that we can't
+ carry out the full factorial, a fractional factorial is an option.
+ This carefully chooses which treatment combinations to omit.
+ The goal is to achieve balance across the levels in a way that allows us
+ to estimate lower level effects (in particular main effects) but not all
+ high-order interactions.
+ What happens is that high-order interactions are aliased to (confounded
+ with) lower-order effects.
+ For example you might choose a fractional factorial design so that you
+ can estimate main effects and two-way interactions but not higher-order
+ interactions.
+\end_layout
+
+\begin_layout Standard
+In interpreting the results, I suggest focusing on the decomposition of
+ sums of squares and not on statistical significance.
+ In most cases, we expect the inputs to have at least some effect on the
+ outcome, so the null hypothesis is a straw man.
+ Better to assess the magnitude of the impacts of the different inputs.
+\end_layout
+
+\begin_layout Standard
+When one has a very large number of inputs, one can use the Latin hypercube
+ approach to sample in the input space in a uniform way, spreading the points
+ out so that each input is sampled uniformly.
+ Assume that each input is 
+\begin_inset Formula $\mathcal{U}(0,1)$
+\end_inset
+
+ (one can easily transform to whatever marginal distributions you want).
+ Suppose that you can run 
+\begin_inset Formula $m$
+\end_inset
+
+ samples.
+ Then for each input variable, we divide the unit interval into 
+\begin_inset Formula $m$
+\end_inset
+
+ bins and randomly choose the order of bins and the position within each
+ bin.
+ This is done independently for each variable and then combined to give
+ 
+\begin_inset Formula $m$
+\end_inset
+
+ samples from the input space.
+ We would then analyze main effects and perhaps two-way interactions to
+ assess which inputs seem to be most important.
+ 
+\end_layout
+
+\begin_layout Section
+Implementation of simulation studies
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Example - from Gentle p.
+ 649 or from students
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Computational efficiency
+\end_layout
+
+\begin_layout Standard
+Parallel processing is often helpful for simulation studies.
+ The reason is that simulation studies are embarrassingly parallel - we
+ can send each replicate to a different computer processor and then collect
+ the results back, and the speedup should scale directly with the number
+ of processors we used.
+ Since we often need to some sort of looping, writing code in C/C++ and
+ compiling and linking to the code from R may also be a good strategy, albeit
+ one not covered in this course.
+ 
+\end_layout
+
+\begin_layout Standard
+Handy functions in R include 
+\emph on
+expand.grid()
+\emph default
+ to get all combinations of a set of vectors and the 
+\emph on
+replicate()
+\emph default
+ function in R, which will carry out the same R expression (often a function
+ call) repeated times.
+ This can replace the use of a 
+\emph on
+for
+\emph default
+ loop with some gains in cleanliness of your code.
+ Storing results in an array is a natural approach.
+\end_layout
+
+\begin_layout Chunk
+
+<<loading, include=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+
+require(fields)
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Chunk
+
+<<expand.grid>>=
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Subsection
+Analysis and reporting
+\end_layout
+
+\begin_layout Standard
+Often results are reported simply in tables, but it can be helpful to think
+ through whether a graphical representation is more informative (sometimes
+ it's not or it's worse, but in some cases it may be much better).
+\end_layout
+
+\begin_layout Standard
+You should set the seed when you start the experiment, so that it's possible
+ to replicate it.
+ It's also a good idea to save the current value of the seed whenever you
+ save interim results, so that you can restart simulations (this is particularly
+ helpful for MCMC) at the exact point you left off, including the random
+ number sequence.
+\end_layout
+
+\begin_layout Standard
+To enhance reproducibility, it's good practice to post your simulation code
+ (and potentially data) on your website or as supplementary material with
+ the journal.
+ One should report sample sizes and information about the random number
+ generator.
+\end_layout
+
+\begin_layout Standard
+Here are JASA's requirements on documenting computations: 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Quotes eld
+\end_inset
+
+Results Based on Computation - Papers reporting results based on computation
+ should provide enough information so that readers can evaluate the quality
+ of the results.
+ Such information includes estimated accuracy of results, as well as description
+s of pseudorandom-number generators, numerical algorithms, computers, programmin
+g languages, and major software components that were used.
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document

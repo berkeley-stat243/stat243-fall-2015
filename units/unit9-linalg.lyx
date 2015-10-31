@@ -2745,7 +2745,7 @@ Would it ever make sense to explicitly compute the inverse, such as to solve
 One additional complexity is that we want to avoid dividing by very small
  values to avoid introducing numerical inaccuracy (we would get large values
  that might overwhelm whatever they are being added to, and small errors
- in the divisor willl have large effects on the result).
+ in the divisor will have large effects on the result).
  This can be done on the fly by interchanging equations to use the equation
  (row) that produces the largest value to divide by.
  For example in the first step, we would switch the first equation (first
