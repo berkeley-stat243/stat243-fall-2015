@@ -5068,7 +5068,19 @@ If
 \begin_inset Formula $A$
 \end_inset
 
-.
+ (for 
+\begin_inset Formula $AA^{\top}$
+\end_inset
+
+ we need to fill out 
+\begin_inset Formula $U$
+\end_inset
+
+ to have 
+\begin_inset Formula $n$
+\end_inset
+
+ columns).
  Note that the squares of the singular values of 
 \begin_inset Formula $A$
 \end_inset
