@@ -1,0 +1,279 @@
+\documentclass{article}
+\usepackage[margin=0.9in]{geometry}
+
+\usepackage{url}
+%% Define a new 'leo' style for the package that will use a smaller font.
+\makeatletter
+\def\url@leostyle{%
+  \@ifundefined{selectfont}{\def\UrlFont{\sf}}{\def\UrlFont{\small\ttfamily}}}
+\makeatother
+%% Now actually use the newly defined style.
+\urlstyle{leo}
+
+
+%% for inline R code: if the inline code is not correctly parsed, you will see a message
+\newcommand{\rinline}[1]{SOMETHING WRONG WITH knitr}
+%% begin.rcode setup, include=FALSE, cache=FALSE
+% opts_chunk$set(fig.path='figure/latex-', cache.path='cache/latex-')
+% read_chunk('scope.py')
+% read_chunk('memory.py')
+% read_chunk('randomwalk.R')
+% read_chunk('randomwalk.py')
+% read_chunk('float.py')
+% read_chunk('scope.R')
+%% end.rcode
+
+\title{Python inspired by problem set 3}
+\date{November 2, 2015}
+\author{Jarrod Millman\\{\small Adapted by}\\Harold Pimentel\\Statistics 243\\ UC Berkeley}
+
+\begin{document}
+
+\maketitle
+
+In groups of two to three, I want you to spend about 10 minutes on each of the
+following questions.  For most of the questions, you will need to use IPython
+to try out the code snippets.  While you are discussing things, I will
+circulate among the groups to answer questions and observe.  After working on
+each question for 10 minutes in small groups, we will have a group discussion
+for about 10 minutes.  And so on.
+
+You may encounter aspects of Python that you haven't seen before.  Hopefully,
+you will be able to get some sense of what the code snippet does by trying it
+out with IPython.  If you can't get something working from IPython, please ask
+me for clarification or help.
+
+\begin{enumerate}
+
+\item Scope
+
+You can add an attribute to a function at any point during runtime.  As long as
+the attribute is assigned a value prior to being needed, everything works.  If
+you try to use an attribute before it is created (through assignment), Python
+will raise an \texttt{AttributeError}.
+
+%% begin.rcode  myfunc, engine='python'
+%% end.rcode
+
+If you call the function now, you should get the following error
+message:\footnote{ Sorry about the curly quotes, \texttt{knitr}'s Python engine
+doesn't properly handle single quotes.  You will notice that I use double
+quotes in the Python snippets.  Normally, I would use single quotes in many
+instances as it is less obtrusive and doesn't require the use of the
+\texttt{Shift} key.}
+
+%% begin.rcode  myfunc1, engine='python', eval=FALSE
+%% end.rcode
+
+That error means that \texttt{myfunc.table} has not been created yet.  To
+create it just assign it a value.  In this case you will want to create
+an empty dictionary.
+
+%% begin.rcode  myfunc2, engine='python', eval=FALSE
+%% end.rcode
+
+Alternatively, you could initially populate it with some already known or
+precalculated entries.  For example, you could save the resulting dictionary
+from an early run of your code to disk.  Then when you want to use the
+code again, you could load the saved dictionary from disk.\footnote{If you
+need to save your dictionary to disk, you may want to use \texttt{JSON}.
+\texttt{JSON} is an open standard, human-readable text file format that
+is widely used as an alternative the \texttt{XML}. And is one of the most
+popular methods for exchanging data on the web.}
+
+Now use \texttt{type(myfunc)} and \texttt{type(myfunc.table)} to examine the
+type of object that \texttt{myfunc} and \texttt{myfunc.table} are labels for.
+Check that \texttt{myfunc.table} is still an empty dictionary.  Now call
+\texttt{myfunc()} on an argument (e.g., 3) and look to see what happens to
+\texttt{myfunc.table}.  Try calling \texttt{myfunc()} with different types of
+arguments (e.g., give it a string or a list).  Do you get an error message?
+Look at \texttt{myfunc.table}.  Did it change?  If so, what happened and why?
+
+This is an example of how you could use Python to memoize a
+function.\footnote{Python 3 provides a decorator to simplify this process: \\*
+\url{https://docs.python.org/3/library/functools.html#functools.lru_cache}}
+Memoization is a way to speed up a function by caching results once they've
+been computed, so that you don't have to compute them again.  Can you think of
+cases where this would be useful?
+
+\item Memory
+
+As I mentioned in an earlier section, variables are not their values in Python
+(think ``I am not my name, I am the person named XXX").  Certain objects in
+Python are mutable (e.g., lists, dictionaries), while other objects are
+immutable (e.g., tuples, strings).  Many objects can be composite (e.g., a list
+of dictionaries or a dictionary of lists, tuples, and strings).  For this
+example, you are going to explore mutable and immutable objects by examining
+how they compose.
+
+First, create a list, a tuple, and a dictionary containing the list and the
+tuple as values.
+
+%% begin.rcode  mutable, engine='python', eval=FALSE
+%% end.rcode
+
+Look at the objects you've created.\footnote{Make sure you see which object is
+composite.  If you have time, you may wish to examine whether you can further
+nest objects.  Can you create a dictionary with a list of dictionaries of
+lists?}  Check their types.  Use the \texttt{id} function to find the memory
+addresses of the various objects.  For instance, you might try something like
+this:
+
+%% begin.rcode  mutable1, engine='python', eval=FALSE
+%% end.rcode
+
+What happens to \texttt{l1} when you modify \texttt{d["a"][1]}?  What about
+when you modify \texttt{d["a"]}?  You might try:
+
+%% begin.rcode  mutable2, engine='python', eval=FALSE
+%% end.rcode
+
+Similarly, what happens when you modify \texttt{d["b"][1]}? What about when you
+modify \texttt{d["b"]}?  You might try:
+
+%% begin.rcode  mutable3, engine='python', eval=FALSE
+%% end.rcode
+
+Now try to make a copy of \texttt{d}.  First, create a new variable by assign
+the old variable to it.
+
+%% begin.rcode  mutable4, engine='python', eval=FALSE
+%% end.rcode
+
+What happened?  If you use tab-completion on \texttt{d.} from IPython, you will
+see it has a \texttt{copy} method.
+
+%% begin.rcode  mutable5, engine='python', eval=FALSE
+%% end.rcode
+
+What does that do?  Finally make a ``deepcopy" of \texttt{d}.
+
+%% begin.rcode  mutable6, engine='python', eval=FALSE
+%% end.rcode
+
+Can you explain the differences between the various ways the above copies work?
+
+%\clearpage
+\item Random walks
+
+For question 4, you were asked to implement a random walk function. As a
+reminder, here is the example solution.
+
+%% begin.rcode  q4.sol
+%% end.rcode
+
+Here is an implementation in Python.
+
+%% begin.rcode  p1, engine='python'
+%% end.rcode
+
+Compare the two versions.  Try to find parallels in the implementation (I tried
+to mimic the R implementation mostly so hopefully they look somewhat similar to
+you).  Do you prefer one over the other?  How about specific code snippets.
+
+Note the syntax used to create the variable \texttt{walk} in the definition of
+the \texttt{random\_2d\_walk()} function.  The argument to the
+\texttt{np.array()} constructor is created using list comprehension.  This
+notation should remind you of the mathematical set-builder
+notation.\footnote{Creating sets using the set-builder notation is known as set
+comprehension.}
+
+In the Python implementation, I am not checking the type and value of my input.
+If I wanted to so, I could something like this:
+
+%% begin.rcode  p1.a, engine='python', eval=FALSE
+%% end.rcode
+
+It is generally not consider Pythonic to check argument types explicitly.  The
+focus is on whether the interface is implemented.  This is called \emph{duck
+typing}.  It is normally considered desirable to let the function error if
+the input is invalid.  It you want to handle the error more directly, then a
+common approach is to try using the input and then handle any exceptions
+explicitly.
+
+%\clearpage
+Here is the example solution for creating an S3 class in R.
+%% begin.rcode  q4class.sol
+%% end.rcode
+
+\clearpage
+Here is an object-oriented implementation in Python.\footnote{In order to make
+the \texttt{position} method act like an attribute, you could use the
+\texttt{@property} decorator.}
+%% begin.rcode  p2, engine='python'
+%% end.rcode
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=.8\textwidth]{../test.png}
+  \caption{Plot of a random walk on a 2-dimensional grid.}
+  \label{fig:figure1}
+\end{figure}
+
+Since \texttt{knitr} is not able to display figures generated by Python, I've
+included the figure generated by the above code in Figure~\ref{fig:figure1}.
+I've also used the \texttt{print} statement to include the output.  If you are
+working at an interactive Python prompt, you can omit it.  You also might
+prefer to use \texttt{plt.show()} rather than saving the figure to disk with
+\texttt{plt.savefig()}.
+
+Look through this implementation and see if you can understand how it works.
+Note the use of \texttt{self}.\footnote{The use of \texttt{self} is a
+convention.  You can use another name (e.g., \texttt{this}), but it is probably
+best to use the convention.}  It is the first argument to the class methods and
+is how the methods are able to refer to the attributes of an instance.
+
+Compare the two class implementations.  Are there any major differences in how
+classes are written in Python and R?  Is one of the implementations clearer or
+easy to read?  Is that due to your familiarity with R?  Are you able to work
+out what Python is doing?  Does its syntax seem obscure?   Type the class
+definition at the IPython prompt and create an instance of it.  Use tab-completion
+to explore the object.  Are you able to figure out how to access and work with
+its attributes and methods?
+
+After considering the similarities and differences in how Python and R
+implement object-oriented programming, can you think of any design criteria
+that might explain the differences between how R and Python implement
+object-oriented programming?  For instance, would one be easier to use
+on-the-fly while working interactively?  Does one implementation seem
+like it would be better to use in a larger codebase?  Why or why not?
+
+\newpage
+\item Bonus 1
+
+R generally does not have pass-by-reference semantics, but you can emulate them in certain circumstances.
+Below is a function that modifies the argument passed in.
+\begin{itemize}
+  \item Explore how it behaves under different inputs.
+  \item How does the memory behave under different inputs? Hint: use \texttt{.Internal(inspect())}
+\end{itemize}
+
+%% begin.rcode environments
+%% end.rcode
+
+\item Bonus 2
+
+For problem set 5, you examined underflow when adding many small values to a
+large value.  Normally you would use the \texttt{sum()} method of the
+\texttt{ndarray} rather than Python's builtin \texttt{sum()} function.  If you
+wanted to use higher precision, then you would specify it explicitly.
+
+%% begin.rcode  float128, engine='python'
+%% end.rcode
+
+Note that \texttt{math.fsum} uses an alternative algorithm to ensure that it
+doesn't loose precision.  Look at the doctring for \texttt{np.sum}.  Can you
+see why specifying the \texttt{dtype} works?
+
+You may find the following code and discussion interesting.\footnote{
+\url{http://code.activestate.com/recipes/393090/}}
+Finally, for the interested, Python also supports rational arthimetic.\footnote{
+\url{https://docs.python.org/2/library/fractions.html}}
+
+For a more details on floating-point arthimetic, please see the classic text by
+David
+Goldberg.\footnote{\url{http://docs.oracle.com/cd/E19957-01/806-3568/ncg_goldberg.html}}
+
+\end{enumerate}
+
+\end{document}
