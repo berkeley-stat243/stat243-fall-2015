@@ -1,0 +1,6549 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\begin_preamble
+\usepackage[unicode=true]{hyperref}
+\usepackage{/accounts/gen/vis/paciorek/latex/paciorek-asa,times,graphics}
+\input{/accounts/gen/vis/paciorek/latex/paciorekMacros}
+%\renewcommand{\baselinestretch}{1.5}
+\hypersetup{unicode=true, pdfusetitle,bookmarks=true,bookmarksnumbered=false,bookmarksopen=false,breaklinks=false,pdfborder={0 0 1},backref=false,colorlinks=true,}
+\end_preamble
+\use_default_options false
+\begin_modules
+knitr
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 12
+\spacing onehalf
+\use_hyperref false
+\papersize letterpaper
+\use_geometry true
+\use_amsmath 1
+\use_esint 0
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 1in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Unit 11: Optimization 
+\end_layout
+
+\begin_layout Standard
+References: 
+\end_layout
+
+\begin_layout Itemize
+Gentle: 
+\emph on
+Computational Statistics
+\end_layout
+
+\begin_layout Itemize
+Lange: 
+\emph on
+Optimization
+\end_layout
+
+\begin_layout Itemize
+Monahan: 
+\emph on
+Numerical Methods of Statistics
+\end_layout
+
+\begin_layout Itemize
+Givens and Hoeting: 
+\emph on
+Computational Statistics
+\end_layout
+
+\begin_layout Itemize
+Materials online from Stanford's 
+\begin_inset CommandInset href
+LatexCommand href
+name "EE364a course"
+target "http://www.stanford.edu/class/ee364a/lectures.html"
+
+\end_inset
+
+ on convex optimization, including 
+\begin_inset CommandInset href
+LatexCommand href
+target "Boyd and Vandenberghe's (online) book Convex Optimization"
+
+\end_inset
+
+
+\emph on
+,
+\emph default
+ which is also linked to from the course webpage.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+JSS vol 60 has Nash article overview of optim and why optimx or other approaches
+ may be better
+\end_layout
+
+\begin_layout Plain Layout
+see NOMAD for constrained optim - C++ lib
+\end_layout
+
+\begin_layout Plain Layout
+Optimization (GH, G-CS, T, Mo, L, LO, basics in Rizzo, CK) (4 days) [see
+ elizabethIdeas.txt]
+\end_layout
+
+\begin_layout Enumerate
+unconstrained (GH, LO) (Dennis/Schabel maybe useful for details of Newton's)
+\end_layout
+
+\begin_layout Enumerate
+constrained - linear programming (G-CS, L, LO)
+\end_layout
+
+\begin_layout Enumerate
+Fisher scoring and NR and Gauss-Seidel, coordinate descent (GH, L, LO) ,
+ Newton's method vs.
+ first-order gradient descent
+\end_layout
+
+\begin_layout Enumerate
+Lasso: started with quadratic program solver (not transpartent); then LARS,
+ then co-ordinate descent (see Tibshirani JRSSB Jun11)
+\end_layout
+
+\begin_layout Enumerate
+EM? (see Dec10 StatSci, including MM stuff)
+\end_layout
+
+\begin_layout Enumerate
+symbolic differentiation (deriv)
+\end_layout
+
+\begin_layout Enumerate
+convexity (LO, Stanford prof convex optimiz.
+ lectures) (Lasso & least angle regression, SVM as example)
+\end_layout
+
+\begin_layout Enumerate
+Monte Carlo (RCMC, RC, GH, Liu, F)
+\end_layout
+
+\begin_layout Enumerate
+convergence rates and speed
+\end_layout
+
+\begin_layout Enumerate
+example from PP POT analysis (potOptimExample.RData)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Chunk
+<<setup, include=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+require(fields)
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Section
+Notation
+\end_layout
+
+\begin_layout Standard
+We'll make use of the first derivative (the gradient) and second derivative
+ (the Hessian) of functions.
+ We'll generally denote univariate and multivariate functions (without distingui
+shing between them) as 
+\begin_inset Formula $f(x)$
+\end_inset
+
+ with 
+\begin_inset Formula $x=(x_{1},\ldots,x_{p})$
+\end_inset
+
+.
+ The (column) vector of first partial derivatives (the gradient) is 
+\begin_inset Formula $f\p(x)=\nabla f(x)=(\frac{\partial f}{\partial x_{1}},\ldots,\frac{\partial f}{\partial x_{p}})^{\top}$
+\end_inset
+
+ and the matrix of second partial derivatives (the Hessian) is 
+\begin_inset Formula 
+\[
+f\pp(x)=\nabla_{f}^{2}(x)=H_{f}(x)=\left(\begin{array}{cccc}
+\frac{\partial^{2}f}{\partial x_{1}^{2}} & \frac{\partial^{2}f}{\partial x_{1}\partial x_{2}} & \cdots & \frac{\partial^{2}f}{\partial x_{1}\partial x_{p}}\\
+\frac{\partial^{2}f}{\partial x_{1}\partial x_{2}} & \frac{\partial^{2}f}{\partial x_{2}^{2}} & \cdots & \frac{\partial^{2}f}{\partial x_{2}\partial x_{p}}\\
+\vdots & \vdots & \ddots\\
+\frac{\partial^{2}f}{\partial x_{1}\partial x_{p}} & \frac{\partial^{2}f}{\partial x_{2}\partial x_{p}} & \cdots & \frac{\partial^{2}f}{\partial x_{p}^{2}}
+\end{array}\right).
+\]
+
+\end_inset
+
+In considering iterative algorithms, I'll use 
+\begin_inset Formula $x_{0},\, x_{1},\ldots,x_{t},\, x_{t+1}$
+\end_inset
+
+ to indicate the sequence of values as we search for the optimum, denoted
+ 
+\begin_inset Formula $x^{*}$
+\end_inset
+
+.
+ 
+\begin_inset Formula $x_{0}$
+\end_inset
+
+ is the starting point, which we must choose (often carefully).
+ If it's unclear at any point whether I mean a value of 
+\begin_inset Formula $x$
+\end_inset
+
+ in the sequence or a sub-element of the 
+\begin_inset Formula $x$
+\end_inset
+
+ vector, let me know, but hopefully it will be clear from context most of
+ the time.
+\end_layout
+
+\begin_layout Standard
+I'll try to use 
+\begin_inset Formula $x$
+\end_inset
+
+ (or if we're talking explicitly about a likelihood, 
+\begin_inset Formula $\theta$
+\end_inset
+
+) to indicate the argument with respect to which we're optimizing and 
+\begin_inset Formula $Y$
+\end_inset
+
+ to indicate data involved in a likelihood.
+ I'll try to use 
+\begin_inset Formula $z$
+\end_inset
+
+ to indicate covariates/regressors so there's no confusion with 
+\begin_inset Formula $x$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Section
+Overview
+\end_layout
+
+\begin_layout Standard
+The basic goal here is to optimize a function numerically when we cannot
+ find the maximum (or minimum) analytically.
+ Some examples:
+\end_layout
+
+\begin_layout Enumerate
+Finding the MLE for a GLM
+\end_layout
+
+\begin_layout Enumerate
+Finding least squares estimates for a nonlinear regression model, 
+\begin_inset Formula 
+\[
+Y_{i}\sim\mathcal{N}(g(z_{i};\beta),\sigma^{2})
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $g(\cdot)$
+\end_inset
+
+ is nonlinear and we seek to find the value of 
+\begin_inset Formula $\theta=(\beta,\sigma^{2})$
+\end_inset
+
+ that best fits the data.
+\end_layout
+
+\begin_layout Enumerate
+Maximizing a likelihood under constraints
+\end_layout
+
+\begin_layout Standard
+Maximum likelihood estimation and variants thereof is a standard situation
+ in which optimization comes up.
+\end_layout
+
+\begin_layout Standard
+We'll focus on 
+\series bold
+minimization
+\series default
+, since any maximization of 
+\begin_inset Formula $f$
+\end_inset
+
+ can be treated as minimization of 
+\begin_inset Formula $-f$
+\end_inset
+
+.
+ The basic setup is to find the 
+\emph on
+argument
+\emph default
+, 
+\begin_inset Formula $x$
+\end_inset
+
+, that minimizes 
+\begin_inset Formula $f(x)$
+\end_inset
+
+:
+\begin_inset Formula 
+\[
+\arg\min_{x\in D}f(x)
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $D$
+\end_inset
+
+ is the domain.
+ Sometimes 
+\begin_inset Formula $D=\Re^{p}$
+\end_inset
+
+ but other times it imposes constraints on 
+\begin_inset Formula $x$
+\end_inset
+
+.
+ When there are no constraints, this is unconstrained optimization, where
+ any 
+\begin_inset Formula $x$
+\end_inset
+
+ for which 
+\begin_inset Formula $f(x)$
+\end_inset
+
+ is defined is a possible solution.
+ We'll assume that 
+\begin_inset Formula $f$
+\end_inset
+
+ is continuous as there's little that can be done systematically if we're
+ dealing with a discontinuous function.
+\end_layout
+
+\begin_layout Standard
+In one dimension, minimization is the same as root-finding with the derivative
+ function, since the minimum of a differentiable function can only occur
+ at a point at which the derivative is zero.
+ So with differentiable functions we'll seek to find 
+\begin_inset Formula $x$
+\end_inset
+
+ s.t.
+ 
+\begin_inset Formula $f\p(x)=\nabla f(x)=0$
+\end_inset
+
+.
+ To ensure a minimum, we want that for all 
+\begin_inset Formula $y$
+\end_inset
+
+ in a neighborhood of 
+\begin_inset Formula $x^{*}$
+\end_inset
+
+, 
+\begin_inset Formula $f(y)\leq f(x^{*})$
+\end_inset
+
+, or (for twice differentiable functions) 
+\begin_inset Formula $f\pp(x^{*})=\nabla^{2}f(x^{*})=H_{f}(x^{*})\geq0$
+\end_inset
+
+, i.e., that the Hessian is positive semi-definite.
+\end_layout
+
+\begin_layout Standard
+Different strategies are used depending on whether 
+\begin_inset Formula $D$
+\end_inset
+
+ is discrete and countable, or continuous, dense and uncountable.
+ We'll concentrate on the continuous case but the discrete case can arise
+ in statistics, such as in doing variable selection.
+\end_layout
+
+\begin_layout Standard
+In general we rely on the fact that we can evaluate 
+\begin_inset Formula $f$
+\end_inset
+
+.
+ Often we make use of analytic or numerical derivatives of 
+\begin_inset Formula $f$
+\end_inset
+
+ as well.
+\end_layout
+
+\begin_layout Standard
+To some degree, optimization is a solved problem, with good software implementat
+ions, so it raises the question of how much to discuss in this class.
+ The basic motivation for going into some of the basic classes of optimization
+ strategies is that the function being optimized changes with each problem
+ and can be tricky to optimize, and I want you to know something about how
+ to choose a good approach when you find yourself with a problem requiring
+ optimization.
+ Finding global, as opposed to local, minima can also be an issue.
+\end_layout
+
+\begin_layout Standard
+Note that I'm not going to cover MCMC (Markov chain Monte Carlo) methods,
+ which are used for approximating integrals and sampling from posterior
+ distributions in a Bayesian context and in a variety of ways for optimization.
+ If you take a Bayesian course you'll cover this in detail, and if you don't
+ do Bayesian work, you probably won't have much need for MCMC, though it
+ comes up in MCEM (Monte Carlo EM) and simulated annealing, among other
+ places.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+The Jacobian of a multivariate function (i.e.
+ a system of equations) is 
+\begin_inset Formula $J_{f}(x)$
+\end_inset
+
+ where the (i,j) element is the partial derivative of the 
+\begin_inset Formula $i$
+\end_inset
+
+th component of 
+\begin_inset Formula $f$
+\end_inset
+
+ w.r.t.
+ 
+\begin_inset Formula $x_{j}$
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+Goals for the unit
+\end_layout
+
+\begin_layout Standard
+Optimization is a big topic.
+ Here's what I would like you to get out of this:
+\end_layout
+
+\begin_layout Enumerate
+an understanding of line searches,
+\end_layout
+
+\begin_layout Enumerate
+an understanding of multivariate derivative-based optimization and how line
+ searches are useful within this,
+\end_layout
+
+\begin_layout Enumerate
+an understanding of derivative-free methods,
+\end_layout
+
+\begin_layout Enumerate
+an understanding of the methods used in R's optimization routines, their
+ strengths and weaknesses, and various tricks for doing better optimization
+ in R, and
+\end_layout
+
+\begin_layout Enumerate
+a basic idea of what convex optimization is and when you might want to go
+ learn more about it.
+\end_layout
+
+\begin_layout Section
+Univariate function optimization
+\end_layout
+
+\begin_layout Standard
+We'll start with some strategies for univariate functions.
+ These can be useful later on in dealing with multivariate functions.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+check on single minimum and strict monotonicity req for golden secton and
+ bisection - I believe flat spots can cause it to break - it stops the GS
+ and could lead one to go in wrong direction for bisection
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Golden section search
+\end_layout
+
+\begin_layout Standard
+This strategy requires only that the function be unimodal.
+\end_layout
+
+\begin_layout Standard
+Assume we have a single minimum, in 
+\begin_inset Formula $[a,b]$
+\end_inset
+
+.
+ We choose two points in the interval and evaluate them, 
+\begin_inset Formula $f(x_{1})$
+\end_inset
+
+ and 
+\begin_inset Formula $f(x_{2})$
+\end_inset
+
+.
+ If 
+\begin_inset Formula $f(x_{1})<f(x_{2})$
+\end_inset
+
+ then the minimum must be in 
+\begin_inset Formula $[a,x_{2}]$
+\end_inset
+
+, and if the converse in 
+\begin_inset Formula $[x_{1},b]$
+\end_inset
+
+.
+ We proceed by choosing a new point in the new, smaller interval and iterate.
+ At each step we reduce the length of the interval in which the minimum
+ must lie.
+ The primary question involves what is an efficient rule to use to choose
+ the new point at each iteration.
+\end_layout
+
+\begin_layout Standard
+Suppose we start with 
+\begin_inset Formula $x_{1}$
+\end_inset
+
+ and 
+\begin_inset Formula $x_{2}$
+\end_inset
+
+ s.t.
+ they divide 
+\begin_inset Formula $[a,b]$
+\end_inset
+
+ into three equal segments.
+ Then we use 
+\begin_inset Formula $f(x_{1})$
+\end_inset
+
+ and 
+\begin_inset Formula $f(x_{2})$
+\end_inset
+
+ to rule out either the leftmost or rightmost segment based on whether 
+\begin_inset Formula $f(x_{1})<f(x_{2})$
+\end_inset
+
+.
+ If we have divided equally, we cannot place the next point very efficiently
+ because either 
+\begin_inset Formula $x_{1}$
+\end_inset
+
+ or 
+\begin_inset Formula $x_{2}$
+\end_inset
+
+ equally divides the remaining space, so we are forced to divide the remaining
+ space into relative lengths of 0.25, 0.25, and 0.5.
+ The next time around, we may only rule out the shorter segment, which leads
+ to inefficiency.
+\end_layout
+
+\begin_layout Standard
+The efficient strategy is to maintain the 
+\emph on
+golden ratio
+\emph default
+ between the distances between the points using 
+\begin_inset Formula $\phi=(\sqrt{5}-1)/2\approx.618$
+\end_inset
+
+, the golden ratio.
+ We start with 
+\begin_inset Formula $x_{1}=a+(1-\phi)(b-a)$
+\end_inset
+
+ and 
+\begin_inset Formula $x_{2}=a+\phi(b-a)$
+\end_inset
+
+.
+ Then suppose 
+\begin_inset Formula $f(x_{1})<f(x_{2})$
+\end_inset
+
+.
+ We now choose to place 
+\begin_inset Formula $x_{3}$
+\end_inset
+
+ s.t.
+ it uses the golden ratio in the interval 
+\begin_inset Formula $[a,x_{1}]$
+\end_inset
+
+: 
+\begin_inset Formula $x_{3}=a+(1-\phi)(x_{2}-a)$
+\end_inset
+
+.
+ Because of the way we've set it up, we once again have the third subinterval,
+ 
+\begin_inset Formula $[x_{1},x_{2}]$
+\end_inset
+
+, of equal length as the first subinterval, 
+\begin_inset Formula $[a,x{}_{3}]$
+\end_inset
+
+.
+ The careful choice allows us to narrow the search interval by an equal
+ proportion,
+\begin_inset Formula $1-\phi$
+\end_inset
+
+, in each iteration.
+ Eventually we have narrowed the minimum to between 
+\begin_inset Formula $x_{t-1}$
+\end_inset
+
+ and 
+\begin_inset Formula $x_{t}$
+\end_inset
+
+, where the difference 
+\begin_inset Formula $|x_{t}-x_{t-1}|$
+\end_inset
+
+ is sufficiently small (within some tolerance - see Section 4 for details),
+ and we report 
+\begin_inset Formula $(x_{t}+x_{t-1})/2$
+\end_inset
+
+.
+ We'll see an example of this on the board in class.
+ 
+\end_layout
+
+\begin_layout Subsection
+Bisection method 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+[Givens, plus info in G-CS]
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The bisection method requires the existence of the first derivative but
+ has the advantage over the golden section search of halving the interval
+ at each step.
+ We again assume unimodality.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Suppose we want to maximize 
+\begin_inset Formula $f(x)=\frac{\log x}{1+x}$
+\end_inset
+
+ and start with 
+\begin_inset Formula $x_{0}=3$
+\end_inset
+
+ based on an initial plot.
+ 
+\end_layout
+
+\end_inset
+
+We start with an initial interval 
+\begin_inset Formula $(a_{0},b_{0})$
+\end_inset
+
+ and proceed to shrink the interval.
+ Let's choose 
+\begin_inset Formula $a_{0}$
+\end_inset
+
+ and 
+\begin_inset Formula $b_{0}$
+\end_inset
+
+, and set 
+\begin_inset Formula $x_{0}$
+\end_inset
+
+ to be the mean of these endpoints.
+ Now we update according to the following algorithm, assuming our current
+ interval is 
+\begin_inset Formula $[a_{t},b_{t}]$
+\end_inset
+
+:
+\begin_inset Formula 
+\[
+[a_{t+1},b_{t+1}]=\begin{cases}
+[a_{t},x_{t}] & \mbox{if}f\p(a_{t})f\p(x_{t})<0\\
+{}[x_{t},b_{t}] & \mbox{if}f\p(a_{t})f\p(x_{t})>0
+\end{cases}
+\]
+
+\end_inset
+
+and set 
+\begin_inset Formula $x_{t+1}$
+\end_inset
+
+ to the mean of 
+\begin_inset Formula $a_{t+1}$
+\end_inset
+
+ and 
+\begin_inset Formula $b_{t+1}$
+\end_inset
+
+.
+ The basic idea is that if the derivative at both 
+\begin_inset Formula $a_{t}$
+\end_inset
+
+ and 
+\begin_inset Formula $x_{t}$
+\end_inset
+
+ is negative, then the minimum must be between 
+\begin_inset Formula $x_{t}$
+\end_inset
+
+ and 
+\begin_inset Formula $b_{t}$
+\end_inset
+
+, based on the intermediate value theorem.
+ If the derivatives at 
+\begin_inset Formula $a_{t}$
+\end_inset
+
+ and 
+\begin_inset Formula $x_{t}$
+\end_inset
+
+ are of different signs, then the minimum must be between 
+\begin_inset Formula $a_{t}$
+\end_inset
+
+ and 
+\begin_inset Formula $x_{t}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Since the bisection method reduces the size of the search space by one-half
+ at each iteration, one can work out that each decimal place of precision
+ requires 3-4 iterations.
+ Obviously bisection is more efficient than the golden section search because
+ we reduce by 
+\begin_inset Formula $0.5>0.382=1-\phi$
+\end_inset
+
+, so we've gained information by using the derivative.
+ It requires an evaluation of the derivative however, while golden section
+ just requires an evaluation of the original function.
+\end_layout
+
+\begin_layout Standard
+Bisection is an example of a 
+\emph on
+bracketing
+\emph default
+ method, in which we trap the minimum within a nested sequence of intervals
+ of decreasing length.
+ These tend to be slow, but if the first derivative is continuous, they
+ are robust and don't require that a second derivative exist.
+ 
+\end_layout
+
+\begin_layout Subsection
+Newton-Raphson (Newton's method)
+\end_layout
+
+\begin_layout Subsubsection
+Overview
+\end_layout
+
+\begin_layout Standard
+We'll talk about Newton-Raphson (N-R) as an optimization method rather than
+ a root-finding method, but they're just different perspectives on the same
+ algorithm.
+\end_layout
+
+\begin_layout Standard
+For N-R, we need two continuous derivatives that we can evaluate.
+ The benefit is speed, relative to bracketing methods.
+ We again assume the function is unimodal.
+ The minimum must occur at 
+\begin_inset Formula $x^{*}$
+\end_inset
+
+ s.t.
+ 
+\begin_inset Formula $f\p(x^{*})=0$
+\end_inset
+
+, provided the second derivative is non-negative at 
+\begin_inset Formula $x^{*}$
+\end_inset
+
+.
+ So we aim to find a zero (a root) of the first derivative function.
+ Assuming that we have an initial value 
+\begin_inset Formula $x_{0}$
+\end_inset
+
+ that is close to 
+\begin_inset Formula $x^{*}$
+\end_inset
+
+, we have the Taylor series approximation
+\begin_inset Formula 
+\[
+f\p(x)\approx f\p(x_{0})+(x-x_{0})f\pp(x_{0}).
+\]
+
+\end_inset
+
+Now set 
+\begin_inset Formula $f\p(x)=0$
+\end_inset
+
+, since that is the condition we desire (the condition that holds when we
+ are at 
+\begin_inset Formula $x^{*}$
+\end_inset
+
+), and solve for 
+\begin_inset Formula $x$
+\end_inset
+
+ to get
+\begin_inset Formula 
+\[
+x_{1}=x_{0}-\frac{f\p(x_{0})}{f\pp(x_{0})},
+\]
+
+\end_inset
+
+and iterate, giving us updates of the form 
+\begin_inset Formula $x_{t+1}=x_{t}-\frac{f\p(x_{t})}{f\pp(x_{t})}$
+\end_inset
+
+.
+ What are we doing intuitively? Basically we are taking the tangent to 
+\begin_inset Formula $f(x)$
+\end_inset
+
+ at 
+\begin_inset Formula $x_{0}$
+\end_inset
+
+ and extrapolating along that line to where it crosses the x-axis to find
+ 
+\begin_inset Formula $x_{1}$
+\end_inset
+
+.
+ We then reevaluate 
+\begin_inset Formula $f(x_{1})$
+\end_inset
+
+ and continue to travel along the tangents.
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+ [see CK slide 15]
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+One can prove that if 
+\begin_inset Formula $f\p(x)$
+\end_inset
+
+ is twice continuously differentiable, is convex, and has a root, then N-R
+ converges from any starting point.
+ 
+\end_layout
+
+\begin_layout Standard
+Note that we can also interpret the N-R update as finding the analytic minimum
+ of the quadratic Taylor series approximation to 
+\begin_inset Formula $f(x)$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Newton's method converges very quickly (as we'll discuss in Section 4),
+ but if you start too far from the minimum, you can run into serious problems.
+\end_layout
+
+\begin_layout Subsubsection
+Secant method variation on N-R
+\end_layout
+
+\begin_layout Standard
+Suppose we don't want to calculate the second derivative required in the
+ divisor of N-R.
+ We might replace the analytic derivative with a discrete difference approximati
+on based on the secant line joining 
+\begin_inset Formula $(x_{t},f\p(x_{t}))$
+\end_inset
+
+ and 
+\begin_inset Formula $(x_{t-1},f\p(x_{t-1}))$
+\end_inset
+
+, giving an approximate second derivative: 
+\begin_inset Formula 
+\[
+f\pp(x_{t})\approx\frac{f\p(x_{t})-f\p(x_{t-1})}{x_{t}-x_{t-1}}.
+\]
+
+\end_inset
+
+For this variant on N-R, we need two starting points, 
+\begin_inset Formula $x_{0}$
+\end_inset
+
+ and 
+\begin_inset Formula $x_{1}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+An alternative to the secant-based approximation is to use a standard discrete
+ approximation of the derivative such as 
+\begin_inset Formula 
+\[
+f\pp(x_{t})\approx\frac{f\p(x_{t}+h)-f\p(x_{t}-h)}{2h}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+How can Newton's method go wrong?
+\end_layout
+
+\begin_layout Standard
+Let's think about what can go wrong - namely when we could have 
+\begin_inset Formula $f(x_{t+1})>f(x_{t})$
+\end_inset
+
+? Basically, if 
+\begin_inset Formula $f\p(x_{t})$
+\end_inset
+
+ is relatively flat, we can get that 
+\begin_inset Formula $|x_{t+1}-x^{*}|>|x_{t}-x^{*}|$
+\end_inset
+
+.
+ We'll see an example on the board and the demo code 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+[Fig 2.4 of Givens]
+\end_layout
+
+\end_inset
+
+.
+ Newton's method can also go uphill when the second derivative is negative,
+ with the method searching for a maximum.
+ 
+\end_layout
+
+\begin_layout Chunk
+<<fig.width=7, fig.height=4>>=
+\end_layout
+
+\begin_layout Chunk
+options(width=55)
+\end_layout
+
+\begin_layout Chunk
+par(mfrow = c(1,2))
+\end_layout
+
+\begin_layout Chunk
+fp <- function(x, theta = 1){
+\end_layout
+
+\begin_layout Chunk
+	exp(x*theta)/(1+exp(x*theta)) - .5
+\end_layout
+
+\begin_layout Chunk
+}
+\end_layout
+
+\begin_layout Chunk
+fpp <- function(x, theta = 1){
+\end_layout
+
+\begin_layout Chunk
+	exp(x*theta)/((1+exp(x*theta))^2)
+\end_layout
+
+\begin_layout Chunk
+}
+\end_layout
+
+\begin_layout Chunk
+xs <- seq(-15, 15, len = 300)
+\end_layout
+
+\begin_layout Chunk
+plot(xs, fp(xs), type = 'l')
+\end_layout
+
+\begin_layout Chunk
+lines(xs, fpp(xs), lty = 2)
+\end_layout
+
+\begin_layout Chunk
+# good starting point
+\end_layout
+
+\begin_layout Chunk
+x0 <- 2
+\end_layout
+
+\begin_layout Chunk
+xvals <- c(x0,rep(NA,9))
+\end_layout
+
+\begin_layout Chunk
+for(t in 2:10){
+\end_layout
+
+\begin_layout Chunk
+	xvals[t]=xvals[t-1] - fp(xvals[t-1]) / fpp(xvals[t-1])
+\end_layout
+
+\begin_layout Chunk
+}
+\end_layout
+
+\begin_layout Chunk
+print(xvals)
+\end_layout
+
+\begin_layout Chunk
+points(xvals, fp(xvals), pch = as.character(1:length(xvals)))
+\end_layout
+
+\begin_layout Chunk
+# bad starting point
+\end_layout
+
+\begin_layout Chunk
+x0 <- 2.5
+\end_layout
+
+\begin_layout Chunk
+xvals <- c(x0,rep(NA,9))
+\end_layout
+
+\begin_layout Chunk
+for(t in 2:10){
+\end_layout
+
+\begin_layout Chunk
+	xvals[t]=xvals[t-1] - fp(xvals[t-1]) / fpp(xvals[t-1])
+\end_layout
+
+\begin_layout Chunk
+}
+\end_layout
+
+\begin_layout Chunk
+print(xvals)
+\end_layout
+
+\begin_layout Chunk
+points(xvals, fp(xvals), pch = as.character(1:length(xvals)), col = 'red')
+\end_layout
+
+\begin_layout Chunk
+# whoops
+\end_layout
+
+\begin_layout Chunk
+#############################################
+\end_layout
+
+\begin_layout Chunk
+# mistakenly climbing uphill
+\end_layout
+
+\begin_layout Chunk
+f <- function(x) cos(x)
+\end_layout
+
+\begin_layout Chunk
+fp <- function(x) -sin(x)
+\end_layout
+
+\begin_layout Chunk
+fpp <- function(x) -cos(x)
+\end_layout
+
+\begin_layout Chunk
+xs <- seq(0, 2*pi, len = 300)
+\end_layout
+
+\begin_layout Chunk
+plot(xs, f(xs), type = 'l', lwd = 2)
+\end_layout
+
+\begin_layout Chunk
+lines(xs, fp(xs))
+\end_layout
+
+\begin_layout Chunk
+lines(xs, fpp(xs), lty = 2)
+\end_layout
+
+\begin_layout Chunk
+x0 <- 0.2 # starting point
+\end_layout
+
+\begin_layout Chunk
+fp(x0) # negative
+\end_layout
+
+\begin_layout Chunk
+fpp(x0) # negative
+\end_layout
+
+\begin_layout Chunk
+x1 <- x0 - fp(x0)/fpp(x0) # whoops, we've gone uphill 
+\end_layout
+
+\begin_layout Chunk
+# because of the negative second derivative
+\end_layout
+
+\begin_layout Chunk
+xvals <- c(x0,rep(NA,9))
+\end_layout
+
+\begin_layout Chunk
+for(t in 2:10){
+\end_layout
+
+\begin_layout Chunk
+	xvals[t]=xvals[t-1]-fp(xvals[t-1])/fpp(xvals[t-1])
+\end_layout
+
+\begin_layout Chunk
+}
+\end_layout
+
+\begin_layout Chunk
+xvals
+\end_layout
+
+\begin_layout Chunk
+points(xvals, fp(xvals), pch = as.character(1:length(xvals)), col = 'red')
+\end_layout
+
+\begin_layout Chunk
+# and we've found a maximum rather than a minimum...
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+One nice, general idea is to use a fast method such as Newton's method 
+\emph on
+safeguarded
+\emph default
+ by a robust, but slower method.
+ Here's how one can do this for N-R, safeguarding with a bracketing method
+ such as bisection.
+ Basically, we check the N-R proposed move to see if N-R is proposing a
+ step outside of where the root is known to lie based on the previous steps
+ and the gradient values for those steps.
+ If so, we could choose the next step based on bisection.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+[see paper note]
+\end_layout
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+Another approach is backtracking.
+ If a new value is proposed that yields a larger value of the function,
+ backtrack to find a value that reduces the function.
+ One possibility is a line search but given that we're trying to reduce
+ computation, a full line search is often unwise computationally (also in
+ the multivariate Newton's method, we are in the middle of an iterative
+ algorithm for which we will just be going off in another direction anyway
+ at the next iteration).
+ A basic approach is to keep backtracking in halves.
+ A nice alternative is to fit a polynomial to the known information about
+ that slice of the function, namely 
+\begin_inset Formula $f(x_{t+1})$
+\end_inset
+
+, 
+\begin_inset Formula $f(x_{t})$
+\end_inset
+
+, 
+\begin_inset Formula $f\p(x_{t})$
+\end_inset
+
+ and 
+\begin_inset Formula $f\pp(x_{t})$
+\end_inset
+
+ and find the minimum of the polynomial approximation.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+[are these the right 4 points?]
+\end_layout
+
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+[Boyd p.
+ 465 gives a somewhat more complicated description where it depends on gradient,
+ this one is from Lange NA p.
+ 251]
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Convergence ideas 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+[Givens]
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Convergence metrics
+\end_layout
+
+\begin_layout Standard
+We might choose to assess whether 
+\begin_inset Formula $f\p(x_{t})$
+\end_inset
+
+ is near zero, which should assure that we have reached the critical point.
+ However, in parts of the domain where 
+\begin_inset Formula $f(x)$
+\end_inset
+
+ is fairly flat, we may find the derivative is near zero even though we
+ are far from the optimum.
+ Instead, we generally monitor 
+\begin_inset Formula $|x_{t+1}-x_{t}|$
+\end_inset
+
+ (for the moment, assume 
+\begin_inset Formula $x$
+\end_inset
+
+ is scalar).
+ We might consider absolute convergence: 
+\begin_inset Formula $|x_{t+1}-x_{t}|<\epsilon$
+\end_inset
+
+ or relative convergence, 
+\begin_inset Formula $\frac{|x_{t+1}-x_{t}|}{|x_{t}|}<\epsilon$
+\end_inset
+
+.
+ Relative convergence is appealing because it accounts for the scale of
+ 
+\begin_inset Formula $x$
+\end_inset
+
+, but it can run into problems when 
+\begin_inset Formula $x_{t}$
+\end_inset
+
+ is near zero, in which case one can use 
+\begin_inset Formula $\frac{|x_{t+1}-x_{t}|}{|x_{t}|+\epsilon}<\epsilon$
+\end_inset
+
+.
+ We would want to account for machine precision in thinking about setting
+ 
+\begin_inset Formula $\epsilon$
+\end_inset
+
+.
+ For relative convergence a reasonable choice of 
+\begin_inset Formula $\epsilon$
+\end_inset
+
+ would be to use the square root of machine epsilon or about 
+\begin_inset Formula $1\times10^{-8}$
+\end_inset
+
+.
+ This is the 
+\emph on
+reltol
+\emph default
+ argument in 
+\emph on
+optim()
+\emph default
+ in R.
+\end_layout
+
+\begin_layout Standard
+Problems with the optimization may show up in a convergence measure that
+ fails to decrease or cycles (oscillates).
+ Software generally has a stopping rule that stops the algorithm after a
+ fixed number of iterations; these can generally be changed by the user.
+ When an algorithm stops because of the stopping rule before the convergence
+ criterion is met, we say the algorithm has failed to converge.
+ Sometimes we just need to run it longer, but often it indicates a problem
+ with the function being optimized or with your starting value.
+\end_layout
+
+\begin_layout Standard
+For multivariate optimization, we use a distance metric between 
+\begin_inset Formula $x_{t+1}$
+\end_inset
+
+ and 
+\begin_inset Formula $x_{t}$
+\end_inset
+
+, such as 
+\begin_inset Formula $\|x_{t+1}-x_{t}\|_{p}$
+\end_inset
+
+ , often with 
+\begin_inset Formula $p=1$
+\end_inset
+
+ or 
+\begin_inset Formula $p=2$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsection
+Starting values
+\end_layout
+
+\begin_layout Standard
+Good starting values are important because they can improve the speed of
+ optimization, prevent divergence or cycling, and prevent finding local
+ optima.
+ 
+\end_layout
+
+\begin_layout Standard
+Using random or selected multiple starting values can help with multiple
+ optima (aka multimodality).
+\end_layout
+
+\begin_layout Standard
+Here's a function with multiple optima that is commonly used for testing
+ methods that claim to work well for multimodal problems.
+ This is a hard function to optimize with respect to, particularly in higher
+ dimensions (one can do it in higher dimensions than 2 by simply making
+ the 
+\begin_inset Formula $x$
+\end_inset
+
+ vector longer but having the same structure).
+ In particular Rastrigin with 30 dimensions is considered to be very hard.
+\end_layout
+
+\begin_layout Chunk
+<<rastrigin, fig.width=6, fig.height=5>>=
+\end_layout
+
+\begin_layout Chunk
+rastrigin <- function(x) {
+\end_layout
+
+\begin_layout Chunk
+	A <- 10
+\end_layout
+
+\begin_layout Chunk
+	n <- length(x)
+\end_layout
+
+\begin_layout Chunk
+	return(A*n + sum(x^2 - A * cos(2*pi*x)))
+\end_layout
+
+\begin_layout Chunk
+}
+\end_layout
+
+\begin_layout Chunk
+const <- 5.12
+\end_layout
+
+\begin_layout Chunk
+nGrid <- 100
+\end_layout
+
+\begin_layout Chunk
+gr <- seq(-const, const, len = nGrid)
+\end_layout
+
+\begin_layout Chunk
+xs <- expand.grid(gr, gr)
+\end_layout
+
+\begin_layout Chunk
+y <- apply(xs, 1, rastrigin)
+\end_layout
+
+\begin_layout Chunk
+require(fields)
+\end_layout
+
+\begin_layout Chunk
+image.plot(gr, gr, matrix(y, nGrid, nGrid), col=tim.colors(32))
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+see R Journal Jun 2013 5:13 for some other test fxns, including Rosenbrock
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+One R package that may be useful for multi-modal problems is 
+\emph on
+DEoptim
+\emph default
+, which implements an evolutionary algorithm (genetic algorithms are one
+ kind of evolutionary algorithm).
+ It would be interesting to try an evolutionary algorithm on a test function
+ like this.
+ 
+\end_layout
+
+\begin_layout Subsection
+Convergence rates
+\end_layout
+
+\begin_layout Standard
+Let 
+\begin_inset Formula $\epsilon_{t}=|x_{t}-x^{*}|$
+\end_inset
+
+.
+ If the limit
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\lim_{t\to\infty}\frac{|\epsilon_{t+1}|}{|\epsilon_{t}|^{\beta}}=c
+\]
+
+\end_inset
+
+exists for 
+\begin_inset Formula $\beta>0$
+\end_inset
+
+ and 
+\begin_inset Formula $c\ne0$
+\end_inset
+
+, then a method is said to have order of convergence 
+\begin_inset Formula $\beta$
+\end_inset
+
+.
+ This basically measures how big the error at the 
+\begin_inset Formula $t+1$
+\end_inset
+
+th iteration is relative to that at the 
+\begin_inset Formula $t$
+\end_inset
+
+th iteration.
+\end_layout
+
+\begin_layout Standard
+Bisection doesn't formally satisfy the criterion needed to make use of this
+ definition, but roughly speaking it has linear convergence (
+\begin_inset Formula $\beta=1$
+\end_inset
+
+).
+ Next we'll see that N-R has quadratic convergence (
+\begin_inset Formula $\beta=2$
+\end_inset
+
+), which is fast.
+\end_layout
+
+\begin_layout Standard
+To analyze convergence of N-R, consider a Taylor expansion of the gradient
+ at the minimum, 
+\begin_inset Formula $x^{*}$
+\end_inset
+
+, around the current value, 
+\begin_inset Formula $x_{t}$
+\end_inset
+
+:
+\begin_inset Formula 
+\[
+f\p(x^{*})=f\p(x_{t})+(x^{*}-x_{t})f\pp(x_{t})+\frac{1}{2}(x^{*}-x_{t})^{2}f\ppp(\xi_{t})=0,
+\]
+
+\end_inset
+
+for some 
+\begin_inset Formula $\xi_{t}\in[x^{*},x_{t}]$
+\end_inset
+
+.
+ Making use of the N-R update equation: 
+\begin_inset Formula $x_{t+1}=x_{t}-\frac{f\p(x_{t})}{f\pp(x_{t})}$
+\end_inset
+
+, and some algebra, we have 
+\begin_inset Formula 
+\[
+\frac{|x^{*}-x_{t+1}|}{(x^{*}-x_{t})^{2}}=\frac{1}{2}\frac{f\ppp(\xi_{t})}{f\pp(x_{t})}.
+\]
+
+\end_inset
+
+If the limit of the ratio on the right hand side exists and is equal to
+ 
+\begin_inset Formula $c$
+\end_inset
+
+, then we see that 
+\begin_inset Formula $\beta=2$
+\end_inset
+
+.
+ If 
+\begin_inset Formula $c$
+\end_inset
+
+ were one, then we see that if we have 
+\begin_inset Formula $k$
+\end_inset
+
+ digits of accuracy at 
+\begin_inset Formula $t$
+\end_inset
+
+, we'd have 
+\begin_inset Formula $2k$
+\end_inset
+
+ digits at 
+\begin_inset Formula $t+1$
+\end_inset
+
+, which justifies the characterization of quadratic convergence being fast.
+ In practice 
+\begin_inset Formula $c$
+\end_inset
+
+ will moderate the rate of convergence.
+ The smaller 
+\begin_inset Formula $c$
+\end_inset
+
+ the better, so we'd like to have the second derivative be large and the
+ third derivative be small.
+ The expression also indicates we'll have a problem if 
+\begin_inset Formula $f\pp(x_{t})=0$
+\end_inset
+
+ at any point [think about what this corresponds to graphically - what is
+ our next step when 
+\begin_inset Formula $f\pp(x_{t})=0$
+\end_inset
+
+?].
+ The characteristics of the derivatives determine the domain of attraction
+ (the region in which we'll converge rather than diverge) of the minimum.
+ 
+\end_layout
+
+\begin_layout Standard
+Givens and Hoeting show that using the secant-based approximation to the
+ second derivative in N-R has order of convergence, 
+\begin_inset Formula $\beta\approx1.62$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Here's an example of convergence comparing bisection and N-R:
+\end_layout
+
+\begin_layout Chunk
+<<>>=
+\end_layout
+
+\begin_layout Chunk
+options(digits = 10)
+\end_layout
+
+\begin_layout Chunk
+f <- function(x) cos(x)
+\end_layout
+
+\begin_layout Chunk
+fp <- function(x) -sin(x)
+\end_layout
+
+\begin_layout Chunk
+fpp <- function(x) -cos(x)
+\end_layout
+
+\begin_layout Chunk
+xstar <- pi # known minimum
+\end_layout
+
+\begin_layout Chunk
+# N-R
+\end_layout
+
+\begin_layout Chunk
+x0 <- 2
+\end_layout
+
+\begin_layout Chunk
+xvals <- c(x0,rep(NA,9))
+\end_layout
+
+\begin_layout Chunk
+for(t in 2:10){
+\end_layout
+
+\begin_layout Chunk
+	xvals[t] <- xvals[t-1] - fp(xvals[t-1]) / fpp(xvals[t-1])
+\end_layout
+
+\begin_layout Chunk
+}
+\end_layout
+
+\begin_layout Chunk
+print(xvals)
+\end_layout
+
+\begin_layout Chunk
+# bisection
+\end_layout
+
+\begin_layout Chunk
+bisecStep <- function(interval, fp){
+\end_layout
+
+\begin_layout Chunk
+	xt <- mean(interval)
+\end_layout
+
+\begin_layout Chunk
+	if(fp(interval[1]) * fp(xt) <= 0) interval[2] <- xt else interval[1] <-
+ xt
+\end_layout
+
+\begin_layout Chunk
+	return(interval)
+\end_layout
+
+\begin_layout Chunk
+}
+\end_layout
+
+\begin_layout Chunk
+nIt <- 30
+\end_layout
+
+\begin_layout Chunk
+a0 <- 2; b0 <- (3*pi/2) - (xstar - a0) 
+\end_layout
+
+\begin_layout Chunk
+# have b0 be as far from min as a0 for fair comparison with N-R
+\end_layout
+
+\begin_layout Chunk
+interval <- matrix(NA, nr = nIt, nc = 2)
+\end_layout
+
+\begin_layout Chunk
+interval[1, ] <- c(a0, b0)
+\end_layout
+
+\begin_layout Chunk
+for(t in 2:nIt){
+\end_layout
+
+\begin_layout Chunk
+	interval[t, ] <- bisecStep(interval[t-1, ], fp)
+\end_layout
+
+\begin_layout Chunk
+}
+\end_layout
+
+\begin_layout Chunk
+rowMeans(interval)
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Section
+Multivariate optimization
+\end_layout
+
+\begin_layout Standard
+Optimizing as the dimension of the space gets larger becomes increasingly
+ difficult.
+ First we'll discuss the idea of profiling to reduce dimensionality and
+ then we'll talk about various numerical techniques, many of which build
+ off of Newton's method.
+\end_layout
+
+\begin_layout Subsection
+Profiling
+\end_layout
+
+\begin_layout Standard
+A core technique for likelihood optimization is to analytically maximize
+ over any parameters for which this is possible.
+ Suppose we have two sets of parameters, 
+\begin_inset Formula $\theta_{1}$
+\end_inset
+
+ and 
+\begin_inset Formula $\theta_{2}$
+\end_inset
+
+, and we can analytically maximize w.r.t 
+\begin_inset Formula $\theta_{2}$
+\end_inset
+
+.
+ This will give us 
+\begin_inset Formula $\hat{\theta}_{2}(\theta_{1})$
+\end_inset
+
+, a function of the remaining parameters over which analytic maximization
+ is not possible.
+ Plugging in 
+\begin_inset Formula $\hat{\theta}_{2}(\theta_{1})$
+\end_inset
+
+ into the objective function (in this case generally the likelihood or log
+ likelihood) gives us the profile (log) likelihood solely in terms of the
+ obstinant parameters.
+ For example, suppose we have the regression likelihood with correlated
+ errors:
+\begin_inset Formula 
+\[
+Y\sim\mathcal{N}(X\beta,\sigma^{2}\Sigma(\rho)),
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $\Sigma(\rho)$
+\end_inset
+
+ is a correlation matrix that is a function of a parameter, 
+\begin_inset Formula $\rho$
+\end_inset
+
+.
+ The maximum w.r.t.
+ 
+\begin_inset Formula $\beta$
+\end_inset
+
+ is easily seen to be the GLS estimator 
+\begin_inset Formula $\hat{\beta}(\rho)=(X^{\top}\Sigma(\rho)^{-1}X)^{-1}X^{\top}\Sigma(\rho)^{-1}Y$
+\end_inset
+
+.
+ In general such a maximum is a function of all of the other parameters,
+ but conveniently it's only a function of 
+\begin_inset Formula $\rho$
+\end_inset
+
+ here.
+ This gives us the initial profile likelihood
+\begin_inset Formula 
+\[
+\frac{1}{(\sigma^{2})^{n/2}|\Sigma(\rho)|^{1/2}}\exp\left(-\frac{(Y-X\hat{\beta}(\rho))^{-\top}\Sigma(\rho)^{-1}(Y-X\hat{\beta}(\rho))}{2\sigma^{2}}\right).
+\]
+
+\end_inset
+
+We then notice that the likelihood is maximized w.r.t.
+ 
+\begin_inset Formula $\sigma^{2}$
+\end_inset
+
+ at 
+\begin_inset Formula 
+\[
+\hat{\sigma^{2}}(\rho)=\frac{(Y-X\hat{\beta}(\rho))^{\top}\Sigma(\rho)^{-1}(Y-X\hat{\beta}(\rho))}{n}.
+\]
+
+\end_inset
+
+This gives us the final profile likelihood, 
+\begin_inset Formula 
+\[
+\frac{1}{|\Sigma(\rho)|^{1/2}}\frac{1}{(\hat{\sigma^{2}}(\rho))^{n/2}}\exp(-\frac{1}{2}n),
+\]
+
+\end_inset
+
+ a function of 
+\begin_inset Formula $\rho$
+\end_inset
+
+ only, for which numerical optimization is much simpler.
+ 
+\end_layout
+
+\begin_layout Subsection
+Newton-Raphson (Newton's method)
+\end_layout
+
+\begin_layout Standard
+For multivariate 
+\begin_inset Formula $x$
+\end_inset
+
+ we have the Newton-Raphson update 
+\begin_inset Formula $x_{t+1}=x_{t}-f\pp(x_{t})^{-1}f\p(x_{t})$
+\end_inset
+
+, or in our other notation,
+\begin_inset Formula 
+\[
+x_{t+1}=x_{t}-H_{f}(x_{t})^{-1}\nabla f(x_{t}).
+\]
+
+\end_inset
+
+In class we'll use the demo code for an example of finding the nonlinear
+ least squares fit to some weight loss data to fit the model
+\begin_inset Formula 
+\[
+Y_{i}=\beta_{0}+\beta_{1}2^{-t_{i}/\beta_{2}}+\epsilon_{i}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Some of the things we need to worry about with Newton's method in general
+ about are (1) good starting values, (2) positive definiteness of the Hessian,
+ and (3) avoiding errors in deriving the derivatives.
+\end_layout
+
+\begin_layout Standard
+A note on the positive definiteness: since the Hessian may not be positive
+ definite (although it may well be, provided the function is approximately
+ locally quadratic), one can consider modifying the Cholesky decomposition
+ of the Hessian to enforce positive definiteness by adding diagonal elements
+ to 
+\begin_inset Formula $H_{f}$
+\end_inset
+
+ as necessary.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+The Hessian may not exist, in which case one can use a modified Cholesky
+ algorithm in which positive elements are added as needed when doing the
+ Cholesky to allow taking the square root.
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+A standard approach to nonlinear least squares involves the Gauss-Newton
+ method, discussed briefly next.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+[see GH p.
+ 33 for multivar NR sensitivity to starting values and overshooting]
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+[mention Aitken's addition in G-CS p.
+ 250?]
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Fisher scoring variant on N-R
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+ [GH, M]
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The Fisher information (FI) is the expected value of the outer product of
+ the gradient of the log-likelihood with itself
+\begin_inset Formula 
+\[
+I(\theta)=E_{f}(\nabla f(y)\nabla f(y)^{\top}),
+\]
+
+\end_inset
+
+where the expected value is with respect to the data distribution.
+ Under regularity conditions (true for exponential families), the expectation
+ of the Hessian of the log-likelihood is minus the Fisher information, 
+\begin_inset Formula $E_{f}H_{f}(y)=-I(\theta)$
+\end_inset
+
+.
+ We get the observed Fisher information by plugging the data values into
+ either expression instead of taking the expected value.
+ 
+\end_layout
+
+\begin_layout Standard
+Thus, standard N-R can be thought of as using the observed Fisher information
+ to find the updates.
+ Instead, if we can compute the expectation, we can use minus the FI in
+ place of the Hessian.
+ The result is the Fisher scoring (FS) algorithm.
+ Basically instead of using the Hessian for a given set of data, we are
+ using the FI, which we can think of as the average Hessian over repeated
+ samples of data from the data distribution.
+ FS and N-R have the same convergence properties (i.e., quadratic convergence)
+ but in a given problem, one may be computationally or analytically easier.
+ Givens and Hoeting comment that FS works better for rapid improvements
+ at the beginning of iterations and N-R better for refinement at the end.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+GH say that the expected FI, 
+\begin_inset Formula $I(\theta)$
+\end_inset
+
+ is while the observed FI is 
+\begin_inset Formula $-E(l"(\theta)$
+\end_inset
+
+, with the two equal under mild conditions, and true for exponential familes.
+ The observed FI can be computed even if one annot calculate the expectations.
+\end_layout
+
+\begin_layout Plain Layout
+N-R involves the second derivative of 
+\begin_inset Formula $f$
+\end_inset
+
+.
+ Note that 
+\begin_inset Formula $-f"(\theta)$
+\end_inset
+
+ is the Fisher information (under regularity conditions), so we can replace
+ 
+\begin_inset Formula $f\pp(x_{n})^{-1}$
+\end_inset
+
+ with 
+\begin_inset Formula $-I(x_{n})$
+\end_inset
+
+.
+ This makes use of the expected Fisher information, which we can think of
+ as the average Hessian over repeated samples of data from 
+\begin_inset Formula $f$
+\end_inset
+
+.
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In the demo code, we try out Fisher scoring in the weight loss example.
+\end_layout
+
+\begin_layout Standard
+The Gauss-Newton algorithm for nonlinear least squares involves using the
+ FI in place of the Hessian in determining a Newton-like step.
+ 
+\emph on
+nls()
+\emph default
+ in R uses this approach.
+ Note that this is not exactly the same updating as our manual coding of
+ FS for the weight loss example.
+\end_layout
+
+\begin_layout Paragraph
+Connections between statistical uncertainty and ill-conditionedness
+\end_layout
+
+\begin_layout Standard
+When either the observed or expected FI matrix is nearly singular this means
+ we have a small eigenvalue in the inverse covariance (the precision), which
+ means a large eigenvalue in the covariance matrix.
+ This indicates some linear combination of the parameters has low precision
+ (high variance), and that in that direction the likelihood is nearly flat.
+ As we've seen with N-R, convergence slows with shallow gradients, and we
+ may have numerical problems in determining good optimization steps when
+ the likelihood is sufficiently flat.
+ So convergence problems and statistical uncertainty go hand in hand.
+ One, but not the only, example of this occurs when we have nearly collinear
+ regressors.
+\end_layout
+
+\begin_layout Subsection
+IRLS (IWLS) for GLMs
+\end_layout
+
+\begin_layout Standard
+As most of you know, iterative reweighted least squares (also called iterative
+ weighted least squares) is the standard method for estimation with GLMs.
+ It involves linearizing the model and using working weights and working
+ variances and solving a weighted least squares (WLS) problem (the generic
+ WLS solution is 
+\begin_inset Formula $\hat{\beta}=(X^{\top}WX)^{-1}X^{\top}WY$
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Standard
+Exponential families can be expressed as
+\begin_inset Formula 
+\[
+f(y;\theta,\phi)=\exp((y\theta-b(\theta))/a(\phi)+c(y,\phi)),
+\]
+
+\end_inset
+
+with 
+\begin_inset Formula $E(Y)=b\p(\theta)$
+\end_inset
+
+ and 
+\begin_inset Formula $\mbox{Var}(Y)=b\pp(\theta)$
+\end_inset
+
+.
+ If we have a GLM in the canonical parameterization (log link for Poisson
+ data, logit for binomial), we have the natural parameter 
+\begin_inset Formula $\theta$
+\end_inset
+
+ equal to the linear predictor, 
+\begin_inset Formula $\theta=\eta$
+\end_inset
+
+.
+ A standard linear predictor would simply be 
+\begin_inset Formula $\eta=X\beta$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Considering N-R for a GLM in the canonical parameterization (and ignoring
+ 
+\begin_inset Formula $a(\phi)$
+\end_inset
+
+, which is one for logistic and Poisson regression), we find that the gradient
+ is the inner product of the covariates and a residual vector, 
+\begin_inset Formula $\nabla f(\beta)=(Y-E(Y))^{\top}X$
+\end_inset
+
+, and the Hessian is 
+\begin_inset Formula $\nabla^{2}f(\beta)=-X^{\top}WX$
+\end_inset
+
+ where 
+\begin_inset Formula $W$
+\end_inset
+
+ is a diagonal matrix with 
+\begin_inset Formula $\{\mbox{Var}(Y_{i})\}$
+\end_inset
+
+ on the diagonal (the working weights).
+ Note that both 
+\begin_inset Formula $E(Y)$
+\end_inset
+
+ and the variances in 
+\begin_inset Formula $W$
+\end_inset
+
+ depend on 
+\begin_inset Formula $\beta$
+\end_inset
+
+, so these will change as we iteratively update 
+\begin_inset Formula $\beta$
+\end_inset
+
+.
+ Therefore, the N-R update is 
+\begin_inset Formula 
+\[
+\beta_{t+1}=\beta_{t}+(X^{\top}W_{_{t}}X)^{-1}X^{\top}(Y-E(Y)_{t})
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $E(Y)_{t}$
+\end_inset
+
+ and 
+\begin_inset Formula $W_{t}$
+\end_inset
+
+ are the values at the current parameter estimate, 
+\begin_inset Formula $\beta_{t}$
+\end_inset
+
+ .
+ For example, for logistic regression (here with 
+\begin_inset Formula $n_{i}=1$
+\end_inset
+
+), 
+\begin_inset Formula $W_{t,ii}=p_{ti}(1-p_{ti})$
+\end_inset
+
+ and 
+\begin_inset Formula $E(Y)_{ti}=p_{ti}$
+\end_inset
+
+ where 
+\begin_inset Formula $p_{ti}=\frac{\exp(X_{i}^{\top}\beta_{t})}{1+\exp(X_{i}^{\top}\beta_{t})}$
+\end_inset
+
+.
+ In the canonical parameterization of a GLM, the Hessian does not depend
+ on the data, so the observed and expected FI are the same, and therefore
+ N-R and FS are the same.
+\end_layout
+
+\begin_layout Standard
+The update above can be rewritten in the standard form of IRLS as a WLS
+ problem,
+\begin_inset Formula 
+\[
+\beta_{t+1}=(X^{\top}W_{_{t}}X)^{-1}X^{\top}W_{t}\tilde{Y}_{t},
+\]
+
+\end_inset
+
+where the so-called working observations are 
+\begin_inset Formula $\tilde{Y}_{t}=X\beta_{t}+W_{t}^{-1}(Y-E(Y)_{t})$
+\end_inset
+
+.
+ Note that these are on the scale of the linear predictor.
+\end_layout
+
+\begin_layout Standard
+While Fisher scoring is standard for GLMs, you can also use general purpose
+ optimization routines.
+ 
+\end_layout
+
+\begin_layout Standard
+IRLS is a special case of the general Gauss-Newton method for nonlinear
+ least squares.
+ 
+\end_layout
+
+\begin_layout Subsection
+Descent methods and Newton-like methods
+\end_layout
+
+\begin_layout Standard
+More generally a Newton-like method has updates of the form
+\begin_inset Formula 
+\[
+x_{t+1}=x_{t}-\alpha_{t}M_{t}^{-1}f\p(x_{t}).
+\]
+
+\end_inset
+
+We can choose 
+\begin_inset Formula $M_{t}$
+\end_inset
+
+ in various ways, including as an approximation to the second derivative.
+ 
+\end_layout
+
+\begin_layout Standard
+This opens up several possibilities: 
+\end_layout
+
+\begin_layout Enumerate
+using more computationally efficient approximations to the second derivative,
+\end_layout
+
+\begin_layout Enumerate
+avoiding steps that do not go in the correct direction (i.e., go uphill when
+ minimizing), and
+\end_layout
+
+\begin_layout Enumerate
+scaling by 
+\begin_inset Formula $\alpha_{t}$
+\end_inset
+
+ so as not to step too far.
+ 
+\end_layout
+
+\begin_layout Standard
+Let's consider a variety of strategies.
+\end_layout
+
+\begin_layout Subsubsection
+Descent methods 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+[GH and G-CS]
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The basic strategy is to choose a good direction and then choose the longest
+ step for which the function continues to decrease.
+ Suppose we have a direction, 
+\begin_inset Formula $p_{t}$
+\end_inset
+
+.
+ Then we need to move 
+\begin_inset Formula $x_{t+1}=x_{t}+\alpha_{t}p_{t}$
+\end_inset
+
+, where 
+\begin_inset Formula $\alpha_{t}$
+\end_inset
+
+ is a scalar, choosing a good 
+\begin_inset Formula $\alpha_{t}$
+\end_inset
+
+.
+ We might use a line search (e.g., bisection or golden section search) to
+ find the local minimum of 
+\begin_inset Formula $f(x_{t}+\alpha_{t}p_{t})$
+\end_inset
+
+ with respect to 
+\begin_inset Formula $\alpha_{t}$
+\end_inset
+
+.
+ However, we often would not want to run to convergence, since we'll be
+ taking additional steps anyway.
+ 
+\end_layout
+
+\begin_layout Standard
+Steepest descent chooses the direction as the steepest direction downhill,
+ setting 
+\begin_inset Formula $M_{t}=I$
+\end_inset
+
+, since the gradient gives the steepest direction uphill (the negative sign
+ in the equation below has us move directly downhill rather than directly
+ uphill).
+ A better approach is to scale the step
+\begin_inset Formula 
+\[
+x_{t+1}=x_{t}-\alpha_{t}f\p(x_{t})
+\]
+
+\end_inset
+
+where the contraction, or step length, parameter 
+\begin_inset Formula $\alpha_{t}$
+\end_inset
+
+ is chosen sufficiently small to ensure that we descend, via some sort of
+ line search.
+ The critical downside to steepest descent is that when the contours are
+ elliptical, it tends to zigzag; here's an example.
+ Note that I do a full line search (using the golden section method via
+ 
+\emph on
+optimize()
+\emph default
+) at each step in the direction of steepest descent - this is generally
+ computationally wasteful, but I just want to illustrate how steepest descent
+ can go wrong, even if you go the 
+\begin_inset Quotes eld
+\end_inset
+
+right
+\begin_inset Quotes erd
+\end_inset
+
+ amount in each direction.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+[see also the picture in Boyd p.
+ 469 and eqn 9.20 results show more zigzagging if do backtracking than if
+ do exact line search]
+\end_layout
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Chunk
+<<fig.width=5, fig.height=4>>=
+\end_layout
+
+\begin_layout Chunk
+par(mai = c(.5,.4,.1,.4))
+\end_layout
+
+\begin_layout Chunk
+f <- function(x){
+\end_layout
+
+\begin_layout Chunk
+	x[1]^2/1000 + 4*x[1]*x[2]/1000 + 5*x[2]^2/1000
+\end_layout
+
+\begin_layout Chunk
+}
+\end_layout
+
+\begin_layout Chunk
+fp <- function(x){
+\end_layout
+
+\begin_layout Chunk
+	c(2 * x[1]/1000 + 4 * x[2]/1000,
+\end_layout
+
+\begin_layout Chunk
+	4 * x[1]/1000 + 10 * x[2]/1000)
+\end_layout
+
+\begin_layout Chunk
+}
+\end_layout
+
+\begin_layout Chunk
+lineSearch <- function(alpha, xCurrent, direction, FUN){
+\end_layout
+
+\begin_layout Chunk
+	newx <- xCurrent + alpha * direction
+\end_layout
+
+\begin_layout Chunk
+	FUN(newx)
+\end_layout
+
+\begin_layout Chunk
+}
+\end_layout
+
+\begin_layout Chunk
+nIt <- 50
+\end_layout
+
+\begin_layout Chunk
+xvals <- matrix(NA, nr = nIt, nc = 2)
+\end_layout
+
+\begin_layout Chunk
+xvals[1, ] <- c(7, -4)
+\end_layout
+
+\begin_layout Chunk
+for(t in 2:50){
+\end_layout
+
+\begin_layout Chunk
+	newalpha <- optimize(lineSearch, interval = c(-5000, 5000),
+\end_layout
+
+\begin_layout Chunk
+		xCurrent = xvals[t-1, ], direction = fp(xvals[t-1, ]),
+\end_layout
+
+\begin_layout Chunk
+		FUN = f)$minimum 
+\end_layout
+
+\begin_layout Chunk
+	xvals[t, ] <- xvals[t-1, ] + newalpha * fp(xvals[t-1, ])
+\end_layout
+
+\begin_layout Chunk
+}
+\end_layout
+
+\begin_layout Chunk
+x1s <- seq(-5, 8, len = 100); x2s = seq(-5, 2, len = 100)
+\end_layout
+
+\begin_layout Chunk
+fx <- apply(expand.grid(x1s, x2s), 1, f)
+\end_layout
+
+\begin_layout Chunk
+# plot f(x) surface on log scale
+\end_layout
+
+\begin_layout Chunk
+image.plot(x1s, x2s, matrix(log(fx), 100, 100), 
+\end_layout
+
+\begin_layout Chunk
+	xlim = c(-5, 8), ylim = c(-5,2)) 
+\end_layout
+
+\begin_layout Chunk
+lines(xvals) # overlay optimization path
+\end_layout
+
+\begin_layout Chunk
+# kind of slow
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+If the contours are circular, steepest descent works well.
+ Newton's method deforms elliptical contours based on the Hessian.
+ Another way to think about this is that steepest descent does not take
+ account of the rate of change in the gradient, while Newton's method does.
+ 
+\end_layout
+
+\begin_layout Standard
+The general descent algorithm is 
+\begin_inset Formula 
+\[
+x_{t+1}=x_{t}-\alpha_{t}M_{t}^{-1}f'(x_{t}),
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $M_{t}$
+\end_inset
+
+ is generally chose to approximate the Hessian and 
+\begin_inset Formula $\alpha_{t}$
+\end_inset
+
+ allows us to adjust the step in a smart way.
+ Basically, since the negative gradient tells us the direction that descends
+ (at least within a small neighborhood), if we don't go too far, we should
+ be fine and should work our way downhill.
+ One can work this out formally using a Taylor approximation to 
+\begin_inset Formula $f(x_{t+1})-f(x_{t})$
+\end_inset
+
+ and see that we make use of 
+\begin_inset Formula $M_{t}$
+\end_inset
+
+ being positive definite.
+ (Unfortunately backtracking with positive definite 
+\begin_inset Formula $M_{t}$
+\end_inset
+
+ does not give a theoretical guarantee that the method will converge.
+ We also need to make sure that the steps descend sufficiently quickly and
+ that the algorithm does not step along a level contour of 
+\begin_inset Formula $f$
+\end_inset
+
+.)
+\end_layout
+
+\begin_layout Standard
+The conjugate gradient algorithm for iteratively solving large systems of
+ equations is all about choosing the direction and the step size in a smart
+ way given the optimization problem at hand.
+\end_layout
+
+\begin_layout Subsubsection
+Quasi-Newton methods such as BFGS
+\end_layout
+
+\begin_layout Standard
+Other replacements for the Hessian matrix include estimates that do not
+ vary with 
+\begin_inset Formula $t$
+\end_inset
+
+ and finite difference approximations.
+ When calculating the Hessian is expensive, it can be very helpful to substitute
+ an approximation.
+\end_layout
+
+\begin_layout Standard
+A basic finite difference approximation requires us to compute finite difference
+s in each dimension, but this could be computationally burdensome.
+ A more efficient strategy for choosing 
+\begin_inset Formula $M_{t+1}$
+\end_inset
+
+ is to (1) make use of 
+\begin_inset Formula $M_{t}$
+\end_inset
+
+ and (2) make use of the most recent step to learn about the curvature of
+ 
+\begin_inset Formula $f\p(x)$
+\end_inset
+
+ in the direction of travel.
+ One approach is to use a rank one update to 
+\begin_inset Formula $M_{t}$
+\end_inset
+
+.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+[see GH - hard to follow the motivation for the rank1 and rank2 updates]
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+A basic strategy is to choose 
+\begin_inset Formula $M_{t+1}$
+\end_inset
+
+ such that the secant condition is satisfied:
+\begin_inset Formula 
+\[
+M_{t+1}(x_{t+1}-x_{t})=\nabla f(x_{t+1})-\nabla f(x_{t}),
+\]
+
+\end_inset
+
+which is motivated by the fact that the secant approximates the gradient
+ in the direction of travel.
+ Basically this says to modify 
+\begin_inset Formula $M_{t}$
+\end_inset
+
+ in such a way that we incorporate what we've learned about the gradient
+ from the most recent step.
+ 
+\begin_inset Formula $M_{t+1}$
+\end_inset
+
+ is not fully determined based on this, and we generally impose other conditions
+, in particular that 
+\begin_inset Formula $M_{t+1}$
+\end_inset
+
+ is symmetric and positive definite.
+ Defining 
+\begin_inset Formula $s_{t}=x_{t+1}-x_{t}$
+\end_inset
+
+ and 
+\begin_inset Formula $y_{t}=\nabla f(x_{t+1})-\nabla f(x_{t})$
+\end_inset
+
+, the unique, symmetric rank one update (why is the following a rank one
+ update?) that satisfies the secant condition is
+\begin_inset Formula 
+\[
+M_{t+1}=M_{t}+\frac{(y_{t}-M_{t}s_{t})(y_{t}-M_{t}s_{t})^{\top}}{(y_{t}-M_{t}s_{t})^{\top}s_{t}}.
+\]
+
+\end_inset
+
+If the denominator is positive, 
+\begin_inset Formula $M_{t+1}$
+\end_inset
+
+ may not be positive definite, but this is guaranteed for non-positive values
+ of the denominator.
+ One can also show that one can achieve positive definiteness by shrinking
+ the denominator toward zero sufficiently.
+\end_layout
+
+\begin_layout Standard
+A standard approach to updating 
+\begin_inset Formula $M_{t}$
+\end_inset
+
+ is a commonly-used rank two update that generally results in 
+\begin_inset Formula $M_{t+1}$
+\end_inset
+
+ being positive definite is
+\begin_inset Formula 
+\[
+M_{t+1}=M_{t}-\frac{M_{t}s_{t}(M_{t}s_{t})^{\top}}{s_{t}^{\top}M_{t}s_{t}}+\frac{y_{t}y_{t}^{\top}}{s_{t}^{\top}y_{t}},
+\]
+
+\end_inset
+
+which is known as the Broyden-Fletcher-Goldfarb-Shanno (BFGS) update.
+ This is one of the methods used in R in 
+\emph on
+optim()
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Question: how can we update 
+\begin_inset Formula $M_{t}^{-1}$
+\end_inset
+
+ to 
+\begin_inset Formula $M_{t+1}^{-1}$
+\end_inset
+
+ efficiently? It turns out there is a way to update the Cholesky of 
+\begin_inset Formula $M_{t}$
+\end_inset
+
+ efficiently and this is a better approach than updating the inverse.
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+ [G-CS comments that update best done on Cholesky scale] [It turns out that
+ updating the inverse leads to poor conditioning and a better approach is
+ to update either the Cholesky or the QR decomposition.]
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The order of convergence of quasi-Newton methods is generally slower than
+ the quadratic convergence of N-R because of the approximations but still
+ faster than linear.
+ In general, quasi-Newton methods will do much better if the scales of the
+ elements of 
+\begin_inset Formula $x$
+\end_inset
+
+ are similar.
+ Lange suggests using a starting point for which one can compute the expected
+ information, to provide a good starting value 
+\begin_inset Formula $M_{0}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Note that for estimating a covariance based on the numerical information
+ matrix, we would not want to rely on 
+\begin_inset Formula $M_{t}$
+\end_inset
+
+ from the final iteration, as the approximation may be poor.
+ Rather we would spend the effort to better estimate the Hessian directly
+ at 
+\begin_inset Formula $x^{*}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Basically we use the Hessian or an approximation to choose the direction
+ and then can do backstepping or line search.
+\end_layout
+
+\begin_layout Plain Layout
+A basic approach is to do the full step and then step back by halves.
+ If we combine with an approximation to the Hessian that is positive definite,
+ we can guarantee that we go uphill.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Gauss-Seidel
+\end_layout
+
+\begin_layout Standard
+Gauss-Seidel is also known a back-fitting or cyclic coordinate descent.
+ The basic idea is to work element by element rather than having to choose
+ a direction for each step.
+ For example backfitting used to be used to fit generalized additive models
+ of the form 
+\begin_inset Formula $E(Y)=f_{1}(z_{1})+f_{2}(z_{2})+\ldots+f_{p}(z_{p})$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+The basic strategy is to consider the 
+\begin_inset Formula $j$
+\end_inset
+
+th component of 
+\begin_inset Formula $f\p(x)$
+\end_inset
+
+ as a univariate function of 
+\begin_inset Formula $x_{j}$
+\end_inset
+
+ only and find the root, 
+\begin_inset Formula $x_{j,t+1}$
+\end_inset
+
+ that gives 
+\begin_inset Formula $f\p_{j}(x_{j,t+1})=0$
+\end_inset
+
+.
+ One cycles through each element of 
+\begin_inset Formula $x$
+\end_inset
+
+ to complete a single cycle and then iterates.
+ The appeal is that univariate root-finding/minimization is easy, often
+ more stable than multivariate, and quick.
+\end_layout
+
+\begin_layout Standard
+However, Gauss-Seidel can zigzag, since you only take steps in one dimension
+ at a time, as we see here.
+\end_layout
+
+\begin_layout Chunk
+<<fig.width=5, fig.height=4>>=
+\end_layout
+
+\begin_layout Chunk
+par(mai = c(.5,.4,.1,.4))
+\end_layout
+
+\begin_layout Chunk
+f <- function(x){
+\end_layout
+
+\begin_layout Chunk
+	return(x[1]^2/1000 + 4*x[1]*x[2]/1000 + 5*x[2]^2/1000)
+\end_layout
+
+\begin_layout Chunk
+}
+\end_layout
+
+\begin_layout Chunk
+f1 <- function(x1, x2){ # f(x) as a function of x1
+\end_layout
+
+\begin_layout Chunk
+	return(x1^2/1000 + 4*x1*x2/1000 + 5*x2^2/1000)
+\end_layout
+
+\begin_layout Chunk
+}
+\end_layout
+
+\begin_layout Chunk
+f2 <- function(x2, x1){ # f(x) as a function of x2
+\end_layout
+
+\begin_layout Chunk
+	return(x1^2/1000 + 4*x1*x2/1000 + 5*x2^2/1000)
+\end_layout
+
+\begin_layout Chunk
+}
+\end_layout
+
+\begin_layout Chunk
+x1s <- seq(-5, 8, len = 100); x2s = seq(-5, 2, len = 100)
+\end_layout
+
+\begin_layout Chunk
+fx <- apply(expand.grid(x1s, x2s), 1, f)
+\end_layout
+
+\begin_layout Chunk
+image.plot(x1s, x2s, matrix(log(fx), 100, 100))
+\end_layout
+
+\begin_layout Chunk
+nIt <- 49
+\end_layout
+
+\begin_layout Chunk
+xvals <- matrix(NA, nr = nIt, nc = 2)
+\end_layout
+
+\begin_layout Chunk
+xvals[1, ] <- c(7, -4)
+\end_layout
+
+\begin_layout Chunk
+# 5, -10
+\end_layout
+
+\begin_layout Chunk
+for(t in seq(2, nIt, by = 2)){
+\end_layout
+
+\begin_layout Chunk
+	newx1 <- optimize(f1, x2 = xvals[t-1, 2], interval = c(-40, 40))$minimum
+\end_layout
+
+\begin_layout Chunk
+	xvals[t, ] <- c(newx1, xvals[t-1, 2])
+\end_layout
+
+\begin_layout Chunk
+	newx2 <- optimize(f2, x1 = newx1, interval = c(-40, 40))$minimum
+\end_layout
+
+\begin_layout Chunk
+	xvals[t+1, ] <- c(newx1, newx2)
+\end_layout
+
+\begin_layout Chunk
+}
+\end_layout
+
+\begin_layout Chunk
+lines(xvals)
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+In the notes for Unit 11 on linear algebra, I discussed the use of Gauss-Seidel
+ to iteratively solve 
+\begin_inset Formula $Ax=b$
+\end_inset
+
+ in situations where factorizing 
+\begin_inset Formula $A$
+\end_inset
+
+ (which of course is 
+\begin_inset Formula $O(n^{3})$
+\end_inset
+
+) is too computationally expensive.
+\end_layout
+
+\begin_layout Paragraph
+The lasso
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+[insert info from glmnet article]
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The 
+\emph on
+lasso
+\emph default
+ uses an L1 penalty in regression and related contexts.
+ A standard formulation for the lasso in regression is to minimize
+\begin_inset Formula 
+\[
+\|Y-X\beta\|_{2}^{2}+\lambda\sum_{j}|\beta_{j}|
+\]
+
+\end_inset
+
+to find 
+\begin_inset Formula $\hat{\beta}(\lambda)$
+\end_inset
+
+ for a given value of the penalty parameter, 
+\begin_inset Formula $\lambda$
+\end_inset
+
+.
+ A standard strategy to solve this problem is to use coordinate descent,
+ either cyclically, or by using directional derivatives to choose the coordinate
+ likely to decrease the objective function the most (a greedy strategy).
+ We need to use directional derivatives because the penalty function is
+ not differentiable, but does have directional derivatives in each direction.
+ The directional derivative of the objective function for 
+\begin_inset Formula $\beta_{j}$
+\end_inset
+
+ is
+\begin_inset Formula 
+\[
+-2x_{j}\sum_{i}(Y_{i}-X\beta)\pm\lambda
+\]
+
+\end_inset
+
+where we add 
+\begin_inset Formula $\lambda$
+\end_inset
+
+ if 
+\begin_inset Formula $\beta_{j}\geq0$
+\end_inset
+
+ and you subtract 
+\begin_inset Formula $\lambda$
+\end_inset
+
+ if 
+\begin_inset Formula $\beta_{j}<0$
+\end_inset
+
+.
+ If 
+\begin_inset Formula $\beta_{j,t}$
+\end_inset
+
+ is 0, then a step in either direction contributes 
+\begin_inset Formula $+\lambda$
+\end_inset
+
+ to the derivative as the contribution of the penalty.
+\end_layout
+
+\begin_layout Standard
+Once we have chosen a coordinate, we set the directional derivative to zero
+ and solve for 
+\begin_inset Formula $\beta_{j}$
+\end_inset
+
+ to obtain 
+\begin_inset Formula $\beta_{j,t+1}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+The 
+\emph on
+glmnet
+\emph default
+ package in R implements such optimization for a variety of penalties in
+ linear model and GLM settings, including the lasso.
+ This 
+\begin_inset CommandInset href
+LatexCommand href
+name "Mittal et al. paper"
+target "http://biostatistics.oxfordjournals.org/content/early/2013/10/04/biostatistics.kxt043.short"
+
+\end_inset
+
+ describes similar optimization for survival analysis with very large 
+\begin_inset Formula $p$
+\end_inset
+
+, exploiting sparsity in the 
+\begin_inset Formula $X$
+\end_inset
+
+ matrix for computational efficiency.
+ 
+\end_layout
+
+\begin_layout Standard
+One nice idea that is used in lasso and related settings is the idea of
+ finding the regression coefficients for a variety of values of 
+\begin_inset Formula $\lambda$
+\end_inset
+
+, combined with 
+\begin_inset Quotes eld
+\end_inset
+
+warm starts
+\begin_inset Quotes erd
+\end_inset
+
+.
+ A general approach is to start with a large value of 
+\begin_inset Formula $\lambda$
+\end_inset
+
+ for which all the coefficients are zero and then decrease 
+\begin_inset Formula $\lambda$
+\end_inset
+
+.
+ At each new value of 
+\begin_inset Formula $\lambda$
+\end_inset
+
+, use the estimated coefficients from the previous value as the starting
+ values.
+ This should allow for fast convergence and gives what is called the 
+\begin_inset Quotes eld
+\end_inset
+
+solution path
+\begin_inset Quotes erd
+\end_inset
+
+.
+ Often 
+\begin_inset Formula $\lambda$
+\end_inset
+
+ is chosen based on cross-validation.
+\end_layout
+
+\begin_layout Standard
+The LARS (least angle regression) algorithm uses a similar strategy that
+ allows one to compute 
+\begin_inset Formula $\hat{\beta}_{\lambda}$
+\end_inset
+
+ for all values of 
+\begin_inset Formula $\lambda$
+\end_inset
+
+ at once.
+\end_layout
+
+\begin_layout Standard
+The lasso can also be formulated as the constrained minimization of 
+\begin_inset Formula $\|Y-X\beta\|_{2}^{2}$
+\end_inset
+
+ s.t.
+ 
+\begin_inset Formula $\sum_{j}|\beta_{j}|\leq c$
+\end_inset
+
+, with 
+\begin_inset Formula $c$
+\end_inset
+
+ now playing the role of the penalty parameter.
+ Solving this minimization problem would take us in the direction of quadratic
+ programming, a special case of convex programming, discussed in Section
+ 9.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+talk about warm start in class and path algos in class? Zhou and Lange JCGS(2013
+) 22:261 - a bit complicated but talks about path algos
+\end_layout
+
+\begin_layout Plain Layout
+Simon et al JCGS (2013) 22;231 talks about grouped cyclic descent for group
+ lasso and describes warm starts/path algos some
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Nelder-Mead 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+[M has good description] 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This approach avoids using derivatives or approximations to derivatives.
+ This makes it robust, but also slower than Newton-like methods.
+ The basic strategy is to use a simplex, a polytope of 
+\begin_inset Formula $p+1$
+\end_inset
+
+ points in 
+\begin_inset Formula $p$
+\end_inset
+
+ dimensions (e.g., a triangle when searching in two dimensions, tetrahedron
+ in three dimensions...) to explore the space, choosing to shift, expand, or
+ contract the polytope based on the evaluation of 
+\begin_inset Formula $f$
+\end_inset
+
+ at the points.
+\end_layout
+
+\begin_layout Standard
+The algorithm relies on four tuning factors: a reflection factor, 
+\begin_inset Formula $\alpha>0$
+\end_inset
+
+; an expansion factor, 
+\begin_inset Formula $\gamma>1$
+\end_inset
+
+; a contraction factor, 
+\begin_inset Formula $0<\beta<1$
+\end_inset
+
+; and a shrinkage factor, 
+\begin_inset Formula $0<\delta<1$
+\end_inset
+
+.
+ First one chooses an initial simplex: 
+\begin_inset Formula $p+1$
+\end_inset
+
+ points that serve as the vertices of a convex hull.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Evaluate and order the points, 
+\begin_inset Formula $x_{1},\ldots,x_{p+1}$
+\end_inset
+
+ based on 
+\begin_inset Formula $f(x_{1})\leq\ldots\leq f(x_{p+1})$
+\end_inset
+
+.
+ Let 
+\begin_inset Formula $\bar{x}$
+\end_inset
+
+ be the average of the first 
+\begin_inset Formula $p$
+\end_inset
+
+ 
+\begin_inset Formula $x$
+\end_inset
+
+'s.
+ 
+\end_layout
+
+\begin_layout Enumerate
+(Reflection) Reflect 
+\begin_inset Formula $x_{p+1}$
+\end_inset
+
+ across the hyperplane (a line when 
+\begin_inset Formula $p+1=3$
+\end_inset
+
+) formed by the other points to get 
+\begin_inset Formula $x_{r}$
+\end_inset
+
+, based on 
+\begin_inset Formula $\alpha$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+\begin_inset Formula $x_{r}=(1+\alpha)\bar{x}-\alpha x_{p+1}$
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+If 
+\begin_inset Formula $f(x_{r})$
+\end_inset
+
+ is between the best and worst of the other points, the iteration is done,
+ with 
+\begin_inset Formula $x_{r}$
+\end_inset
+
+ replacing 
+\begin_inset Formula $x_{p+1}$
+\end_inset
+
+.
+ We've found a good direction to move.
+\end_layout
+
+\begin_layout Enumerate
+(Expansion) If 
+\begin_inset Formula $f(x_{r})$
+\end_inset
+
+ is better than all of the other points, expand by extending 
+\begin_inset Formula $x_{r}$
+\end_inset
+
+ to 
+\begin_inset Formula $x_{e}$
+\end_inset
+
+ based on 
+\begin_inset Formula $\gamma$
+\end_inset
+
+, because this indicates the optimum may be further in the direction of
+ reflection.
+ If 
+\begin_inset Formula $f(x_{e})$
+\end_inset
+
+ is better than 
+\begin_inset Formula $f(x_{r})$
+\end_inset
+
+, use 
+\begin_inset Formula $x_{e}$
+\end_inset
+
+ in place of 
+\begin_inset Formula $x_{p+1}$
+\end_inset
+
+.
+ If not, use 
+\begin_inset Formula $x_{r}$
+\end_inset
+
+.
+ The iteration is done.
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+\begin_inset Formula $x_{e}=\gamma x_{r}+(1-\gamma)\bar{x}$
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+If 
+\begin_inset Formula $f(x_{r})$
+\end_inset
+
+ is worse than all the other points, but better than 
+\begin_inset Formula $f(x_{p+1})$
+\end_inset
+
+, let 
+\begin_inset Formula $x_{h}=x_{r}$
+\end_inset
+
+.
+ Otherwise 
+\begin_inset Formula $f(x_{r})$
+\end_inset
+
+ is worse than 
+\begin_inset Formula $f(x_{p+1})$
+\end_inset
+
+ so let 
+\begin_inset Formula $x_{h}=x_{p+1}$
+\end_inset
+
+.
+ In either case, we want to concentrate our polytope toward the other points.
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+(Contraction) Contract 
+\begin_inset Formula $x_{h}$
+\end_inset
+
+ toward the hyperplane formed by the other points, based on 
+\begin_inset Formula $\beta$
+\end_inset
+
+, to get 
+\begin_inset Formula $x_{c}$
+\end_inset
+
+.
+ If the result improves upon 
+\begin_inset Formula $f(x_{h})$
+\end_inset
+
+ replace 
+\begin_inset Formula $x_{p+1}$
+\end_inset
+
+ with 
+\begin_inset Formula $x_{c}$
+\end_inset
+
+.
+ Basically, we haven't found a new point that is better than the other points,
+ so we want to contract the simplex away from the bad point.
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+\begin_inset Formula $x_{c}=\beta x_{h}+(1-\beta)\bar{x}$
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+(Shrinkage) Otherwise (if 
+\begin_inset Formula $x_{c}$
+\end_inset
+
+ is not better than 
+\begin_inset Formula $x_{p+1}$
+\end_inset
+
+) shrink the simplex toward 
+\begin_inset Formula $x_{1}$
+\end_inset
+
+.
+ Basically this suggests our step sizes are too large and we should shrink
+ the simplex, shrinking towards the best point.
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+\begin_inset Formula $x_{i}=\delta x_{i}+(1-\delta)x_{1}$
+\end_inset
+
+for 
+\begin_inset Formula $i=2,\ldots,p+1$
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\end_deeper
+\begin_layout Standard
+Convergence is assessed based on the sample variance of the function values
+ at the points, the total of the norms of the differences between the points
+ in the new and old simplexes, or the size of the simplex.
+\end_layout
+
+\begin_layout Standard
+This is the default in 
+\emph on
+optim() 
+\emph default
+in R, however it is relatively slow, so you may want to try one of the alternati
+ves, such as BFGS.
+\end_layout
+
+\begin_layout Subsection
+Simulated annealing (SA)
+\end_layout
+
+\begin_layout Standard
+Simulated annealing is a 
+\emph on
+stochastic
+\emph default
+ descent algorithm, unlike the deterministic algorithms we've already discussed.
+ It has a couple critical features that set it aside from other approaches.
+ First, uphill moves are allowed; second, whether a move is accepted is
+ stochastic, and finally, as the iterations proceed the algorithm becomes
+ less likely to accept uphill moves.
+\end_layout
+
+\begin_layout Standard
+Assume we are minimizing a negative log likelihood as a function of 
+\begin_inset Formula $\theta$
+\end_inset
+
+, 
+\begin_inset Formula $f(\theta)$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+The basic idea of simulated annealing is that one modifies the objective
+ function, 
+\begin_inset Formula $f$
+\end_inset
+
+ in this case, to make it less peaked at the beginning, using a 
+\begin_inset Quotes eld
+\end_inset
+
+temperature
+\begin_inset Quotes erd
+\end_inset
+
+ variable that changes over time.
+ This helps to allow moves away from local minima, when combined with the
+ ability to move uphill.
+ The name comes from an analogy to heating up a solid to its melting temperature
+ and cooling it slowly - as it cools the atoms go through rearrangements
+ and slowly freeze into the crystal configuration that is at the lowest
+ energy level.
+ 
+\end_layout
+
+\begin_layout Standard
+Here's the algorithm.
+ We divide up iterations into stages, 
+\begin_inset Formula $j=1,2,\ldots$
+\end_inset
+
+ in which the temperature variable, 
+\begin_inset Formula $\tau_{j}$
+\end_inset
+
+, is constant.
+ Like MCMC, we require a proposal distribution to propose new values of
+ 
+\begin_inset Formula $\theta$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate
+Propose to move from 
+\begin_inset Formula $\theta_{t}$
+\end_inset
+
+ to 
+\begin_inset Formula $\tilde{\theta}$
+\end_inset
+
+ from a proposal density, 
+\begin_inset Formula $g_{t}(\cdot|\theta_{t})$
+\end_inset
+
+, such as a normal distribution centered at 
+\begin_inset Formula $\theta_{t}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate
+Accept 
+\begin_inset Formula $\tilde{\theta}$
+\end_inset
+
+ as 
+\begin_inset Formula $\theta_{t+1}$
+\end_inset
+
+ according to the probability 
+\begin_inset Formula $\min(1,\exp((f(\theta_{t})-f(\tilde{\theta}))/\tau_{j})$
+\end_inset
+
+ - i.e., accept if a uniform random deviate is less than that probability.
+ Otherwise set 
+\begin_inset Formula $\theta_{t+1}=\theta_{t}$
+\end_inset
+
+.
+ Notice that for larger values of 
+\begin_inset Formula $\tau_{j}$
+\end_inset
+
+ the differences between the function values at the two locations are reduced
+ (just like a large standard deviation spreads out a distribution).
+ So the exponentiation smooths out the objective function when 
+\begin_inset Formula $\tau_{j}$
+\end_inset
+
+ is large.
+\end_layout
+
+\begin_layout Enumerate
+Repeat steps 1 and 2 
+\begin_inset Formula $m_{j}$
+\end_inset
+
+ times.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Increment the temperature and cooling schedule: 
+\begin_inset Formula $\tau_{j}=\alpha(\tau_{j-1})$
+\end_inset
+
+ and 
+\begin_inset Formula $m_{j}=\beta(m_{j-1})$
+\end_inset
+
+.
+ Back to step 1.
+\end_layout
+
+\begin_layout Standard
+The temperature should slowly decrease to 0 while the number of iterations,
+ 
+\begin_inset Formula $m_{j}$
+\end_inset
+
+, should be large.
+ Choosing these 'schedules' is at the core of implementing SA.
+ Note that we always accept downhill moves in step 2 but we sometimes accept
+ uphill moves as well.
+ 
+\end_layout
+
+\begin_layout Standard
+For each temperature, SA produces an MCMC based on the Metropolis algorithm.
+ So if 
+\begin_inset Formula $m_{j}$
+\end_inset
+
+ is long enough, we should sample from the stationary distribution of the
+ Markov chain, 
+\begin_inset Formula $\exp(-f(\theta)/\tau_{j}))$
+\end_inset
+
+.
+ Provided we can move between local minima, the chain should gravitate toward
+ the global minima because these are increasingly deep (low values) relative
+ to the local minima as the temperature drops.
+ Then as the temperature cools, 
+\begin_inset Formula $\theta_{t}$
+\end_inset
+
+ should get trapped in an increasingly deep well centered on the global
+ minimum.
+ There is a danger that we will get trapped in a local minimum and not be
+ able to get out as the temperature drops, so the temperature schedule is
+ quite important in trying to avoid this.
+\end_layout
+
+\begin_layout Standard
+A wide variety of schedules have been tried.
+ One approach is to set 
+\begin_inset Formula $m_{j}=1\forall j$
+\end_inset
+
+ and 
+\begin_inset Formula $\alpha(\tau_{j-1})=\frac{\tau_{j-1}}{1+a\tau_{j-1}}$
+\end_inset
+
+ for a small 
+\begin_inset Formula $a$
+\end_inset
+
+.
+ For a given problem it can take a lot of experimentation to choose 
+\begin_inset Formula $\tau_{0}$
+\end_inset
+
+ and 
+\begin_inset Formula $m_{0}$
+\end_inset
+
+ and the values for the scheduling functions.
+ For the initial temperature, it's a good idea to choose it large enough
+ that 
+\begin_inset Formula $\exp((f(\theta_{i})-f(\theta_{j}))/\tau_{0})\approx1$
+\end_inset
+
+ for any pair 
+\begin_inset Formula $\{\theta_{i},\theta_{j}\}$
+\end_inset
+
+ in the domain, so that the algorithm can visit the entire space initially.
+\end_layout
+
+\begin_layout Standard
+Simulated annealing can converge slowly.
+ Multiple random starting points or stratified starting points can be helpful
+ for finding a global minimum.
+ However, given the slow convergence, these can also be computationally
+ burdensome.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Subsection
+Gauss-Newton [GH, G-CS - do?]
+\end_layout
+
+\begin_layout Plain Layout
+see Monahan for basic explanation of G-N in nonlinear regression
+\end_layout
+
+\begin_layout Subsection
+Genetic algorithms [GH - do?]
+\end_layout
+
+\begin_layout Plain Layout
+basically configured for optimization over discrete spaces - need to choose
+ crossover/mutation steps
+\end_layout
+
+\begin_layout Subsection
+Fixed point method [GH]
+\end_layout
+
+\begin_layout Plain Layout
+p.
+ 30 GH - not sure if I should cover this
+\end_layout
+
+\begin_layout Plain Layout
+G-CS is unreadable
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Basic optimization in R
+\end_layout
+
+\begin_layout Subsection
+Core optimization functions
+\end_layout
+
+\begin_layout Standard
+R has several optimization functions.
+ 
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+optimize()
+\emph default
+ is good for 1-d optimization: 
+\begin_inset Quotes eld
+\end_inset
+
+The method used is a combination of golden section search and successive
+ parabolic interpolation, and was designed for use with continuous functions.
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Another option is 
+\emph on
+uniroot()
+\emph default
+ for finding the zero of a function, which you can use to minimize a function
+ if you can compute the derivative.
+ 
+\end_layout
+
+\begin_layout Itemize
+For more than one variable, 
+\emph on
+optim()
+\emph default
+ uses a variety of optimization methods including the robust Nelder-Mead
+ method, the BFGS quasi-Newton method and simulated annealing.
+ You can choose which method you prefer and can try multiple methods.
+ You can supply a gradient function to 
+\emph on
+optim()
+\emph default
+ for use with the Newton-related methods but it can also calculate numerical
+ derivatives on the fly.
+ You can have 
+\emph on
+optim()
+\emph default
+ return the Hessian at the optimum (based on a numerical estimate), which
+ then allows straighforward calculation of asymptotic variances based on
+ the information matrix.
+ 
+\end_layout
+
+\begin_layout Itemize
+Also for multivariate optimization, 
+\emph on
+nlm()
+\emph default
+ uses a Newton-style method, for which you can supply analytic gradient
+ and Hessian, or it will estimate these numerically.
+ 
+\emph on
+nlm()
+\emph default
+ can also return the Hessian at the optimum.
+\end_layout
+
+\begin_layout Itemize
+The 
+\emph on
+optimx
+\emph default
+ package provides 
+\emph on
+optimx()
+\emph default
+, which is a wrapper for a variety of optimization methods (including many
+ of those in 
+\emph on
+optim()
+\emph default
+, as well as 
+\emph on
+nlm()
+\emph default
+.
+ One nice feature is that it allow you to use multiple methods in the same
+ function call.
+ 
+\end_layout
+
+\begin_layout Standard
+In the demo code, we'll work our way through a real example of optimizing
+ a likelihood for some climate data on extreme precipitation.
+\end_layout
+
+\begin_layout Subsection
+Various considerations in using the R functions
+\end_layout
+
+\begin_layout Standard
+As we've seen, initial values are important both for avoiding divergence
+ (e.g., in N-R), for increasing speed of convergence, and for helping to avoid
+ local optima.
+ So it is well worth the time to try to figure out a good starting value
+ or multiple starting values for a given problem.
+\end_layout
+
+\begin_layout Standard
+Scaling can be important.
+ One useful step is to make sure the problem is well-scaled, namely that
+ a unit step in any parameter has a comparable change in the objective function,
+ preferably approximately a unit change at the optimum.
+ 
+\emph on
+optim()
+\emph default
+ allows you to supply scaling information through the 
+\emph on
+parscale
+\emph default
+ component of the 
+\emph on
+control
+\emph default
+ argument.
+ Basically if 
+\begin_inset Formula $x_{j}$
+\end_inset
+
+ is varying at 
+\begin_inset Formula $p$
+\end_inset
+
+ orders of magnitude smaller than the other 
+\begin_inset Formula $x$
+\end_inset
+
+s, we want to reparameterize to 
+\begin_inset Formula $x_{j}^{*}=x_{j}\cdot10^{p}$
+\end_inset
+
+ and then convert back to the original scale after finding the answer.
+ Or we may want to work on the log scale for some variables, reparameterizing
+ as 
+\begin_inset Formula $x_{j}^{*}=\log(x_{j})$
+\end_inset
+
+.
+ We could make such changes manually in our expression for the objective
+ function or make use of arguments such as 
+\emph on
+parscale
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+If the function itself gives very large or small values near the solution,
+ you may want to rescale the entire function to avoid calculations with
+ very large or small numbers.
+ This can avoid problems such as having apparent convergence because a gradient
+ is near zero, simply because the scale of the function is small.
+ In 
+\emph on
+optim()
+\emph default
+ this can be controlled with the 
+\emph on
+fnscale
+\emph default
+ component of 
+\emph on
+control
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Always consider your answer and make sure it makes sense, in particular
+ that you haven't 'converged' to an extreme value on the boundary of the
+ space.
+ 
+\end_layout
+
+\begin_layout Standard
+Venables and Ripley suggest that it is often worth supplying analytic first
+ derivatives rather than having a routine calculate numerical derivatives
+ but not worth supplying analytic second derivatives.
+ As we'll see in Unit 14, R can do symbolic (i.e., analytic) differentiation
+ to find first and second derivatives using 
+\emph on
+deriv()
+\emph default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+In general for software development it's obviously worth putting more time
+ into figuring out the best optimization approach and supplying derivatives.
+ For a one-off analysis, you can try a few different approaches and assess
+ sensitivity.
+ 
+\end_layout
+
+\begin_layout Standard
+The nice thing about likelihood optimization is that the asymptotic theory
+ tells us that with large samples, the likelihood is approximately quadratic
+ (i.e., the asymptotic normality of MLEs), which makes for a nice surface
+ over which to do optimization.
+ When optimizing with respect to variance components and other parameters
+ that are non-negative, one approach to dealing with the constraints is
+ to optimize with respect to the log of the parameter.
+\end_layout
+
+\begin_layout Section
+Combinatorial optimization over discrete spaces 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+[GH, G-CS]
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Many statistical optimization problems involve continuous domains, but sometimes
+ there are problems in which the domain is discrete.
+ Variable selection is an example of this.
+ 
+\end_layout
+
+\begin_layout Standard
+
+\emph on
+Simulated annealing
+\emph default
+ can be used for optimizing in a discrete space.
+ Another approach uses 
+\emph on
+genetic algorithms
+\emph default
+, in which one sets up the dimensions as loci grouped on a chromosome and
+ has mutation and crossover steps in which two potential solutions reproduce.
+ An example would be in high-dimensional variable selection.
+\end_layout
+
+\begin_layout Standard
+
+\emph on
+Stochastic search variable selection
+\emph default
+ is a popular Bayesian technique for variable selection that involves MCMC.
+\end_layout
+
+\begin_layout Section
+Convexity
+\end_layout
+
+\begin_layout Standard
+Many optimization problems involve (or can be transformed into) convex functions.
+ Convex optimization (also called convex programming) is a big topic and
+ one that we'll only brush the surface of in Sections 8 and 9.
+ The goal here is to give you enough of a sense of the topic that you know
+ when you're working on a problem that might involve convex optimization,
+ in which case you'll need to go learn more.
+\end_layout
+
+\begin_layout Standard
+Optimization for convex functions is simpler than for ordinary functions
+ because we don't have to worry about local optima - any stationary point
+ (point where the gradient is zero) is a global minimum.
+ A set 
+\begin_inset Formula $S$
+\end_inset
+
+ in 
+\begin_inset Formula $\Re^{p}$
+\end_inset
+
+ is convex if any line segment between two points in 
+\begin_inset Formula $S$
+\end_inset
+
+ lies entirely within 
+\begin_inset Formula $S$
+\end_inset
+
+.
+ More generally, 
+\begin_inset Formula $S$
+\end_inset
+
+ is convex if any convex combination is itself in 
+\begin_inset Formula $S$
+\end_inset
+
+, i.e., 
+\begin_inset Formula $\sum_{i=1}^{m}\alpha_{i}x_{i}\in S$
+\end_inset
+
+ for non-negative weights, 
+\begin_inset Formula $\alpha_{i}$
+\end_inset
+
+, that sum to 1.
+ Convex functions are defined on convex sets - 
+\begin_inset Formula $f$
+\end_inset
+
+ is convex if for points in a convex set, 
+\begin_inset Formula $x_{i}\in S$
+\end_inset
+
+, we have 
+\begin_inset Formula $f(\sum_{i=1}^{m}\alpha_{i}x_{i})\leq\sum_{i=1}^{m}\alpha_{i}f(x_{i})$
+\end_inset
+
+.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+[show picture]
+\end_layout
+
+\end_inset
+
+ Strict convexity is when the inequality is strict (no equality).
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+ Note that tangents to convex functions lie entirely below the function
+ except at the point of tangency.
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The first-order convexity condition relates a convex function to its first
+ derivative: 
+\begin_inset Formula $f$
+\end_inset
+
+ is convex if and only if 
+\begin_inset Formula $f(x)\geq f(y)+\nabla f(y)^{\top}(x-y)$
+\end_inset
+
+ for 
+\begin_inset Formula $y$
+\end_inset
+
+ and 
+\begin_inset Formula $x$
+\end_inset
+
+ in the domain of 
+\begin_inset Formula $f$
+\end_inset
+
+.
+ We can interpret this as saying that the first order Taylor approximation
+ to 
+\begin_inset Formula $f$
+\end_inset
+
+ is tangent to and below (or touching) the function at all points.
+ 
+\end_layout
+
+\begin_layout Standard
+The second-order convexity condition is that a function is convex if (provided
+ its first derivative exists), the derivative is non-decreasing, in which
+ case we have 
+\begin_inset Formula $f\pp(x)\geq0\,\,\forall x$
+\end_inset
+
+ (for univariate functions).
+ If we have 
+\begin_inset Formula $f\pp(x)\leq0\,\,\forall x$
+\end_inset
+
+ (a concave, or convex down function) we can always consider 
+\begin_inset Formula $-f(x)$
+\end_inset
+
+, which is convex.
+ Convexity in multiple dimensions means that the gradient is nondecreasing
+ in all dimensions.
+ If 
+\begin_inset Formula $f$
+\end_inset
+
+ is twice differentiable, then if the Hessian is positive semi-definite,
+ 
+\begin_inset Formula $f$
+\end_inset
+
+ is convex.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+epigraph is set of points above f in the domain of f; if epigraph is convex
+ then functino is convex
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+There are a variety of results that allow us to recognize and construct
+ convex functions based on knowing what operations create and preserve convexity.
+ The Boyd book is a good source for material on such operations.
+ Note that norms are convex functions (based on the triangle inequality),
+ 
+\begin_inset Formula $\|\sum_{i=1}^{n}\alpha_{i}x_{i}\|\leq\sum_{i=1}^{n}\alpha_{i}\|x_{i}\|$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+We'll talk about a general algorithm that works for convex functions (the
+ MM algorithm) and about the EM algorithm that is well-known in statistics,
+ and is a special case of MM.
+\end_layout
+
+\begin_layout Subsection
+MM algorithm 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+[Lange, wu.lang.2010.pdf]
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Bien and Tibshirani Dec11 Bka have examle of using majorize/minorize on
+ nonconvex problem 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The MM algorithm is really more of a principle for constructing problem
+ specific algorithms.
+ MM stands for majorize-minorize.
+ We'll use the majorize part of it to minimize functions - the minorize
+ part is the counterpart for maximizing functions.
+\end_layout
+
+\begin_layout Standard
+Suppose we want to minimize a convex function, 
+\begin_inset Formula $f(x)$
+\end_inset
+
+.
+ The idea is to construct a majorizing function, at 
+\begin_inset Formula $x_{t}$
+\end_inset
+
+, which we'll call 
+\begin_inset Formula $g$
+\end_inset
+
+.
+ 
+\begin_inset Formula $g$
+\end_inset
+
+ majorizes 
+\begin_inset Formula $f$
+\end_inset
+
+ at 
+\begin_inset Formula $x_{t}$
+\end_inset
+
+ if 
+\begin_inset Formula $f(x_{t})=g(x_{t})$
+\end_inset
+
+ and 
+\begin_inset Formula $f(x)\leq g(x)\forall x$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+The iterative algorithm is as follows.
+ Given 
+\begin_inset Formula $x_{t}$
+\end_inset
+
+, construct a majorizing function 
+\begin_inset Formula $g(x_{t}).$
+\end_inset
+
+ Then minimize 
+\begin_inset Formula $g$
+\end_inset
+
+ w.r.t.
+ 
+\begin_inset Formula $x$
+\end_inset
+
+ (or at least move downhill, such as with a modified Newton step) to find
+ 
+\begin_inset Formula $x_{t+1}$
+\end_inset
+
+.
+ Then we iterate, finding the next majorizing function.
+ The algorithm is obviously guaranteed to go downhill, and ideally we use
+ a function 
+\begin_inset Formula $g$
+\end_inset
+
+ that is easy to work with (i.e., to minimize or go downhill with respect
+ to).
+ Note that we haven't done any matrix inversions or computed any derivatives
+ of 
+\begin_inset Formula $f$
+\end_inset
+
+.
+ Furthermore, the algorithm is numerically stable - it does not over- or
+ undershoot the optimum.
+ The downside is that convergence can be quite slow.
+\end_layout
+
+\begin_layout Standard
+The tricky part is finding a good majorizing function.
+ Basically one needs to gain some skill in working with inequalities.
+ The Lange book has some discussion of this.
+ 
+\end_layout
+
+\begin_layout Standard
+An example is for estimating regression coefficients for median regression
+ (aka least absolute deviation regression), which minimizes 
+\begin_inset Formula $f(\theta)=\sum_{i=1}^{n}|y_{i}-z_{i}^{\top}\theta|=\sum_{i=1}^{n}|r_{i}(\theta)|$
+\end_inset
+
+.
+ Note that 
+\begin_inset Formula $f(\theta)$
+\end_inset
+
+ is convex because affine functions (in this case 
+\begin_inset Formula $y_{i}-z_{i}^{\top}\theta$
+\end_inset
+
+) are convex, convex functions of affine functions are convex, and the summation
+ preserves the convexity.
+ We'll work through this example in class.
+ We'll make use the following (commonly-used) inequality, which holds for
+ any concave function, 
+\begin_inset Formula $f$
+\end_inset
+
+:
+\begin_inset Formula 
+\[
+f(x)\leq f(y)+f\p(y)(x-y).
+\]
+
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Here's an example for deriving an algorithm for estimating parameters of
+ the multivariate 
+\begin_inset Formula $t$
+\end_inset
+
+.
+ [provide from wu.lang.2010 StatSci]
+\end_layout
+
+\begin_layout Plain Layout
+[or do LAD regression - Lange p.
+ 126]
+\end_layout
+
+\begin_layout Plain Layout
+note that as discussed in Simon et al JCGS 22(2) 2013, you can think of
+ gradient descent as majorize minize with a quadratic function
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Expectation-Maximization (EM)
+\end_layout
+
+\begin_layout Standard
+It turns out the EM algorithm that many of you have heard about is a special
+ case of MM.
+ For our purpose here, we'll consider maximization.
+ 
+\end_layout
+
+\begin_layout Standard
+The EM algorithm is most readily motivated from a missing data perspective.
+ Suppose you want to maximize 
+\begin_inset Formula $L(\theta|X=x)=f(x|\theta)$
+\end_inset
+
+ based on available data in a missing data context.
+ Denote the complete data as 
+\begin_inset Formula $Y=(X,Z)$
+\end_inset
+
+ with 
+\begin_inset Formula $Z$
+\end_inset
+
+ is missing.
+ As we'll see, in many cases, 
+\begin_inset Formula $Z$
+\end_inset
+
+ is actually a set of latent variables that we introduce into the problem
+ to formulate it so we can use EM.
+ The canonical example is when 
+\begin_inset Formula $Z$
+\end_inset
+
+ are membership indicators in a mixture modeling context.
+\end_layout
+
+\begin_layout Standard
+In general, 
+\begin_inset Formula $L(\theta|x)$
+\end_inset
+
+ may be hard to optimize because it involves an integral over the missing
+ data, 
+\begin_inset Formula $Z$
+\end_inset
+
+:
+\begin_inset Formula 
+\[
+f(x|\theta)=\int f(x,z|\theta)dz,
+\]
+
+\end_inset
+
+but the EM algorithm provides a recipe that makes the optimization straightforwa
+rd for many problems.
+\end_layout
+
+\begin_layout Standard
+The algorithm is as follows.
+ Let 
+\begin_inset Formula $\theta_{t}$
+\end_inset
+
+ be the current value of 
+\begin_inset Formula $\theta$
+\end_inset
+
+.
+ Then define 
+\begin_inset Formula 
+\[
+Q(\theta|\theta_{t})=E(\log L(\theta|Y)|x,\theta_{t})
+\]
+
+\end_inset
+
+The algorithm is
+\end_layout
+
+\begin_layout Enumerate
+E step: Compute 
+\begin_inset Formula $Q(\theta|\theta_{t})$
+\end_inset
+
+, ideally calculating the expectation over the missing data in closed form.
+ Note that 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\log L(\theta|Y)$
+\end_inset
+
+ is a function of 
+\begin_inset Formula $\theta$
+\end_inset
+
+ so 
+\begin_inset Formula $Q(\theta|\theta_{t})$
+\end_inset
+
+ will involve both 
+\begin_inset Formula $\theta$
+\end_inset
+
+ and 
+\begin_inset Formula $\theta_{t}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+.
+\end_layout
+
+\begin_layout Enumerate
+M step: Maximize 
+\begin_inset Formula $Q(\theta|\theta_{t})$
+\end_inset
+
+ with respect to 
+\begin_inset Formula $\theta$
+\end_inset
+
+, finding 
+\begin_inset Formula $\theta_{t+1}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate
+Continue until convergence.
+\end_layout
+
+\begin_layout Standard
+Ideally both the E and M steps can be done analytically.
+ When the M step cannot be done analytically, one can employ some of the
+ numerical optimization tools we've already seen.
+ When the E step cannot be done analytically, one standard approach is to
+ estimate the expectation by Monte Carlo, which produces Monte Carlo EM
+ (MCEM).
+ The strategy is to draw from 
+\begin_inset Formula $z_{j}$
+\end_inset
+
+ from 
+\begin_inset Formula $f(z|x,\theta_{t})$
+\end_inset
+
+ and approximate 
+\begin_inset Formula $Q$
+\end_inset
+
+ as a Monte Carlo average of 
+\begin_inset Formula $\log f(x,z_{j}|\theta)$
+\end_inset
+
+, and then optimize over this approximation to the expectation.
+ If one can't draw in closed form from the conditional density, one strategy
+ is to do a short MCMC to draw a (correlated) sample.
+\end_layout
+
+\begin_layout Standard
+EM can be show to increase the value of the function at each step using
+ Jensen's inequality (equivalent to the information inequality that holds
+ with regard to the Kullback-Leibler divergence between two distributions)
+ (Givens and Hoeting, p.
+ 95, go through the details).
+ Furthermore, one can show that it amounts, at each step, to maximizing
+ a minorizing function for 
+\begin_inset Formula $\log L(\theta)$
+\end_inset
+
+ - the minorizing function (effectively 
+\begin_inset Formula $Q$
+\end_inset
+
+) is tangent to 
+\begin_inset Formula $\log L(\theta)$
+\end_inset
+
+ at 
+\begin_inset Formula $\theta_{t}$
+\end_inset
+
+ and lies below 
+\begin_inset Formula $\log L(\theta)$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+A standard example is a mixture model.
+ Suppose we have 
+\begin_inset Formula 
+\[
+f(x)=\sum_{k=1}^{K}\pi_{k}f_{k}(x;\phi_{k})
+\]
+
+\end_inset
+
+where we have 
+\begin_inset Formula $K$
+\end_inset
+
+ mixture components and 
+\begin_inset Formula $\pi_{k}$
+\end_inset
+
+ are the (marginal) probabilities of being in each component.
+ The complete parameter vector is 
+\begin_inset Formula $\theta=\{\{\pi_{k}\},\{\phi_{k}\}\}$
+\end_inset
+
+.
+ Note that the likelihood is a complicated product (over observations) over
+ the sum (over components), so maximization may be difficult.
+ Furthermore, such likelihoods are well-known to be multimodal because of
+ label switching.
+\end_layout
+
+\begin_layout Standard
+To use EM, we take the group membership indicators for each observation
+ as the missing data.
+ For the 
+\begin_inset Formula $i$
+\end_inset
+
+th observation, we have 
+\begin_inset Formula $z_{i}\in\{1,2,\ldots,K\}$
+\end_inset
+
+.
+ Introducing these indicators 
+\begin_inset Quotes eld
+\end_inset
+
+breaks the mixture
+\begin_inset Quotes erd
+\end_inset
+
+.
+ If we know the memberships for all the observations, it's often easy to
+ estimate the parameters for each group based on the observations from that
+ group.
+ For example if the 
+\begin_inset Formula $\{f_{k}\}$
+\end_inset
+
+'s were normal densities, then we can estimate the mean and variance of
+ each normal density using the sample mean and sample variance of the 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+'s that belong to each mixture component.
+ EM will give us a variation on this that uses 
+\begin_inset Quotes eld
+\end_inset
+
+soft
+\begin_inset Quotes erd
+\end_inset
+
+ (i.e., probabilistic) weighting.
+\end_layout
+
+\begin_layout Standard
+The complete log likelihood given 
+\begin_inset Formula $z$
+\end_inset
+
+ and 
+\begin_inset Formula $x$
+\end_inset
+
+ is
+\begin_inset Formula 
+\[
+\log\prod_{i}f(x_{i}|z_{i},\theta)\mbox{Pr}(Z_{i}=z_{i}|\pi)
+\]
+
+\end_inset
+
+which can be expressed as
+\begin_inset Formula 
+\[
+\log L(x,z|\theta)=\sum_{i}\sum_{k}I(z_{i}=k)(\log f_{k}(x_{i}|\phi_{k})+\log\pi_{k})
+\]
+
+\end_inset
+
+with 
+\begin_inset Formula $Q$
+\end_inset
+
+ equal to 
+\begin_inset Formula 
+\[
+Q(\theta|\theta_{t})=\sum_{i}\sum_{k}E(I(z_{i}=k)|x_{i},\theta_{t})(\log f_{k}(y_{i}|\phi_{k})+\log\pi_{k})
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $E(I(z_{i}=k)|x_{i},\theta_{t})$
+\end_inset
+
+ is equal to the probability that the 
+\begin_inset Formula $i$
+\end_inset
+
+th observation is in the 
+\begin_inset Formula $k$
+\end_inset
+
+th group given 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+ and 
+\begin_inset Formula $\theta_{t}$
+\end_inset
+
+, which is calculated from Bayes theorem as 
+\begin_inset Formula 
+\[
+p_{ikt}=\frac{\pi_{k,t}f_{k}(x_{i}|\theta_{t})}{\sum_{j}\pi_{j,t}f_{j}(x_{i}|\theta_{t})}
+\]
+
+\end_inset
+
+We can now separately maximize 
+\begin_inset Formula $Q(\theta|\theta_{t})$
+\end_inset
+
+ with respect to 
+\begin_inset Formula $\pi_{k}$
+\end_inset
+
+ and 
+\begin_inset Formula $\phi_{k}$
+\end_inset
+
+ to find 
+\begin_inset Formula $\pi_{k,t+1}$
+\end_inset
+
+ and 
+\begin_inset Formula $\phi_{k,t+1}$
+\end_inset
+
+, since the expression is the sum of a term involving the parameters of
+ the distributions and a term involving the mixture probabilities.
+ In the latter case, if the 
+\begin_inset Formula $f_{k}$
+\end_inset
+
+ are normal distributions, you end up with a weighted sum of normal distribution
+s, for which the estimators of the mean and variance parameters are the
+ weighted mean of the observations and the weighted variance.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+And here's the multivariate 
+\begin_inset Formula $t$
+\end_inset
+
+ example based on EM.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+One nice feature of both MM and EM is that one can handle constaints in
+ the M step [how?]
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Optimization under constraints
+\end_layout
+
+\begin_layout Standard
+Constrained optimization is harder than unconstrained, and inequality constraint
+s harder to deal with than equality constraints.
+\end_layout
+
+\begin_layout Standard
+Constrained optimization can sometimes be avoided by reparameterizing.
+ E.g., to optimize w.r.t.
+ a variance component or other non-negative parameter, you can work on the
+ log scale.
+\end_layout
+
+\begin_layout Standard
+Optimization under constraints often goes under the name of 'programming',
+ with different types of programming for different types of objective functions
+ combined with different types of constraints.
+ 
+\end_layout
+
+\begin_layout Subsection
+Convex optimization (convex programming)
+\end_layout
+
+\begin_layout Standard
+Convex programming minimizes 
+\begin_inset Formula $f(x)$
+\end_inset
+
+ s.t.
+ 
+\begin_inset Formula $h_{j}(x)\leq0,\, j=1,\ldots,m$
+\end_inset
+
+ and 
+\begin_inset Formula $a_{i}^{\top}x=b_{i},\, i=1,\ldots,q$
+\end_inset
+
+, where both 
+\begin_inset Formula $f$
+\end_inset
+
+ and the constraint functions are convex.
+ Note that this includes more general equality constraints, as we can write
+ 
+\begin_inset Formula $g(x)=b$
+\end_inset
+
+ as two inequalities 
+\begin_inset Formula $g(x)\leq b$
+\end_inset
+
+ and 
+\begin_inset Formula $g(x)\geq b$
+\end_inset
+
+.
+ It also includes 
+\begin_inset Formula $h_{j}(x)\geq b_{j}$
+\end_inset
+
+ by taking 
+\begin_inset Formula $-h_{j}(x)$
+\end_inset
+
+.
+ Note that we can always have 
+\begin_inset Formula $h_{j}(x)\leq b_{j}$
+\end_inset
+
+ and convert to the above form by subtracting 
+\begin_inset Formula $b_{j}$
+\end_inset
+
+ from each side (note that this preserves convexity).
+ A vector 
+\begin_inset Formula $x$
+\end_inset
+
+ is said to be feasible, or in the feasible set, if all the constraints
+ are satisfied for 
+\begin_inset Formula $x$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+There are good algorithms for convex programming, and it's possible to find
+ solutions when we have hundreds or thousands of variables and constraints.
+ It is often difficult to recognize if one has a convex program (i.e., if
+ 
+\begin_inset Formula $f$
+\end_inset
+
+ and the constraint functions are convex), but there are many tricks to
+ transform a problem into a convex program and many problems can be solved
+ through convex programming.
+ So the basic challenge is in recognizing or transforming a problem to one
+ of convex optimization; once you've done that, you can rely on existing
+ methods to find the solution.
+ 
+\end_layout
+
+\begin_layout Standard
+Linear programming, quadratic programming, second order cone programming
+ and semidefinite programming are all special cases of convex programming.
+ In general, these types of optimization are progressively more computationally
+ complex.
+\end_layout
+
+\begin_layout Standard
+First let's see some of the special cases and then discuss the more general
+ problem.
+\end_layout
+
+\begin_layout Subsection
+Linear programming: Linear system, linear constraints
+\end_layout
+
+\begin_layout Standard
+Linear programming seeks to minimize 
+\begin_inset Formula 
+\[
+f(x)=c^{\top}x
+\]
+
+\end_inset
+
+subject to a system of 
+\begin_inset Formula $m$
+\end_inset
+
+ inequality constraints, 
+\begin_inset Formula $a_{i}^{\top}x\leq b_{i}$
+\end_inset
+
+ for 
+\begin_inset Formula $i=1,\ldots,m$
+\end_inset
+
+, where 
+\begin_inset Formula $A$
+\end_inset
+
+ is of full row rank.
+ This can also be written in terms of generalized inequality notation, 
+\begin_inset Formula $Ax\preceq b$
+\end_inset
+
+.
+ There are standard algorithms for solving linear programs, including the
+ simplex method and interior point methods.
+\end_layout
+
+\begin_layout Standard
+Note that each equation in the set of equations 
+\begin_inset Formula $Ax=b$
+\end_inset
+
+ defines a hyperplane, so each inequality in 
+\begin_inset Formula $Ax\preceq b$
+\end_inset
+
+ defines a half-space.
+ Minimizing a linear function (presuming that the minimum exists) must mean
+ that we push in the correct direction towards the boundaries formed by
+ the hyperplanes, with the solution occuring at a corner (vertex) of the
+ solid formed by the hyperplanes.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+[see pic in Gentle-CS p.
+ 289]
+\end_layout
+
+\end_inset
+
+ The simplex algorithm starts with a feasible solution at a corner and moves
+ along edges in directions that improve the objective function.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+[see pic in Boyd p.
+ 161]
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+General system, equality constraints
+\end_layout
+
+\begin_layout Standard
+Suppose we have an objective function 
+\begin_inset Formula $f(x)$
+\end_inset
+
+ and we have equality constraints, 
+\begin_inset Formula $Ax=b$
+\end_inset
+
+.
+ We can manipulate this into an unconstrained problem.
+ The null space of 
+\begin_inset Formula $A$
+\end_inset
+
+ is the set of 
+\begin_inset Formula $x$
+\end_inset
+
+ s.t.
+ 
+\begin_inset Formula $Ax=0$
+\end_inset
+
+.
+ So if we start with a candidate 
+\begin_inset Formula $x_{c}$
+\end_inset
+
+ s.t.
+ 
+\begin_inset Formula $Ax_{c}=b$
+\end_inset
+
+ (e.g., by using the pseudo inverse, 
+\begin_inset Formula $A^{+}b$
+\end_inset
+
+), we can form all other candidates (a candidate is an 
+\begin_inset Formula $x$
+\end_inset
+
+ s.t.
+ 
+\begin_inset Formula $Ax=b$
+\end_inset
+
+) as 
+\begin_inset Formula $x=x_{c}+Bz$
+\end_inset
+
+ where 
+\begin_inset Formula $B$
+\end_inset
+
+ is a set of column basis functions for the null space of 
+\begin_inset Formula $A$
+\end_inset
+
+ and 
+\begin_inset Formula $z\in\Re^{p-m}$
+\end_inset
+
+.
+ Consider 
+\begin_inset Formula $h(z)=f(x_{c}+Bz)$
+\end_inset
+
+ and note that 
+\begin_inset Formula $h$
+\end_inset
+
+ is a function of 
+\begin_inset Formula $p-m$
+\end_inset
+
+ rather than 
+\begin_inset Formula $p$
+\end_inset
+
+ inputs.
+ Namely, we are working in a reduced dimension space with no constraints.
+ If we assume differentiability of 
+\begin_inset Formula $f$
+\end_inset
+
+, we can express 
+\begin_inset Formula $\nabla h(z)=B^{\top}\nabla f(x_{c}+Bz)$
+\end_inset
+
+ and 
+\begin_inset Formula $H_{h}(z)=B^{\top}H_{f}(x_{c}+Bz)B$
+\end_inset
+
+.
+ Then we can use unconstrained methods to find the point at which 
+\begin_inset Formula $\nabla h(z)=0$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+How do we find 
+\begin_inset Formula $B$
+\end_inset
+
+? One option is to use the 
+\begin_inset Formula $p-m$
+\end_inset
+
+ columns of 
+\begin_inset Formula $V$
+\end_inset
+
+ in the SVD of 
+\begin_inset Formula $A$
+\end_inset
+
+ that correspond to singular values that are zero.
+ A second option is to take the QR decomposition of 
+\begin_inset Formula $A^{\top}$
+\end_inset
+
+.
+ Then 
+\begin_inset Formula $B$
+\end_inset
+
+ is the columns of 
+\begin_inset Formula $Q_{2}$
+\end_inset
+
+, where these are the columns of the (non-skinny) Q matrix corresponding
+ to the rows of 
+\begin_inset Formula $R$
+\end_inset
+
+ that are zero.
+ 
+\end_layout
+
+\begin_layout Standard
+For more general (nonlinear) equality constraints, 
+\begin_inset Formula $g_{i}(x)=b_{i}$
+\end_inset
+
+, 
+\begin_inset Formula $i=1,\ldots,q$
+\end_inset
+
+, we can use the Lagrange multiplier approach to define a new objective
+ function,
+\begin_inset Formula 
+\[
+L(x,\lambda)=f(x)+\lambda^{\top}(g(x)-b)
+\]
+
+\end_inset
+
+for which, if we set the derivative (with respect to both 
+\begin_inset Formula $x$
+\end_inset
+
+ and the Lagrange multiplier vector, 
+\begin_inset Formula $\lambda$
+\end_inset
+
+) equal to zero, we have a critical point of the original function and we
+ respect the constraints.
+\end_layout
+
+\begin_layout Standard
+An example occurs with quadratic programming, under the simplification of
+ affine equality constraints (quadratic programming in general optimizes
+ a quadratic function under affine inequality constraints - i.e., constraints
+ of the form 
+\begin_inset Formula $Ax-b\preceq0$
+\end_inset
+
+).
+ For example we might solve a least squares problem subject to linear equality
+ constraints, 
+\begin_inset Formula $f(x)=\frac{1}{2}x^{\top}Qx+m^{\top}x+c$
+\end_inset
+
+ s.t.
+ 
+\begin_inset Formula $Ax=b$
+\end_inset
+
+, where 
+\begin_inset Formula $Q$
+\end_inset
+
+ is positive semi-definite.
+ The Lagrange multiplier approach gives the objective function 
+\begin_inset Formula 
+\[
+L(x,\lambda)=\frac{1}{2}x^{\top}Qx+m^{\top}x+c+\lambda^{\top}(Ax-b)
+\]
+
+\end_inset
+
+and differentiating gives the equations
+\begin_inset Formula 
+\begin{eqnarray*}
+\frac{\partial L(x,\lambda)}{\partial x}=m+Qx+A^{\top}\lambda & = & 0\\
+\frac{\partial L(x,\lambda)}{\partial\lambda}=Ax & = & b,
+\end{eqnarray*}
+
+\end_inset
+
+which leads to the solution
+\begin_inset Formula 
+\begin{equation}
+\left(\begin{array}{c}
+x\\
+\lambda
+\end{array}\right)=\left(\begin{array}{cc}
+Q & A^{\top}\\
+A & 0
+\end{array}\right)^{-1}\left(\begin{array}{c}
+-m\\
+b
+\end{array}\right)\label{eq:quadProg}
+\end{equation}
+
+\end_inset
+
+which gives us 
+\begin_inset Formula $x^{*}=-Q^{-1}m+Q^{-1}A^{\top}(AQ^{-1}A^{\top})^{-1}(AQ^{-1}m+b)$
+\end_inset
+
+.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+which can be viewed as projecting the unconstrained solution, 
+\begin_inset Formula $x=-Q^{-1}m$
+\end_inset
+
+ onto the null space of 
+\begin_inset Formula $A$
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Note that if we have an approximation to the Hessian, 
+\begin_inset Formula $Q_{t}$
+\end_inset
+
+, this can be used as part of a Newton-like update (i.e., local quadratic
+ update), respecting the constraints.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Under inequality constraints there are a variety of methods but we won't
+ go into them.
+\emph on
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+
+\emph on
+ 
+\emph default
+[see p.
+ 167 of Boyd for pic]
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Dykstra's algorithm
+\end_layout
+
+\begin_layout Plain Layout
+This algorithm finds the projection of a point 
+\begin_inset Formula $x$
+\end_inset
+
+ onto a finite intersection of closed convex sets.
+ Basically we try to find the feasible point (inside the convex sets) that
+ is closest to the unconstrained solution.
+ 
+\end_layout
+
+\begin_layout Plain Layout
+p.
+ 217 example
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+The dual problem
+\end_layout
+
+\begin_layout Standard
+Sometimes a reformulation of the problem eases the optimization.
+ There are different kinds of dual problems, but we'll just deal with the
+ Lagrangian dual.
+ Let 
+\begin_inset Formula $f(x)$
+\end_inset
+
+ be the function we want to minimize, under constraints 
+\begin_inset Formula $g_{i}(x)=0;\, i=1,\ldots,q$
+\end_inset
+
+ and 
+\begin_inset Formula $h_{j}(x)\leq0;\, j=1,\ldots,m$
+\end_inset
+
+.
+ Here I've explicitly written out the equality constraints to follow the
+ notation in Lange.
+ Consider the Langrangian, 
+\begin_inset Formula 
+\[
+L(x,\lambda,\mu)=f(x)+\sum_{i}\lambda_{i}g_{i}(x)+\sum_{j}\mu_{j}h_{j}(x).
+\]
+
+\end_inset
+
+Its Lagrange dual function is 
+\begin_inset Formula 
+\[
+d(\lambda,\mu)=\inf_{x}L(x,\lambda,\mu).
+\]
+
+\end_inset
+
+For 
+\begin_inset Formula $\mu\succeq0$
+\end_inset
+
+, one can easily show that 
+\begin_inset Formula $d(\lambda,\mu)\leq f(x^{*})$
+\end_inset
+
+ for the minimizing value 
+\begin_inset Formula $x^{*}$
+\end_inset
+
+ (p.
+ 216 of the Boyd book), so the challenge is then to find the best lower
+ bound.
+\end_layout
+
+\begin_layout Standard
+Thus, the Lagrange dual problem is to maximize 
+\begin_inset Formula $d(\lambda,\mu)$
+\end_inset
+
+ subject to 
+\begin_inset Formula $\mu\succeq0$
+\end_inset
+
+, which is always a convex optimization problem because 
+\begin_inset Formula $d(\lambda,\mu)$
+\end_inset
+
+ is concave (because 
+\begin_inset Formula $d(\lambda,\mu)$
+\end_inset
+
+ is a pointwise infimum of a family of affine functions of 
+\begin_inset Formula $(\lambda,\mu)$
+\end_inset
+
+).
+ If the optima of the primal (original) problem and that of the dual do
+ not coincide, there is said to be a 
+\begin_inset Quotes eld
+\end_inset
+
+duality gap
+\begin_inset Quotes erd
+\end_inset
+
+.
+ For convex programming, if certain conditions are satisfied (called 
+\emph on
+constraint qualifications
+\emph default
+), then there is no duality gap, and one can solve the dual problem to solve
+ the primal problem.
+ Usually with the standard form of convex programming, there is no duality
+ gap.
+ Provided we can find the infimum over 
+\begin_inset Formula $x$
+\end_inset
+
+ in closed form we then maximize 
+\begin_inset Formula $d(\lambda,\mu)$
+\end_inset
+
+ w.r.t.
+ the Lagrangian multipliers in a new constrained problem that is sometimes
+ easier to solve, giving us 
+\begin_inset Formula $(\lambda^{*},\mu^{*})$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+One can show (p.
+ 242 of the Boyd book) that 
+\begin_inset Formula $\mu_{i}^{*}=0$
+\end_inset
+
+ unless the 
+\begin_inset Formula $i$
+\end_inset
+
+th constraint is active at the optimum 
+\begin_inset Formula $x^{*}$
+\end_inset
+
+ and that 
+\begin_inset Formula $x^{*}$
+\end_inset
+
+ minimizes 
+\begin_inset Formula $L(x,\lambda^{*},\mu^{*})$
+\end_inset
+
+.
+ So once one has 
+\begin_inset Formula $(\lambda^{*},\mu^{*})$
+\end_inset
+
+, one is in the position of minimizing an unconstrained convex function.
+ If 
+\begin_inset Formula $L(x,\lambda^{*},\mu^{*})$
+\end_inset
+
+ is strictly convex, then 
+\begin_inset Formula $x^{*}$
+\end_inset
+
+ is the unique optimum provided 
+\begin_inset Formula $x^{*}$
+\end_inset
+
+ satisfies the constraints, and no optimum exists if it does not.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Basically one can convert the original optimization
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\[
+L(x,\lambda,\mu)=f(x)+\sum_{i}\lambda_{i}g_{i}(x)+\sum_{j}\mu_{j}h_{j}(x)
+\]
+
+\end_inset
+
+which corresponds to constrained optimization with complicated constraints
+ 
+\begin_inset Formula $g_{i}(x)=0$
+\end_inset
+
+ and 
+\begin_inset Formula $h_{j}(x)\leq0$
+\end_inset
+
+ into the dual problem of maximizing the Lagrange dual function, 
+\begin_inset Formula 
+\[
+d(\lambda,\mu)=\inf_{x}L(x,\lambda,\mu),
+\]
+
+\end_inset
+
+s.t.
+ 
+\begin_inset Formula $\mu\succeq0$
+\end_inset
+
+.
+ Provided we can find the infimum over 
+\begin_inset Formula $x$
+\end_inset
+
+ in closed form we then maximize 
+\begin_inset Formula $d(\lambda,\mu)$
+\end_inset
+
+ w.r.t.
+ the Lagrangian multipliers in a new constrained problem that is sometimes
+ easier to solve.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Here's a simple example: suppose we want to minimize 
+\begin_inset Formula $x^{\top}x$
+\end_inset
+
+ s.t.
+ 
+\begin_inset Formula $Ax=b$
+\end_inset
+
+.
+ The Lagrangian is 
+\begin_inset Formula $L(x,\lambda)=x^{\top}x+\lambda^{\top}(Ax-b)$
+\end_inset
+
+.
+ Since 
+\begin_inset Formula $L(x,\lambda)$
+\end_inset
+
+ is quadratic in 
+\begin_inset Formula $x$
+\end_inset
+
+, the infimum is found by setting 
+\begin_inset Formula $\nabla_{x}L(x,\lambda)=2x+A^{\top}\lambda=0$
+\end_inset
+
+, yielding 
+\begin_inset Formula $x=-\frac{1}{2}A^{\top}\lambda$
+\end_inset
+
+.
+ So the dual function is obtained by plugging this value of 
+\begin_inset Formula $x$
+\end_inset
+
+ into 
+\begin_inset Formula $L(x,\lambda)$
+\end_inset
+
+, which gives 
+\begin_inset Formula 
+\[
+d(\lambda)=-\frac{1}{4}\lambda^{\top}AA^{\top}\lambda-b^{\top}\lambda,
+\]
+
+\end_inset
+
+which is concave quadratic.
+ In this case we can solve the original constrained problem in terms of
+ this unconstrained dual problem.
+ 
+\end_layout
+
+\begin_layout Subsection
+KKT conditions
+\end_layout
+
+\begin_layout Standard
+Karush-Kuhn-Tucker (KKT) theory provides sufficient conditions under which
+ a constrained optimization problem has a minimum, generalizing the Lagrange
+ multiplier approach.
+ The Lange and Boyd books have whole sections on this topic.
+\end_layout
+
+\begin_layout Standard
+Suppose that the function and the constraint functions are continuously
+ differentiable near 
+\begin_inset Formula $x^{*}$
+\end_inset
+
+ and that we have the Lagrangian as before: 
+\begin_inset Formula 
+\[
+L(x,\lambda,\mu)=f(x)+\sum_{i}\lambda_{i}g_{i}(x)+\sum_{j}\mu_{j}h_{j}(x).
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+For nonconvex problems, if 
+\begin_inset Formula $x^{*}$
+\end_inset
+
+ and 
+\begin_inset Formula $(\lambda^{*},\mu^{*})$
+\end_inset
+
+ are the primal and dual optimal points and there is no duality gap, then
+ the KKT conditions hold:
+\begin_inset Formula 
+\begin{eqnarray*}
+h_{j}(x^{*}) & \leq & 0\\
+g_{i}(x^{*}) & = & 0\\
+\mu_{j}^{*} & \geq & 0\\
+\mu_{j}^{*}h_{j}(x) & = & 0\\
+\nabla f(x^{*})+\sum_{i}\lambda_{i}\nabla g_{i}(x^{*})+\sum_{j}\mu_{j}\nabla h_{j}(x^{*}) & = & 0.
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+For convex problems, we also have that if the KKT conditions hold, then
+ 
+\begin_inset Formula $x^{*}$
+\end_inset
+
+ and 
+\begin_inset Formula $(\lambda^{*},\mu^{*})$
+\end_inset
+
+ are primal and dual optimal and there is no duality gap.
+\end_layout
+
+\begin_layout Standard
+We can consider this from a slightly different perspective, in this case
+ requiring that the Lagrangian be twice differentiable.
+ 
+\end_layout
+
+\begin_layout Standard
+First we need a definition.
+ A 
+\emph on
+tangent direction
+\emph default
+, 
+\begin_inset Formula $w$
+\end_inset
+
+, with respect to 
+\begin_inset Formula $g(x)$
+\end_inset
+
+, is a vector for which 
+\begin_inset Formula $\nabla g_{i}(x)^{\top}w=0$
+\end_inset
+
+.
+ If we are at a point, 
+\begin_inset Formula $x^{*}$
+\end_inset
+
+, at which the constraint is satisfied, 
+\begin_inset Formula $g_{i}(x^{*})=0$
+\end_inset
+
+, then we can move in the tangent direction (orthogonal to the gradient
+ of the constraint function) (i.e., along the level curve) and still satisfy
+ the constraint.
+ This is the only kind of movement that is legitimate (gives us a feasible
+ solution).
+\end_layout
+
+\begin_layout Standard
+If the gradient of the Lagrangian with respect to 
+\begin_inset Formula $x$
+\end_inset
+
+ is equal to 0, 
+\begin_inset Formula 
+\[
+\nabla f(x^{*})+\sum_{i}\lambda_{i}\nabla g_{i}(x^{*})+\sum_{j}\mu_{j}\nabla h_{j}(x^{*})=0,
+\]
+
+\end_inset
+
+and if 
+\begin_inset Formula $w^{\top}H_{L}(x^{*},\lambda,\mu)w>0$
+\end_inset
+
+ (with 
+\begin_inset Formula $H_{L}$
+\end_inset
+
+ being the Hessian of the Lagrangian) for all vectors 
+\begin_inset Formula $w$
+\end_inset
+
+ s.t.
+ 
+\begin_inset Formula $\nabla g(x^{*})^{\top}w=0$
+\end_inset
+
+ and, for all active constraints,
+\begin_inset Formula $\nabla h(x^{*})^{\top}w=0$
+\end_inset
+
+, then 
+\begin_inset Formula $x^{*}$
+\end_inset
+
+ is a local minimum.
+ An active constraint is an inequality for which 
+\begin_inset Formula $h_{j}(x^{*})=0$
+\end_inset
+
+ (rather than 
+\begin_inset Formula $h_{j}(x^{*})<0$
+\end_inset
+
+, in which case it is inactive).
+ Basically we only need to worry about the inequality constraints when we
+ are on the boundary, so the goal is to keep the constraints inactive.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Note that the KKT theory doesn't require convexity.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Some basic intuition is that we need positive definiteness only for directions
+ that stay in the feasible region.
+ That is, our only possible directions of movement (the tangent directions)
+ keep us in the feasible region, and for these directions, we need the objective
+ function to be increasing to have a minimum.
+ If we were to move in a direction that goes outside the feasible region,
+ it's ok for the quadratic form involving the Hessian to be negative.
+\end_layout
+
+\begin_layout Standard
+Many algorithms for convex optimization can be interpreted as methods for
+ solving the KKT conditions.
+ 
+\end_layout
+
+\begin_layout Subsection
+Interior-point methods
+\end_layout
+
+\begin_layout Standard
+We'll briefly discuss one of the standard methods for solving a convex optimizat
+ion problem.
+ The barrier method is one type of interior-point algorithm.
+ It turns out that Newton's method can be used to solve a constrained optimizati
+on problem, with twice-differentiable 
+\begin_inset Formula $f$
+\end_inset
+
+ and linear equality constraints.
+ So the basic strategy of the barrier method is to turn the more complicated
+ constraint problem into one with only linear equality constraints.
+ 
+\end_layout
+
+\begin_layout Standard
+Recall our previous notation, in which convex programming minimizes 
+\begin_inset Formula $f(x)$
+\end_inset
+
+ s.t.
+ 
+\begin_inset Formula $h_{i}(x)\leq0,\, i=1,\ldots,m$
+\end_inset
+
+ and 
+\begin_inset Formula $a_{i}^{\top}x=b_{i},\, i=1,\ldots,q$
+\end_inset
+
+, where both 
+\begin_inset Formula $f$
+\end_inset
+
+ and the constraint functions are convex.
+  The strategy begins with moving the inequality constraints into the objective
+ function:
+\begin_inset Formula 
+\[
+f(x)+\sum_{j=1}^{m}I_{-}(h_{j}(x))
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $I_{-}(u)=0$
+\end_inset
+
+ if 
+\begin_inset Formula $u\leq0$
+\end_inset
+
+ and 
+\begin_inset Formula $I_{-}(u)=\infty$
+\end_inset
+
+ if 
+\begin_inset Formula $u>0$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+This is fine, but the new objective function is not differentiable so we
+ can't use a Newton-like approach.
+ Instead, we approximate the indicator function with a logarithmic function,
+ giving the new objective function
+\begin_inset Formula 
+\[
+\tilde{f}(x)=f(x)+\sum_{j=1}^{m}-(1/t)\log(-h_{j}(x)),
+\]
+
+\end_inset
+
+which is convex and differentiable.
+ The new term pushes down the value of the overall objective function when
+ 
+\begin_inset Formula $x$
+\end_inset
+
+ approaches the boundary, nearing points for which the inequality constraints
+ are not met.
+ The 
+\begin_inset Formula $-\sum(1/t)\log(-h_{j}(x))$
+\end_inset
+
+ term is called the log barrier, since it keeps the solution in the feasible
+ set (i.e., the set where the inequality constraints are satisfied), provided
+ we start at a point in the feasible set.
+ Newton's method with equality constraints (
+\begin_inset Formula $Ax=b$
+\end_inset
+
+) is then applied.
+ The key thing is then to have 
+\begin_inset Formula $t$
+\end_inset
+
+ get larger as the iterations proceed, which allows the solution to get
+ closer to the boundary if that is indeed where the minimum lies.
+\end_layout
+
+\begin_layout Standard
+The basic ideas behind Newton's method with equality constraints are (1)
+ start at a feasible point, 
+\begin_inset Formula $x_{0}$
+\end_inset
+
+, such that 
+\begin_inset Formula $Ax_{0}=b$
+\end_inset
+
+, and (2) make sure that each step is in a feasible direction, 
+\begin_inset Formula $A(x_{t+1}-x_{t})=0$
+\end_inset
+
+.
+ To make sure the step is in a feasible direction we have to solve a linear
+ system similar to that in the simplified quadratic programming problem
+ (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:quadProg"
+
+\end_inset
+
+):
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+[see notes]
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\left(\begin{array}{c}
+x_{t+1}-x_{t}\\
+\lambda
+\end{array}\right)=\left(\begin{array}{cc}
+H_{\tilde{f}}(x_{t}) & A^{\top}\\
+A & 0
+\end{array}\right)^{-1}\left(\begin{array}{c}
+-\nabla\tilde{f}(x_{t})\\
+0
+\end{array}\right),
+\]
+
+\end_inset
+
+which shouldn't be surprising since the whole idea of Newton's method is
+ to substitute a quadratic approximation for the actual objective function.
+\end_layout
+
+\begin_layout Subsection
+Software for constrained and convex optimization
+\end_layout
+
+\begin_layout Standard
+R provides an optimization function, 
+\emph on
+constrOptim()
+\emph default
+, for optimizing with linear inequality constraints.
+ This is somewhat more limited than the general problem we've defined in
+ that the constraints need to be linear rather than general functions, 
+\begin_inset Formula $h$
+\end_inset
+
+.
+ However, 
+\emph on
+constrOptim()
+\emph default
+ doesn't require a convex function.
+ It uses a logarithmic barrier function as discussed above in combination
+ with the methods used in 
+\emph on
+optim()
+\emph default
+, e.g., Nelder-Mead, BFGS, etc.
+ In fact it uses 
+\emph on
+optim()
+\emph default
+ for the sequential optimizations, i.e., the individual optimizations involved
+ as one changes the value of 
+\begin_inset Formula $1/t$
+\end_inset
+
+ (called 
+\emph on
+mu
+\emph default
+ in 
+\emph on
+constrOptim()
+\emph default
+).
+ 
+\end_layout
+
+\begin_layout Standard
+Here is how one can use 
+\emph on
+constrOptim()
+\emph default
+ for linear inequality and linear equality constraints.
+ The feasible region is defined to be 
+\begin_inset Formula $u_{i}^{\top}\theta-c_{i}\geq0,\, i=1,\ldots$
+\end_inset
+
+, so for 
+\begin_inset Quotes eld
+\end_inset
+
+less than or equal
+\begin_inset Quotes erd
+\end_inset
+
+ and for equality constraints we need to do some basic manipulations to
+ get our actual constraints into the form needed for the R function.
+ 
+\begin_inset Formula $\theta$
+\end_inset
+
+ in the notation of 
+\emph on
+constrOptim()
+\emph default
+ is what we've been calling 
+\begin_inset Formula $x$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Chunk
+<<constrOptim, fig.height=4, fig.width=4, cache=TRUE>>=
+\end_layout
+
+\begin_layout Chunk
+# based on the example in help(constrOptim)
+\end_layout
+
+\begin_layout Chunk
+fr <- function(x) { ## Rosenbrock Banana function
+\end_layout
+
+\begin_layout Chunk
+	x1 <- x[1]
+\end_layout
+
+\begin_layout Chunk
+	x2 <- x[2]
+\end_layout
+
+\begin_layout Chunk
+	100 * (x2 - x1 * x1)^2 + (1 - x1)^2
+\end_layout
+
+\begin_layout Chunk
+}
+\end_layout
+
+\begin_layout Chunk
+grr <- function(x) { ## Gradient of 'fr'
+\end_layout
+
+\begin_layout Chunk
+	x1 <- x[1]
+\end_layout
+
+\begin_layout Chunk
+	x2 <- x[2]
+\end_layout
+
+\begin_layout Chunk
+	c(-400 * x1 * (x2 - x1 * x1) - 2 * (1 - x1), 200 * (x2 - x1 * x1))
+\end_layout
+
+\begin_layout Chunk
+}
+\end_layout
+
+\begin_layout Chunk
+m <- 100
+\end_layout
+
+\begin_layout Chunk
+x1s <- x2s <- seq(-5, 5, len = m)
+\end_layout
+
+\begin_layout Chunk
+xs <- expand.grid(x1s, x2s)
+\end_layout
+
+\begin_layout Chunk
+f <- apply(xs, 1, fr)
+\end_layout
+
+\begin_layout Chunk
+image.plot(x1s, x2s, matrix(log(f), m))
+\end_layout
+
+\begin_layout Chunk
+
+\end_layout
+
+\begin_layout Chunk
+ui = rbind(c(-1,0), c(1,-1))
+\end_layout
+
+\begin_layout Chunk
+ci = c(-0.9, -0.1)
+\end_layout
+
+\begin_layout Chunk
+# x1 <= 0.9
+\end_layout
+
+\begin_layout Chunk
+# x2 <= x1 + 0.1
+\end_layout
+
+\begin_layout Chunk
+abline(v = 0.9)
+\end_layout
+
+\begin_layout Chunk
+abline(.1, 1)
+\end_layout
+
+\begin_layout Chunk
+
+\end_layout
+
+\begin_layout Chunk
+out <- constrOptim(c(.5,0), fr, grr, ui = ui, ci = ci)
+\end_layout
+
+\begin_layout Chunk
+out$par
+\end_layout
+
+\begin_layout Chunk
+points(out$par[1], out$par[2])
+\end_layout
+
+\begin_layout Chunk
+
+\end_layout
+
+\begin_layout Chunk
+# what about constraining to a different region?
+\end_layout
+
+\begin_layout Chunk
+ui = rbind(c(-1,0), c(-1, 1))
+\end_layout
+
+\begin_layout Chunk
+ci = c(-0.9,0.1)
+\end_layout
+
+\begin_layout Chunk
+# x1 <= 0.9
+\end_layout
+
+\begin_layout Chunk
+# x2 >= x1 + 0.1
+\end_layout
+
+\begin_layout Chunk
+
+\end_layout
+
+\begin_layout Chunk
+out <- constrOptim(c(.5,0), fr, grr, ui = ui, ci = ci)
+\end_layout
+
+\begin_layout Chunk
+# whoops, not feasible!
+\end_layout
+
+\begin_layout Chunk
+out <- constrOptim(c(-3, 2), fr, grr, ui = ui, ci = ci)
+\end_layout
+
+\begin_layout Chunk
+points(out$par[1], out$par[2], pch = 2)
+\end_layout
+
+\begin_layout Chunk
+
+\end_layout
+
+\begin_layout Chunk
+# how about optimizing along a line (equality constraint)?
+\end_layout
+
+\begin_layout Chunk
+# x1 - x2 = 0.1 is the same as
+\end_layout
+
+\begin_layout Chunk
+# x1 - x2 <= 0.1
+\end_layout
+
+\begin_layout Chunk
+# x1 - x2 >= 0.1
+\end_layout
+
+\begin_layout Chunk
+ui = rbind(c(-1, 1), c(1, -1))
+\end_layout
+
+\begin_layout Chunk
+ci = c(-0.1, 0.1)
+\end_layout
+
+\begin_layout Chunk
+out <- constrOptim(c(3.1, 3.0), fr, grr, ui = ui, ci = ci)
+\end_layout
+
+\begin_layout Chunk
+# hmmm, numerical issues?
+\end_layout
+
+\begin_layout Chunk
+
+\end_layout
+
+\begin_layout Chunk
+# ok, how about making a long narrow region around the line?
+\end_layout
+
+\begin_layout Chunk
+# this takes a while...
+\end_layout
+
+\begin_layout Chunk
+ui = rbind(c(1,-1), c(-1,1))
+\end_layout
+
+\begin_layout Chunk
+ci = c(.099,-.101)
+\end_layout
+
+\begin_layout Chunk
+# hmmm
+\end_layout
+
+\begin_layout Chunk
+out1 <- constrOptim(c(3.1, 3.0), fr, grr, ui = ui, ci = ci)
+\end_layout
+
+\begin_layout Chunk
+out2 <- constrOptim(c(3.1, 3.0), fr, NULL, ui = ui, ci = ci)
+\end_layout
+
+\begin_layout Chunk
+image.plot(x1s, x2s, matrix(log(f), m))
+\end_layout
+
+\begin_layout Chunk
+abline(-0.1, 1)
+\end_layout
+
+\begin_layout Chunk
+points(out1$par[1], out1$par[2], pch = "1")
+\end_layout
+
+\begin_layout Chunk
+points(out2$par[1], out2$par[2], pch = "2")
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+This draft paper discusses R's capabilities for convex optimization in more
+ detail.
+\begin_inset Newline newline
+\end_inset
+
+ 
+\begin_inset CommandInset href
+LatexCommand href
+target "http://www.econ.uiuc.edu/~roger/research/conopt/coptr.pdf"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Given that R is somewhat limited in its treatment of convex optimization,
+ some other resources to consider are
+\end_layout
+
+\begin_layout Itemize
+Python, in particular the 
+\emph on
+cvxopt
+\emph default
+ package, and
+\end_layout
+
+\begin_layout Itemize
+Matlab, in particular the 
+\emph on
+fmincon()
+\emph default
+ function, the CVX system, and Matlab's linear and quadratic programming
+ abilities.
+\end_layout
+
+\begin_layout Section
+Summary
+\end_layout
+
+\begin_layout Standard
+The different methods of optimization have different advantages and disadvantage
+s.
+\end_layout
+
+\begin_layout Standard
+According to Lange, MM and EM are numerically stable and computationally
+ simple but can converge very slowly.
+ Newton's method shows very fast convergence but has the downsides we've
+ discussed.
+ Quasi-Newton methods fall in between.
+ Convex optimization generally comes up when optimizing under constraints.
+\end_layout
+
+\begin_layout Standard
+One caution about optimizing under constraints is that you just get a point
+ estimate; quantifying uncertainty in your estimator is more difficult.
+ One strategy is to ignore the inactive inequality constraints and reparameteriz
+e (based on the active equality constraints) to get an unconstrained problem
+ in a lower-dimensional space.
+ Then you can make use of the Hessian in the usual fashion to estimate the
+ information matrix.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+affline set is set of all linear combos of any 2 points where weights sum
+ to 1 - i.e.
+ for any two points in C, the line through them is in C; convexity has weighted
+ average with weights between 0 and 1 and sum to 1
+\end_layout
+
+\begin_layout Plain Layout
+affine fxn = linear + translation; linear is that f(x+y) =f(x)+f(y) and
+ f(cx)=cf(x)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
