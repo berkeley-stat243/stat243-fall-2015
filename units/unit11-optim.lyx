@@ -196,15 +196,52 @@ example from PP POT analysis (potOptimExample.RData)
 
 \end_layout
 
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Some articles that might be good examples:
+\end_layout
+
+\begin_layout Plain Layout
+Simon et al JCGS (2013) 22:231 - block wise coordinate descent (as exampel
+ of MM) and with warm starts (and momentum in the descent)
+\end_layout
+
+\begin_layout Plain Layout
+Zhoui and Lange JCGS (2013) 22:261 - algo similar to L1 path following but
+ for general quadratic programming (quad obj with affine equ and inequ constrain
+ts)
+\end_layout
+
+\begin_layout Plain Layout
+Yang and Zou JCGS (2013) 22:396 - use coord desc based on MM instead of
+ LARS type path algo for SVD where MM allows simple coordinate wise update
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Chunk
+
 <<setup, include=FALSE>>=
 \end_layout
 
 \begin_layout Chunk
+
 require(fields)
 \end_layout
 
 \begin_layout Chunk
+
+read_chunk('unit11-optim.R')
+\end_layout
+
+\begin_layout Chunk
+
 @
 \end_layout
 
@@ -1087,213 +1124,264 @@ status open
 
 \end_inset
 
-.
+ (see below).
  Newton's method can also go uphill when the second derivative is negative,
  with the method searching for a maximum.
  
 \end_layout
 
 \begin_layout Chunk
-<<fig.width=7, fig.height=4>>=
+
+<<newton-wrong, fig.width=7, fig.height=4>>=
 \end_layout
 
 \begin_layout Chunk
+
 options(width=55)
 \end_layout
 
 \begin_layout Chunk
+
 par(mfrow = c(1,2))
 \end_layout
 
 \begin_layout Chunk
+
 fp <- function(x, theta = 1){
 \end_layout
 
 \begin_layout Chunk
+
 	exp(x*theta)/(1+exp(x*theta)) - .5
 \end_layout
 
 \begin_layout Chunk
+
 }
 \end_layout
 
 \begin_layout Chunk
+
 fpp <- function(x, theta = 1){
 \end_layout
 
 \begin_layout Chunk
+
 	exp(x*theta)/((1+exp(x*theta))^2)
 \end_layout
 
 \begin_layout Chunk
+
 }
 \end_layout
 
 \begin_layout Chunk
+
 xs <- seq(-15, 15, len = 300)
 \end_layout
 
 \begin_layout Chunk
+
 plot(xs, fp(xs), type = 'l')
 \end_layout
 
 \begin_layout Chunk
+
 lines(xs, fpp(xs), lty = 2)
 \end_layout
 
 \begin_layout Chunk
+
 # good starting point
 \end_layout
 
 \begin_layout Chunk
+
 x0 <- 2
 \end_layout
 
 \begin_layout Chunk
+
 xvals <- c(x0,rep(NA,9))
 \end_layout
 
 \begin_layout Chunk
+
 for(t in 2:10){
 \end_layout
 
 \begin_layout Chunk
+
 	xvals[t]=xvals[t-1] - fp(xvals[t-1]) / fpp(xvals[t-1])
 \end_layout
 
 \begin_layout Chunk
+
 }
 \end_layout
 
 \begin_layout Chunk
+
 print(xvals)
 \end_layout
 
 \begin_layout Chunk
+
 points(xvals, fp(xvals), pch = as.character(1:length(xvals)))
 \end_layout
 
 \begin_layout Chunk
+
 # bad starting point
 \end_layout
 
 \begin_layout Chunk
+
 x0 <- 2.5
 \end_layout
 
 \begin_layout Chunk
+
 xvals <- c(x0,rep(NA,9))
 \end_layout
 
 \begin_layout Chunk
+
 for(t in 2:10){
 \end_layout
 
 \begin_layout Chunk
+
 	xvals[t]=xvals[t-1] - fp(xvals[t-1]) / fpp(xvals[t-1])
 \end_layout
 
 \begin_layout Chunk
+
 }
 \end_layout
 
 \begin_layout Chunk
+
 print(xvals)
 \end_layout
 
 \begin_layout Chunk
+
 points(xvals, fp(xvals), pch = as.character(1:length(xvals)), col = 'red')
 \end_layout
 
 \begin_layout Chunk
+
 # whoops
 \end_layout
 
 \begin_layout Chunk
+
 #############################################
 \end_layout
 
 \begin_layout Chunk
+
 # mistakenly climbing uphill
 \end_layout
 
 \begin_layout Chunk
+
 f <- function(x) cos(x)
 \end_layout
 
 \begin_layout Chunk
+
 fp <- function(x) -sin(x)
 \end_layout
 
 \begin_layout Chunk
+
 fpp <- function(x) -cos(x)
 \end_layout
 
 \begin_layout Chunk
+
 xs <- seq(0, 2*pi, len = 300)
 \end_layout
 
 \begin_layout Chunk
+
 plot(xs, f(xs), type = 'l', lwd = 2)
 \end_layout
 
 \begin_layout Chunk
+
 lines(xs, fp(xs))
 \end_layout
 
 \begin_layout Chunk
+
 lines(xs, fpp(xs), lty = 2)
 \end_layout
 
 \begin_layout Chunk
+
 x0 <- 0.2 # starting point
 \end_layout
 
 \begin_layout Chunk
+
 fp(x0) # negative
 \end_layout
 
 \begin_layout Chunk
+
 fpp(x0) # negative
 \end_layout
 
 \begin_layout Chunk
+
 x1 <- x0 - fp(x0)/fpp(x0) # whoops, we've gone uphill 
 \end_layout
 
 \begin_layout Chunk
+
 # because of the negative second derivative
 \end_layout
 
 \begin_layout Chunk
+
 xvals <- c(x0,rep(NA,9))
 \end_layout
 
 \begin_layout Chunk
+
 for(t in 2:10){
 \end_layout
 
 \begin_layout Chunk
+
 	xvals[t]=xvals[t-1]-fp(xvals[t-1])/fpp(xvals[t-1])
 \end_layout
 
 \begin_layout Chunk
+
 }
 \end_layout
 
 \begin_layout Chunk
+
 xvals
 \end_layout
 
 \begin_layout Chunk
+
 points(xvals, fp(xvals), pch = as.character(1:length(xvals)), col = 'red')
 \end_layout
 
 \begin_layout Chunk
+
 # and we've found a maximum rather than a minimum...
 \end_layout
 
 \begin_layout Chunk
+
 @
 \end_layout
 
@@ -1516,8 +1604,9 @@ Using random or selected multiple starting values can help with multiple
 \end_layout
 
 \begin_layout Standard
-Here's a function with multiple optima that is commonly used for testing
- methods that claim to work well for multimodal problems.
+Here's a function (the Rastrigin function) with multiple optima that is
+ commonly used for testing methods that claim to work well for multimodal
+ problems.
  This is a hard function to optimize with respect to, particularly in higher
  dimensions (one can do it in higher dimensions than 2 by simply making
  the 
@@ -1529,58 +1618,12 @@ Here's a function with multiple optima that is commonly used for testing
 \end_layout
 
 \begin_layout Chunk
+
 <<rastrigin, fig.width=6, fig.height=5>>=
 \end_layout
 
 \begin_layout Chunk
-rastrigin <- function(x) {
-\end_layout
 
-\begin_layout Chunk
-	A <- 10
-\end_layout
-
-\begin_layout Chunk
-	n <- length(x)
-\end_layout
-
-\begin_layout Chunk
-	return(A*n + sum(x^2 - A * cos(2*pi*x)))
-\end_layout
-
-\begin_layout Chunk
-}
-\end_layout
-
-\begin_layout Chunk
-const <- 5.12
-\end_layout
-
-\begin_layout Chunk
-nGrid <- 100
-\end_layout
-
-\begin_layout Chunk
-gr <- seq(-const, const, len = nGrid)
-\end_layout
-
-\begin_layout Chunk
-xs <- expand.grid(gr, gr)
-\end_layout
-
-\begin_layout Chunk
-y <- apply(xs, 1, rastrigin)
-\end_layout
-
-\begin_layout Chunk
-require(fields)
-\end_layout
-
-\begin_layout Chunk
-image.plot(gr, gr, matrix(y, nGrid, nGrid), col=tim.colors(32))
-\end_layout
-
-\begin_layout Chunk
 @
 \end_layout
 
@@ -1774,119 +1817,12 @@ Here's an example of convergence comparing bisection and N-R:
 \end_layout
 
 \begin_layout Chunk
-<<>>=
+
+<<convergence>>=
 \end_layout
 
 \begin_layout Chunk
-options(digits = 10)
-\end_layout
 
-\begin_layout Chunk
-f <- function(x) cos(x)
-\end_layout
-
-\begin_layout Chunk
-fp <- function(x) -sin(x)
-\end_layout
-
-\begin_layout Chunk
-fpp <- function(x) -cos(x)
-\end_layout
-
-\begin_layout Chunk
-xstar <- pi # known minimum
-\end_layout
-
-\begin_layout Chunk
-# N-R
-\end_layout
-
-\begin_layout Chunk
-x0 <- 2
-\end_layout
-
-\begin_layout Chunk
-xvals <- c(x0,rep(NA,9))
-\end_layout
-
-\begin_layout Chunk
-for(t in 2:10){
-\end_layout
-
-\begin_layout Chunk
-	xvals[t] <- xvals[t-1] - fp(xvals[t-1]) / fpp(xvals[t-1])
-\end_layout
-
-\begin_layout Chunk
-}
-\end_layout
-
-\begin_layout Chunk
-print(xvals)
-\end_layout
-
-\begin_layout Chunk
-# bisection
-\end_layout
-
-\begin_layout Chunk
-bisecStep <- function(interval, fp){
-\end_layout
-
-\begin_layout Chunk
-	xt <- mean(interval)
-\end_layout
-
-\begin_layout Chunk
-	if(fp(interval[1]) * fp(xt) <= 0) interval[2] <- xt else interval[1] <-
- xt
-\end_layout
-
-\begin_layout Chunk
-	return(interval)
-\end_layout
-
-\begin_layout Chunk
-}
-\end_layout
-
-\begin_layout Chunk
-nIt <- 30
-\end_layout
-
-\begin_layout Chunk
-a0 <- 2; b0 <- (3*pi/2) - (xstar - a0) 
-\end_layout
-
-\begin_layout Chunk
-# have b0 be as far from min as a0 for fair comparison with N-R
-\end_layout
-
-\begin_layout Chunk
-interval <- matrix(NA, nr = nIt, nc = 2)
-\end_layout
-
-\begin_layout Chunk
-interval[1, ] <- c(a0, b0)
-\end_layout
-
-\begin_layout Chunk
-for(t in 2:nIt){
-\end_layout
-
-\begin_layout Chunk
-	interval[t, ] <- bisecStep(interval[t-1, ], fp)
-\end_layout
-
-\begin_layout Chunk
-}
-\end_layout
-
-\begin_layout Chunk
-rowMeans(interval)
-\end_layout
-
-\begin_layout Chunk
 @
 \end_layout
 
@@ -2027,8 +1963,9 @@ x_{t+1}=x_{t}-H_{f}(x_{t})^{-1}\nabla f(x_{t}).
 
 \end_inset
 
-In class we'll use the demo code for an example of finding the nonlinear
- least squares fit to some weight loss data to fit the model
+In class we'll use the demo code in the Unit 11 code file (not shown here)
+ for an example of finding the nonlinear least squares fit to some weight
+ loss data to fit the model
 \begin_inset Formula 
 \[
 Y_{i}=\beta_{0}+\beta_{1}2^{-t_{i}/\beta_{2}}+\epsilon_{i}.
@@ -2218,7 +2155,8 @@ N-R involves the second derivative of
 \end_layout
 
 \begin_layout Standard
-In the demo code, we try out Fisher scoring in the weight loss example.
+In class we'll use the demo code in the Unit 11 code file (not shown here)
+ to try out Fisher scoring in the weight loss example.
 \end_layout
 
 \begin_layout Standard
@@ -2570,122 +2508,12 @@ status open
 \end_layout
 
 \begin_layout Chunk
-<<fig.width=5, fig.height=4>>=
+
+<<steepest, fig.width=5, fig.height=4>>=
 \end_layout
 
 \begin_layout Chunk
-par(mai = c(.5,.4,.1,.4))
-\end_layout
 
-\begin_layout Chunk
-f <- function(x){
-\end_layout
-
-\begin_layout Chunk
-	x[1]^2/1000 + 4*x[1]*x[2]/1000 + 5*x[2]^2/1000
-\end_layout
-
-\begin_layout Chunk
-}
-\end_layout
-
-\begin_layout Chunk
-fp <- function(x){
-\end_layout
-
-\begin_layout Chunk
-	c(2 * x[1]/1000 + 4 * x[2]/1000,
-\end_layout
-
-\begin_layout Chunk
-	4 * x[1]/1000 + 10 * x[2]/1000)
-\end_layout
-
-\begin_layout Chunk
-}
-\end_layout
-
-\begin_layout Chunk
-lineSearch <- function(alpha, xCurrent, direction, FUN){
-\end_layout
-
-\begin_layout Chunk
-	newx <- xCurrent + alpha * direction
-\end_layout
-
-\begin_layout Chunk
-	FUN(newx)
-\end_layout
-
-\begin_layout Chunk
-}
-\end_layout
-
-\begin_layout Chunk
-nIt <- 50
-\end_layout
-
-\begin_layout Chunk
-xvals <- matrix(NA, nr = nIt, nc = 2)
-\end_layout
-
-\begin_layout Chunk
-xvals[1, ] <- c(7, -4)
-\end_layout
-
-\begin_layout Chunk
-for(t in 2:50){
-\end_layout
-
-\begin_layout Chunk
-	newalpha <- optimize(lineSearch, interval = c(-5000, 5000),
-\end_layout
-
-\begin_layout Chunk
-		xCurrent = xvals[t-1, ], direction = fp(xvals[t-1, ]),
-\end_layout
-
-\begin_layout Chunk
-		FUN = f)$minimum 
-\end_layout
-
-\begin_layout Chunk
-	xvals[t, ] <- xvals[t-1, ] + newalpha * fp(xvals[t-1, ])
-\end_layout
-
-\begin_layout Chunk
-}
-\end_layout
-
-\begin_layout Chunk
-x1s <- seq(-5, 8, len = 100); x2s = seq(-5, 2, len = 100)
-\end_layout
-
-\begin_layout Chunk
-fx <- apply(expand.grid(x1s, x2s), 1, f)
-\end_layout
-
-\begin_layout Chunk
-# plot f(x) surface on log scale
-\end_layout
-
-\begin_layout Chunk
-image.plot(x1s, x2s, matrix(log(fx), 100, 100), 
-\end_layout
-
-\begin_layout Chunk
-	xlim = c(-5, 8), ylim = c(-5,2)) 
-\end_layout
-
-\begin_layout Chunk
-lines(xvals) # overlay optimization path
-\end_layout
-
-\begin_layout Chunk
-# kind of slow
-\end_layout
-
-\begin_layout Chunk
 @
 \end_layout
 
@@ -2966,6 +2794,22 @@ Gauss-Seidel
 \end_layout
 
 \begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Mittal et al.
+ Biostatistics (2014), 15, 2, pp.
+ 207–221 good example of optimiz in high dims using cyclic method; perhaps
+ a reading for class 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 Gauss-Seidel is also known a back-fitting or cyclic coordinate descent.
  The basic idea is to work element by element rather than having to choose
  a direction for each step.
@@ -3014,111 +2858,17 @@ However, Gauss-Seidel can zigzag, since you only take steps in one dimension
 \end_layout
 
 \begin_layout Chunk
-<<fig.width=5, fig.height=4>>=
+
+<<Gauss-Seidel, fig.width=5, fig.height=4>>=
 \end_layout
 
 \begin_layout Chunk
-par(mai = c(.5,.4,.1,.4))
-\end_layout
 
-\begin_layout Chunk
-f <- function(x){
-\end_layout
-
-\begin_layout Chunk
-	return(x[1]^2/1000 + 4*x[1]*x[2]/1000 + 5*x[2]^2/1000)
-\end_layout
-
-\begin_layout Chunk
-}
-\end_layout
-
-\begin_layout Chunk
-f1 <- function(x1, x2){ # f(x) as a function of x1
-\end_layout
-
-\begin_layout Chunk
-	return(x1^2/1000 + 4*x1*x2/1000 + 5*x2^2/1000)
-\end_layout
-
-\begin_layout Chunk
-}
-\end_layout
-
-\begin_layout Chunk
-f2 <- function(x2, x1){ # f(x) as a function of x2
-\end_layout
-
-\begin_layout Chunk
-	return(x1^2/1000 + 4*x1*x2/1000 + 5*x2^2/1000)
-\end_layout
-
-\begin_layout Chunk
-}
-\end_layout
-
-\begin_layout Chunk
-x1s <- seq(-5, 8, len = 100); x2s = seq(-5, 2, len = 100)
-\end_layout
-
-\begin_layout Chunk
-fx <- apply(expand.grid(x1s, x2s), 1, f)
-\end_layout
-
-\begin_layout Chunk
-image.plot(x1s, x2s, matrix(log(fx), 100, 100))
-\end_layout
-
-\begin_layout Chunk
-nIt <- 49
-\end_layout
-
-\begin_layout Chunk
-xvals <- matrix(NA, nr = nIt, nc = 2)
-\end_layout
-
-\begin_layout Chunk
-xvals[1, ] <- c(7, -4)
-\end_layout
-
-\begin_layout Chunk
-# 5, -10
-\end_layout
-
-\begin_layout Chunk
-for(t in seq(2, nIt, by = 2)){
-\end_layout
-
-\begin_layout Chunk
-	newx1 <- optimize(f1, x2 = xvals[t-1, 2], interval = c(-40, 40))$minimum
-\end_layout
-
-\begin_layout Chunk
-	xvals[t, ] <- c(newx1, xvals[t-1, 2])
-\end_layout
-
-\begin_layout Chunk
-	newx2 <- optimize(f2, x1 = newx1, interval = c(-40, 40))$minimum
-\end_layout
-
-\begin_layout Chunk
-	xvals[t+1, ] <- c(newx1, newx2)
-\end_layout
-
-\begin_layout Chunk
-}
-\end_layout
-
-\begin_layout Chunk
-lines(xvals)
-\end_layout
-
-\begin_layout Chunk
 @
 \end_layout
 
 \begin_layout Standard
-In the notes for Unit 11 on linear algebra, I discussed the use of Gauss-Seidel
+In the notes for Unit 9 on linear algebra, I discussed the use of Gauss-Seidel
  to iteratively solve 
 \begin_inset Formula $Ax=b$
 \end_inset
@@ -3238,8 +2988,16 @@ The
 \emph on
 glmnet
 \emph default
- package in R implements such optimization for a variety of penalties in
- linear model and GLM settings, including the lasso.
+ package in R (described in 
+\begin_inset CommandInset href
+LatexCommand href
+name "this Journal of Statistical Software paper"
+target "http://www.jstatsoft.org/article/view/v033i01"
+
+\end_inset
+
+) implements such optimization for a variety of penalties in linear model
+ and GLM settings, including the lasso.
  This 
 \begin_inset CommandInset href
 LatexCommand href
@@ -3256,7 +3014,8 @@ target "http://biostatistics.oxfordjournals.org/content/early/2013/10/04/biostat
 \begin_inset Formula $X$
 \end_inset
 
- matrix for computational efficiency.
+ matrix for computational efficiency; note that they do not use Newton-Raphson
+ because the matrix operations are infeasible computationally.
  
 \end_layout
 
@@ -3652,6 +3411,42 @@ for
 Convergence is assessed based on the sample variance of the function values
  at the points, the total of the norms of the differences between the points
  in the new and old simplexes, or the size of the simplex.
+ In class we'll work through some demo code (not shown here) that illustrates
+ the individual steps in an iteration of Nelder-Mead.
+\end_layout
+
+\begin_layout Standard
+We can see the points at which the function was evaluated in the same quadratic
+ example we saw in previous sections.
+ The left hand panel shows the steps from a starting point somewhat far
+ from the optimum, with the first 9 points numbered.
+ In this case, we start with points 1, 2, and 3.
+ Point 4 is a reflection.
+ At this point, it looks like point 5 is a contraction but that doesn't
+ exactly follow the algorithm above, so perhaps the algorithm as implemented
+ is a bit different than as described above.
+ The new set is (2, 3, 4).
+ Then point 6 and point 7 are reflection and expansion steps and the new
+ set is (3, 4, 6).
+ Points 8 and 9 are again reflection and expansion steps.
+ The right hand panel shows the steps from a starting point near (actually
+ at) the optimum.
+ Points 4 and 5 are reflection and expansion steps, with the next set being
+ (1, 2, 5).
+ Now step 6 is a reflection but it is the worst of all the points, so point
+ 7 is a contraction of point 2 giving the next set (1, 5, 7).
+ Point 8 is then a reflection and point 9 is a contraction of point 5.
+ 
+\end_layout
+
+\begin_layout Chunk
+
+<<nelder-example>>=
+\end_layout
+
+\begin_layout Chunk
+
+@
 \end_layout
 
 \begin_layout Standard
@@ -4034,8 +3829,8 @@ nlm()
 \end_layout
 
 \begin_layout Standard
-In the demo code, we'll work our way through a real example of optimizing
- a likelihood for some climate data on extreme precipitation.
+In the demo code (not shown here), we'll work our way through a real example
+ of optimizing a likelihood for some climate data on extreme precipitation.
 \end_layout
 
 \begin_layout Subsection
@@ -4131,7 +3926,7 @@ Always consider your answer and make sure it makes sense, in particular
 Venables and Ripley suggest that it is often worth supplying analytic first
  derivatives rather than having a routine calculate numerical derivatives
  but not worth supplying analytic second derivatives.
- As we'll see in Unit 14, R can do symbolic (i.e., analytic) differentiation
+ As we'll see in Unit 12, R can do symbolic (i.e., analytic) differentiation
  to find first and second derivatives using 
 \emph on
 deriv()
@@ -4573,7 +4368,10 @@ note that as discussed in Simon et al JCGS 22(2) 2013, you can think of
 
 \end_inset
 
-
+For an example of MM being used in practice for a real problem, see Jung
+ et al.
+ (2014): Biomarker Detection in Association Studies: Modeling SNPs Simultaneousl
+y via Logistic ANOVA, Journal of the American Statistical Association 109:1355.
 \end_layout
 
 \begin_layout Subsection
@@ -5549,20 +5347,38 @@ L(x,\lambda,\mu)=f(x)+\sum_{i}\lambda_{i}g_{i}(x)+\sum_{j}\mu_{j}h_{j}(x).
 
 \end_inset
 
-Its Lagrange dual function is 
+
+\end_layout
+
+\begin_layout Standard
+Solving that can be shown to be equivalent to this optimization:
 \begin_inset Formula 
 \[
-d(\lambda,\mu)=\inf_{x}L(x,\lambda,\mu).
+\inf_{x}\sup_{\lambda,\mu:\mu_{j}\geq0}L(x,\lambda,\mu)
 \]
 
 \end_inset
 
-For 
+where the supremum ensures that the constraints are satisfied because the
+ Lagrangian is infinity if the constraints are not satisfied.
+\end_layout
+
+\begin_layout Standard
+Let's consider interchanging the minimization and maximization.
+ For 
 \begin_inset Formula $\mu\succeq0$
 \end_inset
 
-, one can easily show that 
-\begin_inset Formula $d(\lambda,\mu)\leq f(x^{*})$
+, one can show that 
+\begin_inset Formula 
+\[
+\sup_{\lambda,\mu:\mu_{j}\geq0}\inf_{x}L(x,\lambda,\mu)\leq\inf_{x}\sup_{\lambda,\mu:\mu_{j}\geq0}L(x,\lambda,\mu),
+\]
+
+\end_inset
+
+because 
+\begin_inset Formula $\inf_{x}L(x,\lambda,\mu)\leq f(x^{*})$
 \end_inset
 
  for the minimizing value 
@@ -5570,20 +5386,28 @@ For
 \end_inset
 
  (p.
- 216 of the Boyd book), so the challenge is then to find the best lower
- bound.
+ 216 of the Boyd book).
+ This gives us the Lagrange dual function: 
+\begin_inset Formula 
+\[
+d(\lambda,\mu)=\inf_{x}L(x,\lambda,\mu),
+\]
+
+\end_inset
+
+and the Lagrange dual problem is to find the best lower bound: 
+\begin_inset Formula 
+\[
+\sup_{\lambda,\mu:\mu_{j}\geq0}d(\lambda,\mu).
+\]
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
-Thus, the Lagrange dual problem is to maximize 
-\begin_inset Formula $d(\lambda,\mu)$
-\end_inset
-
- subject to 
-\begin_inset Formula $\mu\succeq0$
-\end_inset
-
-, which is always a convex optimization problem because 
+The dual problem is always a convex optimization problem because 
 \begin_inset Formula $d(\lambda,\mu)$
 \end_inset
 
@@ -5614,7 +5438,7 @@ constraint qualifications
  the primal problem.
  Usually with the standard form of convex programming, there is no duality
  gap.
- Provided we can find the infimum over 
+ Provided we can do the minimization over 
 \begin_inset Formula $x$
 \end_inset
 
@@ -5782,6 +5606,82 @@ which is concave quadratic.
  In this case we can solve the original constrained problem in terms of
  this unconstrained dual problem.
  
+\end_layout
+
+\begin_layout Standard
+Another example is the primal and dual forms for finding the SVM classifier
+ (see 
+\begin_inset CommandInset href
+LatexCommand href
+name "the Wikipedia article"
+target "https://en.wikipedia.org/wiki/Support_vector_machine#Primal_form"
+
+\end_inset
+
+).
+ In this algorithm, we want to develop a classifier using 
+\begin_inset Formula $n$
+\end_inset
+
+ pairs of 
+\begin_inset Formula $y\in\Re^{1}$
+\end_inset
+
+ and 
+\begin_inset Formula $x\in\Re^{p}$
+\end_inset
+
+.
+ The dual form is easily derived because the minimization over 
+\begin_inset Formula $x$
+\end_inset
+
+ occurs in a function that is quadratic in 
+\begin_inset Formula $x$
+\end_inset
+
+.
+ Expressing the problem in the primal form gives an optimization in 
+\begin_inset Formula $\Re^{p}$
+\end_inset
+
+ while doing so in the dual form gives an optimization in 
+\begin_inset Formula $\Re^{n}$
+\end_inset
+
+.
+ So one reason to use the dual form would be if you have 
+\begin_inset Formula $n\ll p$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Andrew Ng CS229 notes are helpful here and for KKT
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+or see Example 2.1 in JSS v60 i5 though hard to follow
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
@@ -6215,263 +6115,24 @@ constrOptim()
 \end_layout
 
 \begin_layout Chunk
+
 <<constrOptim, fig.height=4, fig.width=4, cache=TRUE>>=
 \end_layout
 
 \begin_layout Chunk
-# based on the example in help(constrOptim)
-\end_layout
 
-\begin_layout Chunk
-fr <- function(x) { ## Rosenbrock Banana function
-\end_layout
-
-\begin_layout Chunk
-	x1 <- x[1]
-\end_layout
-
-\begin_layout Chunk
-	x2 <- x[2]
-\end_layout
-
-\begin_layout Chunk
-	100 * (x2 - x1 * x1)^2 + (1 - x1)^2
-\end_layout
-
-\begin_layout Chunk
-}
-\end_layout
-
-\begin_layout Chunk
-grr <- function(x) { ## Gradient of 'fr'
-\end_layout
-
-\begin_layout Chunk
-	x1 <- x[1]
-\end_layout
-
-\begin_layout Chunk
-	x2 <- x[2]
-\end_layout
-
-\begin_layout Chunk
-	c(-400 * x1 * (x2 - x1 * x1) - 2 * (1 - x1), 200 * (x2 - x1 * x1))
-\end_layout
-
-\begin_layout Chunk
-}
-\end_layout
-
-\begin_layout Chunk
-m <- 100
-\end_layout
-
-\begin_layout Chunk
-x1s <- x2s <- seq(-5, 5, len = m)
-\end_layout
-
-\begin_layout Chunk
-xs <- expand.grid(x1s, x2s)
-\end_layout
-
-\begin_layout Chunk
-f <- apply(xs, 1, fr)
-\end_layout
-
-\begin_layout Chunk
-image.plot(x1s, x2s, matrix(log(f), m))
-\end_layout
-
-\begin_layout Chunk
-
-\end_layout
-
-\begin_layout Chunk
-ui = rbind(c(-1,0), c(1,-1))
-\end_layout
-
-\begin_layout Chunk
-ci = c(-0.9, -0.1)
-\end_layout
-
-\begin_layout Chunk
-# x1 <= 0.9
-\end_layout
-
-\begin_layout Chunk
-# x2 <= x1 + 0.1
-\end_layout
-
-\begin_layout Chunk
-abline(v = 0.9)
-\end_layout
-
-\begin_layout Chunk
-abline(.1, 1)
-\end_layout
-
-\begin_layout Chunk
-
-\end_layout
-
-\begin_layout Chunk
-out <- constrOptim(c(.5,0), fr, grr, ui = ui, ci = ci)
-\end_layout
-
-\begin_layout Chunk
-out$par
-\end_layout
-
-\begin_layout Chunk
-points(out$par[1], out$par[2])
-\end_layout
-
-\begin_layout Chunk
-
-\end_layout
-
-\begin_layout Chunk
-# what about constraining to a different region?
-\end_layout
-
-\begin_layout Chunk
-ui = rbind(c(-1,0), c(-1, 1))
-\end_layout
-
-\begin_layout Chunk
-ci = c(-0.9,0.1)
-\end_layout
-
-\begin_layout Chunk
-# x1 <= 0.9
-\end_layout
-
-\begin_layout Chunk
-# x2 >= x1 + 0.1
-\end_layout
-
-\begin_layout Chunk
-
-\end_layout
-
-\begin_layout Chunk
-out <- constrOptim(c(.5,0), fr, grr, ui = ui, ci = ci)
-\end_layout
-
-\begin_layout Chunk
-# whoops, not feasible!
-\end_layout
-
-\begin_layout Chunk
-out <- constrOptim(c(-3, 2), fr, grr, ui = ui, ci = ci)
-\end_layout
-
-\begin_layout Chunk
-points(out$par[1], out$par[2], pch = 2)
-\end_layout
-
-\begin_layout Chunk
-
-\end_layout
-
-\begin_layout Chunk
-# how about optimizing along a line (equality constraint)?
-\end_layout
-
-\begin_layout Chunk
-# x1 - x2 = 0.1 is the same as
-\end_layout
-
-\begin_layout Chunk
-# x1 - x2 <= 0.1
-\end_layout
-
-\begin_layout Chunk
-# x1 - x2 >= 0.1
-\end_layout
-
-\begin_layout Chunk
-ui = rbind(c(-1, 1), c(1, -1))
-\end_layout
-
-\begin_layout Chunk
-ci = c(-0.1, 0.1)
-\end_layout
-
-\begin_layout Chunk
-out <- constrOptim(c(3.1, 3.0), fr, grr, ui = ui, ci = ci)
-\end_layout
-
-\begin_layout Chunk
-# hmmm, numerical issues?
-\end_layout
-
-\begin_layout Chunk
-
-\end_layout
-
-\begin_layout Chunk
-# ok, how about making a long narrow region around the line?
-\end_layout
-
-\begin_layout Chunk
-# this takes a while...
-\end_layout
-
-\begin_layout Chunk
-ui = rbind(c(1,-1), c(-1,1))
-\end_layout
-
-\begin_layout Chunk
-ci = c(.099,-.101)
-\end_layout
-
-\begin_layout Chunk
-# hmmm
-\end_layout
-
-\begin_layout Chunk
-out1 <- constrOptim(c(3.1, 3.0), fr, grr, ui = ui, ci = ci)
-\end_layout
-
-\begin_layout Chunk
-out2 <- constrOptim(c(3.1, 3.0), fr, NULL, ui = ui, ci = ci)
-\end_layout
-
-\begin_layout Chunk
-image.plot(x1s, x2s, matrix(log(f), m))
-\end_layout
-
-\begin_layout Chunk
-abline(-0.1, 1)
-\end_layout
-
-\begin_layout Chunk
-points(out1$par[1], out1$par[2], pch = "1")
-\end_layout
-
-\begin_layout Chunk
-points(out2$par[1], out2$par[2], pch = "2")
-\end_layout
-
-\begin_layout Chunk
 @
 \end_layout
 
 \begin_layout Standard
-This draft paper discusses R's capabilities for convex optimization in more
- detail.
-\begin_inset Newline newline
-\end_inset
-
- 
 \begin_inset CommandInset href
 LatexCommand href
-target "http://www.econ.uiuc.edu/~roger/research/conopt/coptr.pdf"
+name "This paper"
+target "http://www.jstatsoft.org/article/view/v060i05"
 
 \end_inset
 
-.
+ discusses R's capabilities for convex optimization in more detail.
 \end_layout
 
 \begin_layout Standard
