@@ -226,22 +226,18 @@ Yang and Zou JCGS (2013) 22:396 - use coord desc based on MM instead of
 \end_layout
 
 \begin_layout Chunk
-
 <<setup, include=FALSE>>=
 \end_layout
 
 \begin_layout Chunk
-
 require(fields)
 \end_layout
 
 \begin_layout Chunk
-
 read_chunk('unit11-optim.R')
 \end_layout
 
 \begin_layout Chunk
-
 @
 \end_layout
 
@@ -1131,257 +1127,10 @@ status open
 \end_layout
 
 \begin_layout Chunk
-
 <<newton-wrong, fig.width=7, fig.height=4>>=
 \end_layout
 
 \begin_layout Chunk
-
-options(width=55)
-\end_layout
-
-\begin_layout Chunk
-
-par(mfrow = c(1,2))
-\end_layout
-
-\begin_layout Chunk
-
-fp <- function(x, theta = 1){
-\end_layout
-
-\begin_layout Chunk
-
-	exp(x*theta)/(1+exp(x*theta)) - .5
-\end_layout
-
-\begin_layout Chunk
-
-}
-\end_layout
-
-\begin_layout Chunk
-
-fpp <- function(x, theta = 1){
-\end_layout
-
-\begin_layout Chunk
-
-	exp(x*theta)/((1+exp(x*theta))^2)
-\end_layout
-
-\begin_layout Chunk
-
-}
-\end_layout
-
-\begin_layout Chunk
-
-xs <- seq(-15, 15, len = 300)
-\end_layout
-
-\begin_layout Chunk
-
-plot(xs, fp(xs), type = 'l')
-\end_layout
-
-\begin_layout Chunk
-
-lines(xs, fpp(xs), lty = 2)
-\end_layout
-
-\begin_layout Chunk
-
-# good starting point
-\end_layout
-
-\begin_layout Chunk
-
-x0 <- 2
-\end_layout
-
-\begin_layout Chunk
-
-xvals <- c(x0,rep(NA,9))
-\end_layout
-
-\begin_layout Chunk
-
-for(t in 2:10){
-\end_layout
-
-\begin_layout Chunk
-
-	xvals[t]=xvals[t-1] - fp(xvals[t-1]) / fpp(xvals[t-1])
-\end_layout
-
-\begin_layout Chunk
-
-}
-\end_layout
-
-\begin_layout Chunk
-
-print(xvals)
-\end_layout
-
-\begin_layout Chunk
-
-points(xvals, fp(xvals), pch = as.character(1:length(xvals)))
-\end_layout
-
-\begin_layout Chunk
-
-# bad starting point
-\end_layout
-
-\begin_layout Chunk
-
-x0 <- 2.5
-\end_layout
-
-\begin_layout Chunk
-
-xvals <- c(x0,rep(NA,9))
-\end_layout
-
-\begin_layout Chunk
-
-for(t in 2:10){
-\end_layout
-
-\begin_layout Chunk
-
-	xvals[t]=xvals[t-1] - fp(xvals[t-1]) / fpp(xvals[t-1])
-\end_layout
-
-\begin_layout Chunk
-
-}
-\end_layout
-
-\begin_layout Chunk
-
-print(xvals)
-\end_layout
-
-\begin_layout Chunk
-
-points(xvals, fp(xvals), pch = as.character(1:length(xvals)), col = 'red')
-\end_layout
-
-\begin_layout Chunk
-
-# whoops
-\end_layout
-
-\begin_layout Chunk
-
-#############################################
-\end_layout
-
-\begin_layout Chunk
-
-# mistakenly climbing uphill
-\end_layout
-
-\begin_layout Chunk
-
-f <- function(x) cos(x)
-\end_layout
-
-\begin_layout Chunk
-
-fp <- function(x) -sin(x)
-\end_layout
-
-\begin_layout Chunk
-
-fpp <- function(x) -cos(x)
-\end_layout
-
-\begin_layout Chunk
-
-xs <- seq(0, 2*pi, len = 300)
-\end_layout
-
-\begin_layout Chunk
-
-plot(xs, f(xs), type = 'l', lwd = 2)
-\end_layout
-
-\begin_layout Chunk
-
-lines(xs, fp(xs))
-\end_layout
-
-\begin_layout Chunk
-
-lines(xs, fpp(xs), lty = 2)
-\end_layout
-
-\begin_layout Chunk
-
-x0 <- 0.2 # starting point
-\end_layout
-
-\begin_layout Chunk
-
-fp(x0) # negative
-\end_layout
-
-\begin_layout Chunk
-
-fpp(x0) # negative
-\end_layout
-
-\begin_layout Chunk
-
-x1 <- x0 - fp(x0)/fpp(x0) # whoops, we've gone uphill 
-\end_layout
-
-\begin_layout Chunk
-
-# because of the negative second derivative
-\end_layout
-
-\begin_layout Chunk
-
-xvals <- c(x0,rep(NA,9))
-\end_layout
-
-\begin_layout Chunk
-
-for(t in 2:10){
-\end_layout
-
-\begin_layout Chunk
-
-	xvals[t]=xvals[t-1]-fp(xvals[t-1])/fpp(xvals[t-1])
-\end_layout
-
-\begin_layout Chunk
-
-}
-\end_layout
-
-\begin_layout Chunk
-
-xvals
-\end_layout
-
-\begin_layout Chunk
-
-points(xvals, fp(xvals), pch = as.character(1:length(xvals)), col = 'red')
-\end_layout
-
-\begin_layout Chunk
-
-# and we've found a maximum rather than a minimum...
-\end_layout
-
-\begin_layout Chunk
-
 @
 \end_layout
 
@@ -1618,12 +1367,10 @@ Here's a function (the Rastrigin function) with multiple optima that is
 \end_layout
 
 \begin_layout Chunk
-
 <<rastrigin, fig.width=6, fig.height=5>>=
 \end_layout
 
 \begin_layout Chunk
-
 @
 \end_layout
 
@@ -1817,12 +1564,10 @@ Here's an example of convergence comparing bisection and N-R:
 \end_layout
 
 \begin_layout Chunk
-
 <<convergence>>=
 \end_layout
 
 \begin_layout Chunk
-
 @
 \end_layout
 
@@ -2460,7 +2205,7 @@ Steepest descent chooses the direction as the steepest direction downhill,
 , since the gradient gives the steepest direction uphill (the negative sign
  in the equation below has us move directly downhill rather than directly
  uphill).
- A better approach is to scale the step
+ Given the direction, we want to scale the step
 \begin_inset Formula 
 \[
 x_{t+1}=x_{t}-\alpha_{t}f\p(x_{t})
@@ -2508,12 +2253,10 @@ status open
 \end_layout
 
 \begin_layout Chunk
-
 <<steepest, fig.width=5, fig.height=4>>=
 \end_layout
 
 \begin_layout Chunk
-
 @
 \end_layout
 
@@ -2858,12 +2601,10 @@ However, Gauss-Seidel can zigzag, since you only take steps in one dimension
 \end_layout
 
 \begin_layout Chunk
-
 <<Gauss-Seidel, fig.width=5, fig.height=4>>=
 \end_layout
 
 \begin_layout Chunk
-
 @
 \end_layout
 
@@ -3440,12 +3181,10 @@ We can see the points at which the function was evaluated in the same quadratic
 \end_layout
 
 \begin_layout Chunk
-
 <<nelder-example>>=
 \end_layout
 
 \begin_layout Chunk
-
 @
 \end_layout
 
@@ -6115,12 +5854,10 @@ constrOptim()
 \end_layout
 
 \begin_layout Chunk
-
 <<constrOptim, fig.height=4, fig.width=4, cache=TRUE>>=
 \end_layout
 
 \begin_layout Chunk
-
 @
 \end_layout
 

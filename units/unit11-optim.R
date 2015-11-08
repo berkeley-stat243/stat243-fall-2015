@@ -41,9 +41,13 @@ print(xvals)
 points(xvals, fp(xvals), pch = as.character(1:length(xvals)), col = 'red')
 ## whoops
 
-## mistakenly climbing uphill
+## example of mistakenly climbing uphill
+
+# original fxn
 f <- function(x) cos(x)
+# gradient
 fp <- function(x) -sin(x)
+# second derivative
 fpp <- function(x) -cos(x)
 xs <- seq(0, 2*pi, len = 300)
 plot(xs, f(xs), type = 'l', lwd = 2)
@@ -70,7 +74,7 @@ points(xvals, fp(xvals), pch = as.character(1:length(xvals)), col = 'red')
 
 ### 4.2 Starting values
 
-## @knitr rastringin
+## @knitr rastrigin
 
 rastrigin <- function(x) {
 	A <- 10
@@ -80,7 +84,7 @@ rastrigin <- function(x) {
 const <- 5.12
 nGrid <- 100
 gr <- seq(-const, const, len = nGrid)
-xs <- expand.grid(gr, gr)
+xs <- expand.grid(x1 = gr, x2 = gr)
 y <- apply(xs, 1, rastrigin)
 require(fields)
 image.plot(gr, gr, matrix(y, nGrid, nGrid), col=tim.colors(32))
