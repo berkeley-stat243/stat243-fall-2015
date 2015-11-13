@@ -2533,7 +2533,7 @@ A basic approach is to do the full step and then step back by halves.
 \end_layout
 
 \begin_layout Subsection
-Gauss-Seidel
+Coordinate descent (Gauss-Seidel)
 \end_layout
 
 \begin_layout Standard
