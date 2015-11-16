@@ -83,7 +83,14 @@ TODO: put a picture of something
 You should have observed that the push was not accepted at the previous stage and gotten a message something like this:
 
 ```
-TODO: add a conflicting push message
+To git@github.com:berkeley-stat243/stat243-fall-2015.git
+ ! [rejected]        master -> master (fetch first)
+error: failed to push some refs to 'git@github.com:berkeley-stat243/stat243-fall-2015.git'
+hint: Updates were rejected because the remote contains work that you do
+hint: not have locally. This is usually caused by another repository pushing
+hint: to the same ref. You may want to first integrate the remote changes
+hint: (e.g., 'git pull ...') before pushing again.
+hint: See the 'Note about fast-forwards' in 'git push --help' for details.
 ```
 
 ### 5b. `userB`: the `push` issues
