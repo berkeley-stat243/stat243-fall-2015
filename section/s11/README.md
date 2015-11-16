@@ -39,18 +39,18 @@ They can be anything you want as long as they are __AFTER__ the existing text.
 Commit the changes, but __do not push__:
 
 ```
-git commit -m 'userA modifies README'
+git commit -a -m 'userA modifies README'
 ```
 
 ### 3b. `userB`: clone the repository and make changes
 
-Now that you have been added as a collaborator, clone the repository and make your own changes.
+Now that you have been added as a collaborator, clone (`git clone`) the repository and make your own changes.
 Make sure that these changes are __BEFORE__ the existing text.
 
 Commit these changes and __do not push__:
 
 ```
-git commit -m 'userB modifies README concurrently'
+git commit -a -m 'userB modifies README concurrently'
 ```
 
 ## 4. Push changes
@@ -72,12 +72,16 @@ Did everything go okay?
 __(Q1)__ Before you proceed, talk to `userA` and try to predict what will happen.
 Will git automatically merge the 2 commits?
 
+
+Here's a picture of cute baby pandas to help you from scrolling and seeing the answer.
+
+![cute baby pandas](http://cdn1.vox-cdn.com/assets/4495701/127910043.jpg)
+
+Now actually try to do the push:
+
 ```
 git push origin master
 ```
-
-TODO: put a picture of something
-
 ## 5. Resolve any issues
 
 You should have observed that the push was not accepted at the previous stage and gotten a message something like this:
@@ -93,9 +97,10 @@ hint: (e.g., 'git pull ...') before pushing again.
 hint: See the 'Note about fast-forwards' in 'git push --help' for details.
 ```
 
+The error message is related to the fact that both commits have the same parent, but the branch diverged and there is no clear place to put the commit for git.
+
 ### 5b. `userB`: the `push` issues
 
-The error message is related to the fact that both commits have the same parent, but the branch diverged and there is no clear place to put the commit for git.
 The way to deal with this is to do a `git pull` and update your existing branch.
 
 ```
@@ -112,10 +117,24 @@ If you followed all the directions, you should now be able to push:
 ```
 git push origin master
 ```
-
-TODO: add a note about looking at the graph
-
 __(Q2)__ How can you prevent this from happening in the future?
+
+### 5c. Look at the network graph together
+
+Now is a good time to look at the network graph. From the homepage of your repository:
+
+- Click the "Graphs" tab on the right side
+- Near the top, click the "Network" tab
+
+You should see that the master branch diverges, but then converges to 1 node.
+
+### 5a. `userA`: update your branch
+
+Make sure you have the changes that `userB` made:
+
+```
+git pull origin master
+```
 
 ## 6. Concurrent conflicting changes
 
@@ -146,7 +165,16 @@ git pull origin master
 You should have received an error telling you that there are some conflicts that must be manually merged in:
 
 ```
-TODO: put conflict message here
+remote: Counting objects: 3, done.
+remote: Compressing objects: 100% (2/2), done.
+remote: Total 3 (delta 0), reused 3 (delta 0), pack-reused 0
+Unpacking objects: 100% (3/3), done.
+From github.com:pimentel/practiceMerging
+ * branch            master     -> FETCH_HEAD
+   0f12908..f081f62  master     -> origin/master
+Auto-merging README.md
+CONFLICT (content): Merge conflict in README.md
+Automatic merge failed; fix conflicts and then commit the result.
 ```
 
 ## 7. Dealing with conflicts
@@ -168,7 +196,7 @@ This is going to be a problem...
 >>>>>>> trouble
 ```
 
-Where the first block denotes the code that is in your current branch and the second block denotes the code that is in the branch you are trying to merge in.
+Where the first block denotes the code that is in your current branch and the second block denotes the code that is in the branch ()you are trying to merge in.
 When fixing this problem, you must remove all of the markup (`<<<`, `===`, `>>>`) and make the code functional.
 When you are done, make sure to test the code (if relevant) then you can commit.
 
@@ -179,7 +207,21 @@ git commit -a -m 'manual resolution of merge'
 There are some tools that can help with dealing with the merge.
 In atom, there is a tool called [merge-conflicts](https://atom.io/packages/merge-conflicts) that highlights the differences and lets you simply click to keep a particular block.
 
-# resources
+Now is a good time to look at the network graph again.
+You should now see that the master branch diverged twice but there is only 1 branch in total.
+
+# 8. Revel in success
+
+Congratulations! You successfully merge conflicting branches while working with collaborators.
+The concepts are the same if you are working with different branches.
+You might want to look into using github pull requests if you are working with branches that diverged significantly.
+Github helps by being able to visualize the differences between branches very nicely as well as communicating about specific lines of code.
+
+# Resources
+
+You can learn more about a centralized workflow at the [atlassian page](https://www.atlassian.com/git/tutorials/comparing-workflows/centralized-workflow)
+
+While we didn't talk about it, doing a rebase is sometimes helpful:
+
 - [difference between merge and rebase](http://stackoverflow.com/questions/16666089/whats-the-difference-between-git-merge-and-git-rebase)
 - [when to use merge and when to use rebase](http://www.derekgourlay.com/archives/428)
-- https://www.atlassian.com/git/tutorials/comparing-workflows/centralized-workflow
