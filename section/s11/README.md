@@ -4,7 +4,9 @@ Today we will be practicing working remotely with github and collaborators.
 
 # Remote working exercise
 
-For this exercise there will be 2 users `userA` and `userB`.
+For this exercise there will be to users: `userA` and `userB`.
+Make sure to work together and talk about each step.
+Do not proceed to the next step before your partner has finish the current step as this will probably mess up the intended workflow.
 
 ## 1. `userA`: create the repository
 
@@ -210,16 +212,17 @@ In atom, there is a tool called [merge-conflicts](https://atom.io/packages/merge
 Now is a good time to look at the network graph again.
 You should now see that the master branch diverged twice but there is only 1 branch in total.
 
-# 8. Revel in success
+# 8. Revel in success and perfect your new trade
 
 Congratulations! You successfully merge conflicting branches while working with collaborators.
 The concepts are the same if you are working with different branches.
-You might want to look into using github pull requests if you are working with branches that diverged significantly.
+Below you will find some resources to expand your knowledge about git.
+You might want to look into using github pull requests if you are working with branches that diverge significantly.
 Github helps by being able to visualize the differences between branches very nicely as well as communicating about specific lines of code.
 
 # Resources
 
-You can learn more about a centralized workflow at the [atlassian page](https://www.atlassian.com/git/tutorials/comparing-workflows/centralized-workflow)
+You can learn more about a centralized workflow at the [Atlassian page](https://www.atlassian.com/git/tutorials/comparing-workflows/centralized-workflow)
 
 While we didn't talk about it, doing a rebase is sometimes helpful:
 
