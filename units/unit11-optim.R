@@ -452,6 +452,7 @@ f <- function(x, plot = TRUE){
     return(x[1]^2/1000 + 4*x[1]*x[2]/1000 + 5*x[2]^2/1000)
 }
 
+library(fields)
 par(mfrow = c(1,2))
 
 x1s <- seq(-5, 8, len = 100); x2s = seq(-5, 2, len = 100)
