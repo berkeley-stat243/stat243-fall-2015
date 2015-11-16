@@ -2,7 +2,7 @@
 
 Today we will be practicing working remotely with github and collaborators.
 
-# Remote working exercise
+# Working remotely exercise
 
 For this exercise there will be two users: `userA` and `userB`.
 Make sure to work together and talk about each step.
