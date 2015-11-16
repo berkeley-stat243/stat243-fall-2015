@@ -4,9 +4,9 @@ Today we will be practicing working remotely with github and collaborators.
 
 # Remote working exercise
 
-For this exercise there will be to users: `userA` and `userB`.
+For this exercise there will be two users: `userA` and `userB`.
 Make sure to work together and talk about each step.
-Do not proceed to the next step before your partner has finish the current step as this will probably mess up the intended workflow.
+Do not proceed to the next step before your partner has finished the current step as this will probably mess up the intended workflow.
 
 ## 1. `userA`: create the repository
 
@@ -21,7 +21,7 @@ Invite `userB` to become a collaborator:
 
 ## 2. `userA`: add a file
 
-Add a file called "README.md". Put some text into it. Make sure to commit and push:
+Add a file called `README.md`. Put some text into it. Make sure to commit and push:
 
 ```
 git add README.md
@@ -35,7 +35,7 @@ Here we will make concurrent changes and see how git behaves.
 
 ### 3a. `userA`: make some more modifications
 
-Open up "README.md" and make some more modifications.
+Open up `README.md` and make some more modifications.
 They can be anything you want as long as they are __AFTER__ the existing text.
 
 Commit the changes, but __do not push__:
@@ -195,10 +195,11 @@ The difference usually looks like this:
 More work on the master branch...
 =======
 This is going to be a problem...
->>>>>>> trouble
+>>>>>>> trouble-branch
 ```
 
-Where the first block denotes the code that is in your current branch and the second block denotes the code that is in the branch ()you are trying to merge in.
+Where the first block denotes the code that is in your current branch and the second block denotes the code that is in the branch you are trying to merge in.
+If you are working on the same branch and there was a conflict, `trouble` will be replaced with the commit hash that conflicts.
 When fixing this problem, you must remove all of the markup (`<<<`, `===`, `>>>`) and make the code functional.
 When you are done, make sure to test the code (if relevant) then you can commit.
 
@@ -214,7 +215,7 @@ You should now see that the master branch diverged twice but there is only 1 bra
 
 # 8. Revel in success and perfect your new trade
 
-Congratulations! You successfully merge conflicting branches while working with collaborators.
+Congratulations! You successfully merged conflicting branches while working with collaborators.
 The concepts are the same if you are working with different branches.
 Below you will find some resources to expand your knowledge about git.
 You might want to look into using github pull requests if you are working with branches that diverge significantly.
@@ -222,7 +223,9 @@ Github helps by being able to visualize the differences between branches very ni
 
 # Resources
 
-You can learn more about a centralized workflow at the [Atlassian page](https://www.atlassian.com/git/tutorials/comparing-workflows/centralized-workflow)
+- [More on the centralized workflow](https://www.atlassian.com/git/tutorials/comparing-workflows/centralized-workflow)
+- [How to undo (almost) anything with Git](https://github.com/blog/2019-how-to-undo-almost-anything-with-git)
+- [How to Write a Git Commit Message](http://chris.beams.io/posts/git-commit/)
 
 While we didn't talk about it, doing a rebase is sometimes helpful:
 
