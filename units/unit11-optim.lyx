@@ -5467,7 +5467,7 @@ For nonconvex problems, if
 h_{j}(x^{*}) & \leq & 0\\
 g_{i}(x^{*}) & = & 0\\
 \mu_{j}^{*} & \geq & 0\\
-\mu_{j}^{*}h_{j}(x) & = & 0\\
+\mu_{j}^{*}h_{j}(x^{*}) & = & 0\\
 \nabla f(x^{*})+\sum_{i}\lambda_{i}^{*}\nabla g_{i}(x^{*})+\sum_{j}\mu_{j}^{*}\nabla h_{j}(x^{*}) & = & 0.
 \end{eqnarray*}
 
