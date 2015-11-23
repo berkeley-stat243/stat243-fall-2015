@@ -1,0 +1,1334 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\begin_preamble
+\usepackage[unicode=true]{hyperref}
+\usepackage{/accounts/gen/vis/paciorek/latex/paciorek-asa,times,graphics}
+\input{/accounts/gen/vis/paciorek/latex/paciorekMacros}
+%\renewcommand{\baselinestretch}{1.5}
+\hypersetup{unicode=true, pdfusetitle,bookmarks=true,bookmarksnumbered=false,bookmarksopen=false,breaklinks=false,pdfborder={0 0 1},backref=false,colorlinks=true,}
+\end_preamble
+\use_default_options false
+\begin_modules
+knitr
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 12
+\spacing onehalf
+\use_hyperref false
+\papersize letterpaper
+\use_geometry true
+\use_amsmath 1
+\use_esint 0
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 1in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Unit 12: Numerical Integration and Differentiation 
+\end_layout
+
+\begin_layout Chunk
+
+<<read-chunk, echo=FALSE>>= 
+\end_layout
+
+\begin_layout Chunk
+
+read_chunk('unit12-integ.R') 
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+References: 
+\end_layout
+
+\begin_layout Itemize
+Gentle: Computational Statistics
+\end_layout
+
+\begin_layout Itemize
+Monahan: Numerical Methods of Statistics
+\end_layout
+
+\begin_layout Itemize
+Givens and Hoeting: Computational Statistics
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+done: GH 121-140; Rizzo 330-331 for quadrature, G-CS 184-199, Lange NA 363-376,M
+on 257-291
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Our goal here is to understand the basics of numerical (and symbolic) approaches
+ to approximating derivatives and integrals on a computer.
+ Derivatives are useful primarily for optimization.
+ Integrals arise in approximating expected values and in various places
+ where we need to integrate over an unknown random variable (e.g., Bayesian
+ contexts, random effects models, missing data contexts).
+ For example, consider a Poisson regression model with random effects, 
+\begin_inset Formula $Y_{i}\sim\mbox{Poi}(X_{i}^{\top}\beta+b_{i})$
+\end_inset
+
+.
+ We'd like to estimate 
+\begin_inset Formula $\beta$
+\end_inset
+
+ by maximizing the marginal likelihood for the vector of observations, 
+\begin_inset Formula $Y$
+\end_inset
+
+, integrating over the vector of random effects, 
+\begin_inset Formula $b$
+\end_inset
+
+: 
+\begin_inset Formula $\int f(y,b;\beta)f(b)db$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Section
+Differentiation
+\end_layout
+
+\begin_layout Subsection
+Numerical differentiation
+\end_layout
+
+\begin_layout Standard
+There's not much to this topic.
+ The basic idea is to approximate the derivative of interest using finite
+ differences.
+\end_layout
+
+\begin_layout Standard
+A standard discrete approximation of the derivative is the forward difference
+ 
+\begin_inset Formula 
+\[
+f\p(x)\approx\frac{f(x+h)-f(x)}{h}
+\]
+
+\end_inset
+
+A more accurate approach is the central difference
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+f\p(x)\approx\frac{f(x+h)-f(x-h)}{2h}
+\]
+
+\end_inset
+
+Provided we already have computed 
+\begin_inset Formula $f(x)$
+\end_inset
+
+, the forward difference takes half as much computing as the central difference.
+ However, the central difference has an error of 
+\begin_inset Formula $O(h^{2})$
+\end_inset
+
+ while the forward difference has error of 
+\begin_inset Formula $O(h)$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+For second derivatives, if we apply the above approximations to 
+\begin_inset Formula $f\p(x)$
+\end_inset
+
+ and 
+\begin_inset Formula $f\p(x+h)$
+\end_inset
+
+, we get an approximation of the second derivative based on second differences:
+\begin_inset Formula 
+\[
+f\pp(x)\approx\frac{f\p(x+h)-f\p(x)}{h}\approx\frac{f(x+2h)-2f(x+h)+f(x)}{h^{2}}.
+\]
+
+\end_inset
+
+The corresponding central difference approximation is
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+f\pp(x)\approx\frac{f(x+h)-2f(x)+f(x-h)}{h^{2}}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+For multivariate 
+\begin_inset Formula $x$
+\end_inset
+
+, we need to compute directional derivatives.
+ In general these will be in axis-oriented directions (e.g., for the Hessian),
+ but they can be in other directions.
+ The basic idea is to find 
+\begin_inset Formula $f(x+he)$
+\end_inset
+
+ in expressions such as those above where 
+\begin_inset Formula $e$
+\end_inset
+
+ is a unit length vector giving the direction.
+ For axis oriented directions, we have 
+\begin_inset Formula $e_{i}$
+\end_inset
+
+ being a vector with a one in the 
+\begin_inset Formula $i$
+\end_inset
+
+th position and zeroes in the other positions, 
+\begin_inset Formula 
+\[
+\frac{\partial f}{\partial x_{i}}\approx\frac{f(x+he_{i})-f(x)}{h}.
+\]
+
+\end_inset
+
+Note that for mixed partial derivatives, we need to use 
+\begin_inset Formula $e_{i}$
+\end_inset
+
+ and 
+\begin_inset Formula $e_{j}$
+\end_inset
+
+, so the second difference approximation gets a bit more complicated, 
+\begin_inset Formula 
+\[
+\frac{\partial^{2}f}{\partial x_{i}\partial x_{j}}\approx\frac{f(x+he_{j}+he_{i})-f(x+he_{j})-f(x+he_{i})+f(x)}{h^{2}}.
+\]
+
+\end_inset
+
+We would have analogous quantities for central difference approximations.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+For a directional derivative, we would use a length-one vector in the correct
+ direction in place of the 
+\begin_inset Formula $e_{i}$
+\end_inset
+
+ and 
+\begin_inset Formula $e_{j}$
+\end_inset
+
+ vectors.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+Numerical issues
+\end_layout
+
+\begin_layout Standard
+Ideally we would take 
+\begin_inset Formula $h$
+\end_inset
+
+ very small and get a highly accurate estimate of the derivative.
+ However, the limits of machine precision mean that the difference estimator
+ can behave badly for very small 
+\begin_inset Formula $h$
+\end_inset
+
+, since we lose accuracy in computing differences such as between 
+\begin_inset Formula $f(x+h)$
+\end_inset
+
+ and 
+\begin_inset Formula $f(x-h)$
+\end_inset
+
+ and from dividing by small 
+\begin_inset Formula $h$
+\end_inset
+
+.
+ Therefore we accept a bias in the estimate by not using 
+\begin_inset Formula $h$
+\end_inset
+
+ so small, often by taking 
+\begin_inset Formula $h$
+\end_inset
+
+ to be square root of machine epsilon (i.e., about 
+\begin_inset Formula $1\times10^{-8}$
+\end_inset
+
+ on most systems).
+ Actually, we need to account for the order of magnitude of 
+\begin_inset Formula $x$
+\end_inset
+
+, so what we really want is 
+\begin_inset Formula $h=\sqrt{\epsilon}|x|$
+\end_inset
+
+ - i.e., we want it to be in terms relative to the magnitude of 
+\begin_inset Formula $x$
+\end_inset
+
+.
+ As an example, recall that if 
+\begin_inset Formula $x=1\times10^{9}$
+\end_inset
+
+ and we did 
+\begin_inset Formula $x+h=1\times10^{9}+1\times10^{-8}$
+\end_inset
+
+, we would get 
+\begin_inset Formula $x+h=1\times10^{9}=x$
+\end_inset
+
+ because we can only represent 7 decimal places with precision.
+\end_layout
+
+\begin_layout Standard
+Givens and Hoeting and Monahan point out that some sources recommend the
+ cube root of machine epsilon (about 
+\begin_inset Formula $5\times10^{-6}$
+\end_inset
+
+ on most systems), in particular when approximating second derivatives.
+ 
+\end_layout
+
+\begin_layout Standard
+Let's assess these recommendations empirically in R.
+ We'll use a test function, 
+\begin_inset Formula $\log\Gamma(x)$
+\end_inset
+
+, for which we can obtain the derivatives with high accuracy using built-in
+ R functions.
+ This is a modification of Monahan's example from his 
+\emph on
+numdif.r
+\emph default
+ code.
+\end_layout
+
+\begin_layout Chunk
+
+<<diff>>=
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+What do we conclude about the advice about using 
+\begin_inset Formula $h$
+\end_inset
+
+ proportional to either the square root or cube root of machine epsilon?
+\end_layout
+
+\begin_layout Subsection
+Numerical differentiation in R
+\end_layout
+
+\begin_layout Standard
+There are multiple numerical derivative functions in R.
+ 
+\emph on
+numericDeriv()
+\emph default
+ will do the first derivative.
+ It requires an expression rather than a function as the form in which the
+ function is input, which in some cases might be inconvenient.
+ The functions in the 
+\emph on
+numDeriv
+\emph default
+ package will compute the gradient and Hessian, either in the standard way
+ (using the argument 
+\family typewriter
+method = 'simple'
+\family default
+) or with a more accurate approximation (using the argument 
+\family typewriter
+method = 'Richardson'
+\family default
+).
+ For optimization, one might use the simple option, assuming that is faster,
+ while the more accurate approximation might be good for computing the Hessian
+ to approximate the information matrix for getting an asymptotic covariance.
+ (Although in this case, the statistical uncertainty generally will ovewhelm
+ any numerical uncertainty.)
+\end_layout
+
+\begin_layout Chunk
+
+<<numericDeriv>>=
+\end_layout
+
+\begin_layout Chunk
+
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+Note that by default, if you rely on numerical derivatives in 
+\emph on
+optim()
+\emph default
+, it uses 
+\begin_inset Formula $h=0.001$
+\end_inset
+
+ (the 
+\emph on
+ndeps
+\emph default
+ sub-argument to 
+\emph on
+control
+\emph default
+), which might not be appropriate if the parameters vary on a small scale.
+ This relatively large value of 
+\begin_inset Formula $h$
+\end_inset
+
+ is probably chosen based on 
+\emph on
+optim()
+\emph default
+ assuming that you've scaled the parameters as described in the text describing
+ the 
+\emph on
+parscale
+\emph default
+ argument.
+\end_layout
+
+\begin_layout Subsection
+Symbolic differentiation
+\end_layout
+
+\begin_layout Standard
+We've seen that we often need the first and second derivatives for optimization.
+ Numerical differentiation is fine, but if we can readily compute the derivative
+s in closed form, that can improve our optimization.
+ (Venables and Ripley comment that this is particularly the case for the
+ first derivative, but not as much for the second.)
+\end_layout
+
+\begin_layout Standard
+In general, using a computer program to do the analytic differentiation
+ is recommended as it's easy to make errors in doing differentiation by
+ hand.
+ Monahan points out that one of the main causes of error in optimization
+ is human error in coding analytic derivatives, so it's good practice to
+ avoid this.
+ R has a simple differentiation ability in the 
+\emph on
+deriv()
+\emph default
+ function (which handles the gradient and the Hessian).
+ However it can only handle a limited number of functions.
+ Here's an example of using 
+\emph on
+deriv()
+\emph default
+ and then embedding the resulting R code in a user-defined function.
+ This can be quite handy, though the format of the result in terms of attributes
+ is not the most handy, so you might want to monkey around with the code
+ more in practice.
+\end_layout
+
+\begin_layout Chunk
+
+<<symbolic-diff, tidy=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+For more complicated functions, both Maple and Mathematica do symbolic different
+iation.
+ Here are some examples in Mathematica, which is available on the SCF machines
+ and through campus: 
+\begin_inset CommandInset href
+LatexCommand href
+target "http://ist.berkeley.edu/software-central"
+
+\end_inset
+
+:
+\family typewriter
+
+\begin_inset Newline newline
+\end_inset
+
+# first partial derivative wrt x 
+\begin_inset Newline newline
+\end_inset
+
+D[ Exp[x^n] - Cos[x y], x] 
+\begin_inset Newline newline
+\end_inset
+
+# second partial derivative 
+\begin_inset Newline newline
+\end_inset
+
+D[ Exp[x^n] - Cos[x y], {x, 2}] 
+\begin_inset Newline newline
+\end_inset
+
+# partials 
+\begin_inset Newline newline
+\end_inset
+
+D[ Exp[x^n] - Cos[x y], x, y] 
+\begin_inset Newline newline
+\end_inset
+
+# trig function example 
+\begin_inset Newline newline
+\end_inset
+
+D[ ArcTan[x], x] 
+\end_layout
+
+\begin_layout Section
+Integration
+\end_layout
+
+\begin_layout Standard
+We've actually already discussed numerical integration extensively in the
+ simulation unit, where we considered Monte Carlo approximation of high-dimensio
+nal integrals.
+ In the case where we have an integral in just one or two dimensions, MC
+ is fine, but we can get highly-accurate, very fast approximations by numerical
+ integration methods known as quadrature.
+ Unfortunately such approximations scale very badly as the dimension grows,
+ while MC methods scale well, so MC is recommended in higher dimensions.
+ Here's an empirical example in R, where the MC estimator is
+\begin_inset Formula 
+\[
+\int_{0}^{\pi}\sin(x)dx=\int_{0}^{\pi}\pi\sin(x)\left(\frac{1}{\pi}\cdot1\right)dx=E_{f}(\pi\sin(x))
+\]
+
+\end_inset
+
+for 
+\begin_inset Formula $f=\mathcal{U}(0,\pi)$
+\end_inset
+
+:
+\end_layout
+
+\begin_layout Chunk
+
+<<numeric-integ-example, tidy=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Standard
+More on this issue below.
+\end_layout
+
+\begin_layout Subsection
+Numerical integration methods
+\end_layout
+
+\begin_layout Standard
+The basic idea is to break the domain into pieces and approximate the integral
+ within each piece:
+\begin_inset Formula 
+\[
+\int_{a}^{b}f(x)dx=\sum_{i=0}^{n-1}\int_{x_{i}}^{x_{i+1}}f(x)dx,
+\]
+
+\end_inset
+
+where we then approximate 
+\begin_inset Formula $\int_{x_{i}}^{x_{i+1}}f(x)dx\approx\sum_{j=0}^{m}A_{ij}f(x_{ij}^{*})$
+\end_inset
+
+ where 
+\begin_inset Formula $x_{ij}^{*}$
+\end_inset
+
+ are the 
+\emph on
+nodes
+\emph default
+.
+ 
+\end_layout
+
+\begin_layout Subsubsection
+Newton-Cotes quadrature
+\end_layout
+
+\begin_layout Standard
+Newton-Cotes quadrature has equal length intervals of length 
+\begin_inset Formula $h=(b-a)/n$
+\end_inset
+
+, with the same number of nodes in each interval.
+ 
+\begin_inset Formula $f(x)$
+\end_inset
+
+ is replaced with a polynomial approximation in each interval and 
+\begin_inset Formula $A_{ij}$
+\end_inset
+
+ are chosen so that the sum equals the integral of the polynomial approximation
+ on the interval.
+ 
+\end_layout
+
+\begin_layout Standard
+A basic example is the 
+\emph on
+Riemann rule
+\emph default
+, which takes a single node, 
+\begin_inset Formula $x_{i}^{*}=x_{i}$
+\end_inset
+
+ and the 
+\begin_inset Quotes eld
+\end_inset
+
+polynomial
+\begin_inset Quotes erd
+\end_inset
+
+ is a constant, 
+\begin_inset Formula $f(x_{i}^{*})$
+\end_inset
+
+, so we have 
+\begin_inset Formula 
+\[
+\int_{x_{i}}^{x_{i+1}}f(x)dx\approx(x_{i+1}-x_{i})f(x_{i}).
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Of course using a piecewise constant to approximate 
+\begin_inset Formula $f(x)$
+\end_inset
+
+ is not likely to give us high accuracy.
+ 
+\end_layout
+
+\begin_layout Standard
+The 
+\emph on
+trapezoidal rule
+\emph default
+ takes 
+\begin_inset Formula $x_{i0}^{*}=x_{i}$
+\end_inset
+
+, 
+\begin_inset Formula $x_{i1}^{*}=x_{i+1}$
+\end_inset
+
+ and uses a linear interpolation between 
+\begin_inset Formula $f(x_{i0}^{*})$
+\end_inset
+
+ and 
+\begin_inset Formula $f(x_{i1}^{*})$
+\end_inset
+
+ to give 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula 
+\[
+\int_{x_{i}}^{x_{i+1}}f(x)dx\approx\left(\frac{x_{i+1}-x_{i}}{2}\right)(f(x_{i})+f(x_{i+1})).
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\emph on
+Simpson's rule
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+ uses a quadratic interpolation 
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+at the points 
+\begin_inset Formula $x_{i0}^{*}=x_{i}$
+\end_inset
+
+, 
+\begin_inset Formula $x_{i1}^{*}=(x_{i}+x_{i+1})/2$
+\end_inset
+
+, 
+\begin_inset Formula $x_{i2}^{*}=x_{i+1}$
+\end_inset
+
+ to give 
+\begin_inset Formula 
+\[
+\int_{x_{i}}^{x_{i+1}}f(x)dx\approx\left(\frac{x_{i+1}-x_{i}}{6}\right)\left(f(x_{i})+4f\left(\frac{x_{i}+x_{i+1}}{2}\right)+f(x_{i+1})\right).
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The error of various rules is often quantified as a power of 
+\begin_inset Formula $h=x_{i+1}-x_{i}$
+\end_inset
+
+.
+ The trapezoid rule gives 
+\begin_inset Formula $O(h^{2})$
+\end_inset
+
+ while Simpson's rule gives 
+\begin_inset Formula $O(h^{4})$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Paragraph
+Romberg quadrature
+\end_layout
+
+\begin_layout Standard
+There is an extension of Newton-Cotes quadrature that takes combinations
+ of estimates based on different numbers of intervals.
+ This is called Richardson extrapolation and when used with the trapezoidal
+ rule is called 
+\emph on
+Romberg quadrature
+\emph default
+.
+ The result is greatly increased accuracy.
+ A simple example of this is as follows.
+ Let 
+\begin_inset Formula $\hat{T}(h)$
+\end_inset
+
+ be the trapezoidal rule approximation of the integral when the length of
+ each interval is 
+\begin_inset Formula $h$
+\end_inset
+
+.
+ Then 
+\begin_inset Formula $\frac{4\hat{T}(h/2)-\hat{T}(h)}{3}$
+\end_inset
+
+ results in an approximation with error of 
+\begin_inset Formula $O(h^{4})$
+\end_inset
+
+ because the differencing is cleverly chosen to kill off the error term
+ that is 
+\begin_inset Formula $O(h^{2}).$
+\end_inset
+
+ In fact this approximation is Simpson's rule with intervals of length 
+\begin_inset Formula $h/2$
+\end_inset
+
+, with the advantage that we don't have to do as many function evaluations
+ (
+\begin_inset Formula $2n$
+\end_inset
+
+ vs.
+ 
+\begin_inset Formula $4n$
+\end_inset
+
+).
+ Even better, one can iterate this approach for more accuracy as described
+ in detail in Givens and Hoeting.
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+ [more detail?]
+\end_layout
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+Note that at some point, simply making intervals smaller in quadrature will
+ not improve accuracy because of errors introduced by the imprecision of
+ computer numbers.
+\end_layout
+
+\begin_layout Subsubsection
+Gaussian quadrature
+\end_layout
+
+\begin_layout Standard
+Here the idea is to relax the constraints of equally-spaced intervals and
+ nodes within intervals.
+ We want to put more nodes where the function is larger in magnitude.
+\end_layout
+
+\begin_layout Standard
+Gaussian quadrature approximates integrals that are in the form of an expected
+ value as
+\begin_inset Formula 
+\[
+\int_{a}^{b}f(x)\mu(x)dx\approx\sum_{i=0}^{m}w_{i}f(x_{i})
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $\mu(x)$
+\end_inset
+
+ is a probability density, with the requirement that 
+\begin_inset Formula $\int x^{k}\mu(x)dx=E_{\mu}X^{k}<\infty$
+\end_inset
+
+ for 
+\begin_inset Formula $k\geq0$
+\end_inset
+
+.
+ Note that it can also deal with indefinite integrals where 
+\begin_inset Formula $a=-\infty$
+\end_inset
+
+ and/or 
+\begin_inset Formula $b=\infty$
+\end_inset
+
+.
+ Typically 
+\begin_inset Formula $\mu$
+\end_inset
+
+ is non-uniform, so the nodes (the quadrature points) cluster in areas of
+ high density.The choice of node locations depends on understanding orthogonal
+ polynomials, which we won't go into here.
+\end_layout
+
+\begin_layout Standard
+It turns out this approach can exactly integrate polynomials of degree 
+\begin_inset Formula $2m+1$
+\end_inset
+
+ (or lower).
+ The advantage is that for smooth functions that can be approximated well
+ by a single polynomial, we get highly accurate results.
+ The downside is that if the function is not well approximated by such a
+ polynomial, the result may not be so good.
+ The Romberg approach is more robust.
+\end_layout
+
+\begin_layout Standard
+Note that if the problem is not in the form 
+\begin_inset Formula $\int_{a}^{b}f(x)\mu(x)dx$
+\end_inset
+
+, but rather 
+\begin_inset Formula $\int_{a}^{b}f(x)dx$
+\end_inset
+
+, we can reexpress as 
+\begin_inset Formula $\int_{a}^{b}\frac{f(x)}{\mu(x)}\mu(x)dx$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Note that the trapezoidal rule amounts to 
+\begin_inset Formula $\mu$
+\end_inset
+
+ being the uniform distribution with the points equally spaced.
+ 
+\end_layout
+
+\begin_layout Subsubsection
+Adaptive quadrature
+\end_layout
+
+\begin_layout Standard
+Adaptive quadrature chooses interval lengths based on the behavior of the
+ integrand.
+ The goal is to have shorter intervals where the function varies more and
+ longer intervals where it varies less.
+ The reason for avoiding short intervals everywhere involves the extra computati
+on and greater opportunity for rounding error.
+ 
+\end_layout
+
+\begin_layout Subsubsection
+Higher dimensions
+\end_layout
+
+\begin_layout Standard
+For rectangular regions, one can use the techniques described above over
+ squares instead of intervals, but things become more difficult with more
+ complicated regions of integration.
+\end_layout
+
+\begin_layout Standard
+The basic result for Monte Carlo integration (i.e., Unit 10 on simulation)
+ is that the error of the MC estimator scales as 
+\begin_inset Formula $O(m^{-1/2})$
+\end_inset
+
+, where 
+\begin_inset Formula $m$
+\end_inset
+
+ is the number of MC samples, regardless of dimensionality.
+ Let's consider how the error of quadrature scales.
+ We've seen that the error is often quantified as 
+\begin_inset Formula $O(h^{q})$
+\end_inset
+
+.
+ In 
+\begin_inset Formula $d$
+\end_inset
+
+ dimensions, the error is the same as a function of 
+\begin_inset Formula $h$
+\end_inset
+
+, but if in one dimension we need 
+\begin_inset Formula $n$
+\end_inset
+
+ function evaluations to get intervals of length 
+\begin_inset Formula $h$
+\end_inset
+
+, in 
+\begin_inset Formula $d$
+\end_inset
+
+ dimensions, we need 
+\begin_inset Formula $n^{d}$
+\end_inset
+
+ function evaluations to get hypercubes with sides of length 
+\begin_inset Formula $h$
+\end_inset
+
+.
+ Let's re-express the error in terms of 
+\begin_inset Formula $n$
+\end_inset
+
+ rather than 
+\begin_inset Formula $h$
+\end_inset
+
+ based on 
+\begin_inset Formula $h=c/n$
+\end_inset
+
+ for a constant 
+\begin_inset Formula $c$
+\end_inset
+
+ (such as 
+\begin_inset Formula $c=b-a$
+\end_inset
+
+), which gives us error of 
+\begin_inset Formula $O(n^{-q})$
+\end_inset
+
+ for one-dimensional integration.
+ In 
+\begin_inset Formula $d$
+\end_inset
+
+ dimensions we have 
+\begin_inset Formula $n^{1/d}$
+\end_inset
+
+ function evaluations per dimension, so the error for fixed 
+\begin_inset Formula $n$
+\end_inset
+
+ is 
+\begin_inset Formula $O((n^{1/d})^{-q})=O(n^{-q/d})$
+\end_inset
+
+ which scales as 
+\begin_inset Formula $n^{-1/d}$
+\end_inset
+
+.
+ As an example, suppose 
+\begin_inset Formula $d=10$
+\end_inset
+
+ and we have 
+\begin_inset Formula $n=1000$
+\end_inset
+
+ function evaluations.
+ This gives us an accuracy comparable to one-dimensional integration with
+ 
+\begin_inset Formula $n=1000^{1/10}\approx2$
+\end_inset
+
+, which is awful.
+ Even with only 
+\begin_inset Formula $d=4$
+\end_inset
+
+, we get 
+\begin_inset Formula $n=1000^{1/4}\approx6$
+\end_inset
+
+, which is pretty bad.
+ This is one version of the curse of dimensionality.
+ 
+\end_layout
+
+\begin_layout Subsection
+Numerical integration in R
+\end_layout
+
+\begin_layout Standard
+R implements an adaptive version of Gaussian quadrature in 
+\emph on
+integrate()
+\emph default
+.
+ The '...' argument allows you to pass additional arguments to the function
+ that is being integrated.
+ The function must be vectorized (i.e., accept a vector of inputs and evaluate
+ and return the function value for each input as a vector of outputs).
+\end_layout
+
+\begin_layout Standard
+Note that the domain of integration can be unbounded and if either the upper
+ or lower limit is unbounded, you should enter 
+\family typewriter
+\series bold
+Inf
+\family default
+\series default
+ or 
+\family typewriter
+\series bold
+-Inf
+\family default
+\series default
+ respectively.
+\end_layout
+
+\begin_layout Chunk
+
+<<numeric-integ>>=
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Subsection
+Singularities and infinite ranges
+\end_layout
+
+\begin_layout Standard
+A singularity occurs when the function is unbounded, which can cause difficultie
+s with numerical integration.
+ For example, 
+\begin_inset Formula $\int_{0}^{1}\frac{1}{\sqrt{x}}=2$
+\end_inset
+
+, but 
+\begin_inset Formula $f(0)=\infty$
+\end_inset
+
+.
+ One strategy is a change of variables.
+ For example, to find 
+\begin_inset Formula $\int_{0}^{1}\frac{\exp(x)}{\sqrt{x}}dx$
+\end_inset
+
+, let 
+\begin_inset Formula $u=\sqrt{x}$
+\end_inset
+
+, which gives the integral, 
+\begin_inset Formula $2\int_{0}^{1}\exp(u^{2})du$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Another strategy is to subtract off the singularity.
+ E.g., in the example above, reexpress as
+\begin_inset Formula 
+\[
+\int_{0}^{1}\frac{\exp(x)-1}{\sqrt{x}}dx+\int_{0}^{1}\frac{1}{\sqrt{x}}dx=\int_{0}^{1}\frac{\exp(x)-1}{\sqrt{x}}dx+2
+\]
+
+\end_inset
+
+where we do the second integral analytically.
+ It turns out that the first integral is well-behaved at 
+\begin_inset Formula $0$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+It turns out that R's 
+\emph on
+integrate()
+\emph default
+ function can handle 
+\begin_inset Formula $\int_{0}^{1}\frac{\exp(x)}{\sqrt{x}}dx$
+\end_inset
+
+ directly without us changing the problem statement analytically.
+ Perhaps this has something to do with the use of adaptive quadrature, but
+ I'm not sure.
+\end_layout
+
+\begin_layout Chunk
+
+<<singularity>>=
+\end_layout
+
+\begin_layout Chunk
+
+@
+\end_layout
+
+\begin_layout Paragraph
+Infinite ranges
+\end_layout
+
+\begin_layout Standard
+Gaussian quadrature deals with the case that 
+\begin_inset Formula $a=-\infty$
+\end_inset
+
+ and/or 
+\begin_inset Formula $b=\infty$
+\end_inset
+
+.
+ Another possibility is change of variables using transformations such as
+ 
+\begin_inset Formula $1/x$
+\end_inset
+
+, 
+\begin_inset Formula $\exp(x)/(1+\exp(x))$
+\end_inset
+
+, 
+\begin_inset Formula $\exp(-x)$
+\end_inset
+
+, and 
+\begin_inset Formula $x/(1+x)$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsection
+Symbolic integration
+\end_layout
+
+\begin_layout Standard
+Mathematica and Maple are able to do symbolic integration for many problems
+ that are very hard to do by hand (and with the same concerns as when doing
+ differentiation by hand).
+ So this may be worth a try.
+\begin_inset Newline newline
+\end_inset
+
+
+\family typewriter
+# one-dimensional integration
+\begin_inset Newline newline
+\end_inset
+
+Integrate[Sin[x]^2, x]
+\begin_inset Newline newline
+\end_inset
+
+# two-dimensional integration
+\begin_inset Newline newline
+\end_inset
+
+Integrate[Sin[x] Exp[-y^2], x, y]
+\end_layout
+
+\end_body
+\end_document

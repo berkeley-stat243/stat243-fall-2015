@@ -544,8 +544,12 @@ in1 <- mean(yExc) - 0.57722 * in2
 init0 = c(in1, in2, 0.1)
 
 ## fit with Nelder-Mead (default) and BFGS
-optim(init0, pp.lik, y = y, thresh = thresh, npy = npy, control = list(trace = TRUE)) # 118 fxn evals
-optim(init0, pp.lik, y = y, thresh = thresh, npy = npy, method = 'BFGS', control = list(trace = TRUE)) # ~ 10 its
+fit1 <- optim(init0, pp.lik, y = y, thresh = thresh, npy = npy, control = list(trace = TRUE)) # 118 fxn evals
+fit2 <- optim(init0, pp.lik, y = y, thresh = thresh, npy = npy, method = 'BFGS', control = list(trace = TRUE)) # ~ 10 its
+print(fit1)
+print(fit2)
+
+mle <- fit2$par
 
 system.time(optim(init0, pp.lik, y = y, thresh = thresh, npy = npy))
 system.time(optim(init0, pp.lik, y = y, thresh = thresh, npy = npy, method = 'BFGS'))
@@ -598,6 +602,8 @@ parGrid = expand.grid(loc = locVals, scale = scaleVals, shape = shapeVals)
 obj=apply(parGrid, 1, pp.lik, y=y, thresh=thresh, npy=npy) # compute objective function for all parameter combos
 
 tmp = cbind(parGrid,obj)
+
+library(fields)
 
 par(mfrow=c(3, 4), mai = c(.6,.5, .3, .1), mgp = c(1.8, .7, 0))
 for( i in 1:length(shapeVals)){

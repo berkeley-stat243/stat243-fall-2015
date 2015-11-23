@@ -1,0 +1,3031 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\begin_preamble
+\usepackage[unicode=true]{hyperref}
+\usepackage{/accounts/gen/vis/paciorek/latex/paciorek-asa,times,graphics}
+\input{/accounts/gen/vis/paciorek/latex/paciorekMacros}
+%\renewcommand{\baselinestretch}{1.5}
+\hypersetup{unicode=true, pdfusetitle,bookmarks=true,bookmarksnumbered=false,bookmarksopen=false,breaklinks=false,pdfborder={0 0 1},backref=false,colorlinks=true,}
+\end_preamble
+\use_default_options false
+\begin_modules
+knitr
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 12
+\spacing onehalf
+\use_hyperref false
+\papersize letterpaper
+\use_geometry true
+\use_amsmath 1
+\use_esint 0
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 1in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<setup, include=FALSE, cache=FALSE>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+## I use = but I can replace it with <-; set code/output width to be 68
+\end_layout
+
+\begin_layout Plain Layout
+
+options(replace.assign=TRUE, width=60)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Title
+Unit 13: Graphics
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+OLD:
+\end_layout
+
+\begin_layout Plain Layout
+see Gelman-Yau interchange on non-stat graphics http://andrewgelman.com/2009/04/m
+ore_on_data_vi/ http://flowingdata.com/2009/04/22/narrow-minded-data-visualizatio
+n/
+\end_layout
+
+\begin_layout Plain Layout
+sunspot.month would be good for melt/cast and ggplot 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Chunk
+<<read-chunk, echo=FALSE>>= 
+\end_layout
+
+\begin_layout Chunk
+read_chunk('unit13-graphics.R') 
+\end_layout
+
+\begin_layout Chunk
+require(ggplot2, quietly=TRUE)
+\end_layout
+
+\begin_layout Chunk
+require(lattice, quietly=TRUE)
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+This unit first discusses some general concepts and principles of graphics
+ relevant more broadly than R, and then provides implementation details
+ for graphics in R.
+ Note that there is a bunch of example code in the demo code file that is
+ not shown here in these notes.
+\end_layout
+
+\begin_layout Standard
+References: 
+\end_layout
+
+\begin_layout Itemize
+Adler
+\end_layout
+
+\begin_layout Itemize
+Chambers
+\end_layout
+
+\begin_layout Itemize
+Venables and Ripley, Modern Applied Statistics with S
+\end_layout
+
+\begin_layout Itemize
+Murrell, R Graphics (available electronically through OskiCat: 
+\begin_inset CommandInset href
+LatexCommand href
+target "http://uclibs.org/PID/110697"
+
+\end_inset
+
+)
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "R intro manual"
+target "http://cran.r-project.org/doc/manuals/R-intro.html"
+
+\end_inset
+
+ (R-intro) on CRAN
+\end_layout
+
+\begin_layout Itemize
+There is a nice overview on creating good graphics in R at 
+\begin_inset CommandInset href
+LatexCommand href
+target "http://teachpress.environmentalinformatics-marburg.de/2013/07/creating-publication-quality-graphs-in-r-7"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+[see ; ; Murrell R graphics, ; done:Adler part 3, R-intro; Chambers Ch 7,
+ CK adv graph, VR Ch 4, CK lec 3; Phil's R]
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+R has several general graphics packages: 
+\emph on
+graphics
+\emph default
+, 
+\emph on
+grid
+\emph default
+, 
+\emph on
+lattice
+\emph default
+, and 
+\emph on
+ggplot2
+\emph default
+.
+ 
+\emph on
+graphics
+\emph default
+ is the original graphics package.
+ 
+\emph on
+grid
+\emph default
+ is more object-oriented, and is quite powerful and useful if you're involved
+ in serious graphics programming.
+ 
+\emph on
+lattice
+\emph default
+ and 
+\emph on
+ggplot2
+\emph default
+ are more recent packages that use 
+\emph on
+grid
+\emph default
+ to provide the user with high-level graphics capabilities.
+ More details on 
+\emph on
+grid
+\emph default
+ can be found in Murrell's 
+\emph on
+R Graphics
+\emph default
+ and more details on 
+\emph on
+ggplot2
+\emph default
+ can be found in Hadley Wickham's 
+\emph on
+ggplot2: Elegant Graphics for Data Analysis.
+\end_layout
+
+\begin_layout Section
+Good practices for graphics
+\end_layout
+
+\begin_layout Standard
+There are a number of principles that can be used in developing and critiquing
+ graphics.
+ But first let's see some examples that show those principles being violated.
+\end_layout
+
+\begin_layout Subsection
+Some example graphics
+\end_layout
+
+\begin_layout Enumerate
+The file 
+\emph on
+shell.pdf
+\emph default
+ in the repository has an example of a crazy pie chart from the NY Times
+ from a week ago.
+\end_layout
+
+\begin_layout Enumerate
+In Figure 1, you can see a graph that we'll discuss in class.
+ What aspects of the graph could be improved? What aspects do you like?
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename exampleGraphic.png
+	lyxscale 60
+	scale 30
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Example graphic indicated in Section 1.1, item #2
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+The article 
+\emph on
+wainer1984.pdf
+\emph default
+ in the repository is rather old but the ideas are still relevant and while
+ the example figures are dated in terms of appearance, the same issues arise
+ with more modern-looking graphics.
+\end_layout
+
+\begin_layout Enumerate
+The article 
+\emph on
+gelmanUnwin2013.pdf
+\emph default
+ in the repository presents a modern-day reinterpretation of a famous graphic
+ from Florence Nightingale regarding causes of death in the British Army
+ during the Crimean War in the 1850s.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+also Gelman and Unwin "InfoVis and Statistical Graphics" JCGS 2013#1 first
+ article - see Nightingale vs.
+ their graphic - have students summarize the nightingale graphic as to what
+ it shows
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Best practices
+\end_layout
+
+\begin_layout Standard
+Here's a list of some guidelines to consider in creating graphics.
+\end_layout
+
+\begin_layout Enumerate
+Have a high density of information to space
+\end_layout
+
+\begin_layout Enumerate
+Avoid 3-d graphics unless they truly add information
+\end_layout
+
+\begin_layout Enumerate
+Strategies for going beyond two dimensions
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+Use color, but avoid if unnecessary (saves printing costs in journal articles)
+\end_layout
+
+\begin_layout Enumerate
+Use varying symbol or line types 
+\end_layout
+
+\begin_layout Enumerate
+Use multiple panel plots 
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Avoid stacked barplots (see demo code) as it's hard to assess anything except
+ the total and the baseline category.
+\end_layout
+
+\begin_layout Enumerate
+Studies indicate that humans have a hard time comparing areas, volumes,
+ or angles, so try to avoid plots that represent data using any of these,
+ including pie charts.
+ Instead use position or length (horizontal is better than vertical) to
+ display data values
+\end_layout
+
+\begin_layout Enumerate
+Label axes
+\end_layout
+
+\begin_layout Enumerate
+Keep the range of axes (and other features) the same for multiple panels,
+ when possible
+\end_layout
+
+\begin_layout Enumerate
+Use a legend where appropriate
+\end_layout
+
+\begin_layout Enumerate
+Use vector graphics formats such as PDF or Postscript/EPS as these scale
+ without pixelation when resized.
+ Raster formats such as JPEG, PNG, BMP, TIFF don't rescale well and when
+ they have high resolution also have large file sizes.
+ See Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Graphics-file-formats"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Rob Hyndman has a 
+\begin_inset CommandInset href
+LatexCommand href
+name "list of 20 rules for good graphics"
+target "http://robjhyndman.com/hyndsight/graphics/"
+
+\end_inset
+
+, including some of the ones above.
+ 
+\end_layout
+
+\begin_layout Section
+Base R graphics (the 
+\emph on
+graphics
+\emph default
+ package)
+\end_layout
+
+\begin_layout Standard
+The material here mainly gives high-level information and information on
+ adjusting your graphics, rather than telling you how to make particular
+ plots using R's base graphics.
+ The 
+\emph on
+graphicsCommands.pdf
+\emph default
+ file in the github repository and Chapter 14 of Adler provide information
+ about many of the core plotting functions.
+ These include high-level functions such as 
+\emph on
+plot()
+\emph default
+, 
+\emph on
+matplot()
+\emph default
+, 
+\emph on
+pairs()
+\emph default
+, 
+\emph on
+coplot()
+\emph default
+, 
+\emph on
+hist()
+\emph default
+, 
+\emph on
+density()
+\emph default
+, and 
+\emph on
+boxplot()
+\emph default
+, as well as low-level functions for adding information to a plot such as
+ 
+\emph on
+lines()
+\emph default
+, 
+\emph on
+points()
+\emph default
+, 
+\emph on
+abline()
+\emph default
+.
+ Adler goes into great detail on many of these, both in the context of the
+ 
+\emph on
+graphics
+\emph default
+ package and that of the 
+\emph on
+lattice
+\emph default
+ package.
+\end_layout
+
+\begin_layout Subsection
+Background
+\end_layout
+
+\begin_layout Standard
+The basic components of R base graphics are 
+\end_layout
+
+\begin_layout Enumerate
+high-level functions (e.g., 
+\emph on
+plot()
+\emph default
+, 
+\emph on
+boxplot()
+\emph default
+, etc.) for producing an entire plot
+\end_layout
+
+\begin_layout Enumerate
+low-level functions for adding components to existing plots.
+ The ability to build up a complicated plot piecewise is one of the strengths
+ of R's graphics.
+ These low-level functions include 
+\emph on
+abline()
+\emph default
+, 
+\emph on
+arrows()
+\emph default
+, 
+\emph on
+axis()
+\emph default
+, 
+\emph on
+legend()
+\emph default
+, 
+\emph on
+lines()
+\emph default
+, 
+\emph on
+points()
+\emph default
+, 
+\emph on
+rug()
+\emph default
+, 
+\emph on
+text()
+\emph default
+, 
+\emph on
+mtext(), title()
+\emph default
+, 
+\emph on
+symbols()
+\emph default
+.
+\end_layout
+
+\begin_layout Enumerate
+graphics parameters controlled through (1) 
+\emph on
+par()
+\emph default
+ or (2) as arguments to a graphics function call.
+ These parameters change the appearance of a plot or plots (e.g., 
+\emph on
+mai
+\emph default
+, 
+\emph on
+pch
+\emph default
+, 
+\emph on
+col
+\emph default
+)
+\end_layout
+
+\begin_layout Standard
+R graphics work by sequentially plotting graphics elements, so subsequent
+ items may paint over initial elements.
+ One technique when this is an issue is making your colors transparent -
+ see the color subsection below.
+\end_layout
+
+\begin_layout Standard
+Note that as we saw when talking about OOP, the core 
+\emph on
+plot()
+\emph default
+ function does both scatterplots and is a generic method used for plotting
+ a wide variety of objects, e.g., 
+\emph on
+plot.lm()
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+I won't say much about the high-level and low-level functions, but a wide
+ range of these exist.
+ In particular low-level functions allow you to add almost anything you
+ might want to add: arbitrary lines, polygons, symbols, text, arrows, boundary
+ lines in maps, etc.
+ 
+\end_layout
+
+\begin_layout Subsection
+Graphics parameters
+\end_layout
+
+\begin_layout Standard
+We can set graphics parameters through various plotting functions (for temporary
+ changes applying only to the current plotting command) or through the 
+\emph on
+par()
+\emph default
+ function (for a permanent change), allowing us to customize the layout
+ or appearance of a plot.
+ Let's take a look at some of these and what they mean.
+ The demo code shows some additional more complete code examples.
+\end_layout
+
+\begin_layout Standard
+Most of you know how to create a multi-panel plot:
+\end_layout
+
+\begin_layout Chunk
+<<multi-panel, eval=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+Changing the margin sizes (and axis information spacing) is one of the most
+ common modifications one needs to do, particularly when producing a multi-panel
+ plot and when creating an output file.
+ One often wants to reduce the size of the inner margins.
+ This helps maximize the information to white space and increase the resolution
+ of your plot.
+ Sometimes one needs extra space in the outer margin of a multi-panel plot.
+ Positioning and lengths within the graphics window can occur with relative
+ units; i.e., the device domain is 
+\begin_inset Formula $(0,1)\times(0,1)$
+\end_inset
+
+, or in physical units (commonly inches), or in 
+\begin_inset Quotes eld
+\end_inset
+
+lines
+\begin_inset Quotes erd
+\end_inset
+
+ of text.
+ Some values I commonly use are
+\end_layout
+
+\begin_layout Chunk
+<<common-options, eval=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+Here for the margins, the first number is the bottom, the next the left,
+ the third the top, and the fourth the right margin, so with 
+\emph on
+omi
+\emph default
+, I've made some space (0.3 inches) in the outer margin at the top.
+\end_layout
+
+\begin_layout Standard
+Note that if you change graphics options using 
+\emph on
+par()
+\emph default
+ (including within a function call!), the values change permanently (so
+ it's like pass by reference).
+ One way to be able to go back is
+\end_layout
+
+\begin_layout Chunk
+<<oldpar, eval=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+So if you create a function that changes the graphics parameters, you should
+ use the above strategy to reset so you don't surprise your users.
+\end_layout
+
+\begin_layout Standard
+Here are the various layout parameters and their units: 
+\emph on
+din
+\emph default
+ (device size, inches), 
+\emph on
+pin
+\emph default
+ (plot size, inches), 
+\emph on
+fin
+\emph default
+ (figure size, inches), 
+\emph on
+mai
+\emph default
+ (margin size, inches) or 
+\emph on
+mar
+\emph default
+ (margin size, lines), 
+\emph on
+omi
+\emph default
+ (outer margin, inches) or 
+\emph on
+oma
+\emph default
+ (outer margin, lines), 
+\emph on
+mex
+\emph default
+ (# text lines per interline spacing), and 
+\emph on
+plt
+\emph default
+ (plot region as fraction of figure region).
+ 
+\emph on
+cex
+\emph default
+ controls size of points and text in general when called through 
+\emph on
+par()
+\emph default
+, but only controls the size of points when called within a plotting function,
+ while 
+\emph on
+cex.lab
+\emph default
+, 
+\emph on
+cex.axis
+\emph default
+, and 
+\emph on
+cex.main
+\emph default
+ control the size of axis labels, axis values, and the title.
+ Similarly for 
+\emph on
+col
+\emph default
+, 
+\emph on
+col.lab
+\emph default
+, 
+\emph on
+col.axis
+\emph default
+ and 
+\emph on
+col.main
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Here are some other things you can control: text justification (
+\emph on
+adj
+\emph default
+), font size (
+\emph on
+cex
+\emph default
+, 
+\emph on
+csi
+\emph default
+), font type (
+\emph on
+font
+\emph default
+), rotation of text (
+\emph on
+srt
+\emph default
+), color (
+\emph on
+col
+\emph default
+), line type (
+\emph on
+lty
+\emph default
+), line width (
+\emph on
+lwd
+\emph default
+), plotting character symbol (
+\emph on
+pch
+\emph default
+), type/presence of boundary box (
+\emph on
+bty
+\emph default
+), log-scale axes (
+\emph on
+log
+\emph default
+), axis labels (
+\emph on
+{x,y}lab
+\emph default
+), axis limits (
+\emph on
+{x,y}lim
+\emph default
+), a variety of details about the axis limits, labels, and ticks (
+\emph on
+lab
+\emph default
+, 
+\emph on
+las
+\emph default
+, 
+\emph on
+tck
+\emph default
+, 
+\emph on
+{x,y}axp
+\emph default
+, 
+\emph on
+{x,y}axs
+\emph default
+, 
+\emph on
+{x,y}axt
+\emph default
+), and whether to plot axes (
+\emph on
+axes
+\emph default
+).
+\end_layout
+
+\begin_layout Paragraph
+Some additional tidbits
+\end_layout
+
+\begin_layout Standard
+You can force subplots to have the same axis ranges by manipulating 
+\emph on
+xlim
+\emph default
+ and 
+\emph on
+ylim
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+It can be handy to put axis labels in the outer margin of a multi-panel
+ plot:
+\end_layout
+
+\begin_layout Chunk
+<<xylim, eval=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+Note if we wanted to put the label further towards the edge of the plot,
+ we'd need to use 
+\emph on
+omi
+\emph default
+ or 
+\emph on
+oma
+\emph default
+ to create an outer margin, and then we could use a value of 
+\emph on
+line
+\emph default
+ that is greater than -1 to put the text further away from the plotting
+ regions.
+\end_layout
+
+\begin_layout Standard
+You can create multi-line text by just using 
+\begin_inset Quotes eld
+\end_inset
+
+
+\emph on
+
+\backslash
+n
+\emph default
+
+\begin_inset Quotes erd
+\end_inset
+
+ in your character string.
+\end_layout
+
+\begin_layout Standard
+To plot outside the plot region, set 
+\family typewriter
+xpd = TRUE
+\family default
+ - otherwise anything outside the region is 
+\begin_inset Quotes eld
+\end_inset
+
+clipped
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsection
+Adding information to a plot sequentially
+\end_layout
+
+\begin_layout Standard
+There are lots of low-level functions you can use to add components to a
+ plot.
+ These include 
+\emph on
+abline()
+\emph default
+, 
+\emph on
+arrows()
+\emph default
+, 
+\emph on
+axis()
+\emph default
+, 
+\emph on
+legend()
+\emph default
+, 
+\emph on
+lines()
+\emph default
+, 
+\emph on
+points()
+\emph default
+, 
+\emph on
+rug()
+\emph default
+, 
+\emph on
+text()
+\emph default
+, 
+\emph on
+mtext(), title()
+\emph default
+, 
+\emph on
+symbols()
+\emph default
+, 
+\emph on
+hline()
+\emph default
+, 
+\emph on
+vline()
+\emph default
+.
+ A basic strategy for customizing components of a plot is to use the high-level
+ function to plot the basics, specifying parameter arguments that leave
+ out some components (e.g., 
+\family typewriter
+xaxt = 'n
+\family default
+', 
+\family typewriter
+bty = 'n
+\family default
+\series bold
+', 
+\family typewriter
+\series default
+xlab = 
+\family default
+\series bold
+''
+\series default
+).
+ At its most extreme, you can create the structure of a plot without plotting
+ any data for customizing everything:
+\end_layout
+
+\begin_layout Chunk
+<<sequential, eval=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+With
+\emph on
+ title()
+\emph default
+, you can add main and subtitles and axis labels, as we saw in the demo
+ code for the previous subsection.
+ This gives you control over positioning using the 
+\emph on
+line
+\emph default
+ and 
+\emph on
+outer
+\emph default
+ arguments.
+ 
+\emph on
+rug()
+\emph default
+ will add tick marks for each observation along a chosen axis.
+ 
+\emph on
+locator()
+\emph default
+ allows you to choose a location for certain items (e.g., a legend) with your
+ mouse.
+ 
+\end_layout
+
+\begin_layout Standard
+You an create custom axes with the 
+\emph on
+axis()
+\emph default
+ function, adding the axis, ticks, and axis value labels.
+ Here's an example of plotting two sets of data with different axis values.
+ It also shows the use of the new argument to overplot on an existing plot.
+ Often one would initially exclude (some) axes and a boundary box from the
+ plot:
+\end_layout
+
+\begin_layout Chunk
+<<custom-axes, fig.width=4, fig.height=4>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Paragraph
+Adding an additional dimension
+\end_layout
+
+\begin_layout Standard
+Let's consider other ways to pack information on another dimension into
+ a plot:
+\end_layout
+
+\begin_layout Chunk
+<<third-dim, fig.width=6, fig.height=3.5>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+You can also use this approach with different line widths (
+\emph on
+lwd
+\emph default
+) and line styles/types (
+\emph on
+lty
+\emph default
+) when that is relevant.
+\end_layout
+
+\begin_layout Subsection
+Interacting with graphics
+\end_layout
+
+\begin_layout Standard
+R is not well set up for interactive work, but one handy function is 
+\emph on
+identify()
+\emph default
+, which is handy for both identifying points (such as outliers) and marking
+ a specific point.
+ 
+\end_layout
+
+\begin_layout Chunk
+<<identify, eval=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+If you want to do more with interactive graphics (which can be very helpful
+ for high dimensional data), check out the 
+\emph on
+GGobi
+\emph default
+ software.
+\end_layout
+
+\begin_layout Subsection
+Using mathematical expressions in plots
+\end_layout
+
+\begin_layout Subsubsection
+latex2exp
+\end_layout
+
+\begin_layout Standard
+I just discovered the 
+\emph on
+latex2exp
+\emph default
+ package, which seems like it's much easier to work with than the 
+\emph on
+plotmath
+\emph default
+ syntax described in the next subsection.
+\end_layout
+
+\begin_layout Standard
+The 
+\emph on
+latex2exp
+\emph default
+ function takes a LaTeX expression and converts it to an object that can
+ be used in place of a string or plotmath syntax in plotting contexts.
+ Note that you need to escape the usual backslashes in LaTeX syntax, so
+ you'll end up with double backslashes.
+ And for math notation, you need the LaTeX syntax within a math environment.
+\end_layout
+
+\begin_layout Chunk
+<<latex2exp, tidy=FALSE, fig.width=4, fig.height=4>>=
+\end_layout
+
+\begin_layout Chunk
+
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+If you want to combine 
+\emph on
+latex2exp
+\emph default
+ with evaluation of R code, try the following
+\end_layout
+
+\begin_layout Chunk
+<<latex2exp-eval, tidy=FALSE, fig.width=4, fig.height=4>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Subsubsection
+plotmath
+\end_layout
+
+\begin_layout Standard
+We can use Greek letters and mathematical symbols in labels using 
+\emph on
+expression()
+\emph default
+ to enclose the mathematical expression and 
+\emph on
+paste()
+\emph default
+ to combine elements
+\emph on
+.
+\end_layout
+
+\begin_layout Chunk
+<<plotmath, tidy=FALSE, fig.width=4, fig.height=4>>=
+\end_layout
+
+\begin_layout Chunk
+
+\end_layout
+
+\begin_layout Chunk
+plot(x, y, xlab = expression(lambda), 
+\end_layout
+
+\begin_layout Chunk
+ylab = expression(paste(E[lambda]^(2-Lambda), "(deviance)-",Var(phi) )))
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+Here's an example of using a variable within an expression.
+ This is quite powerful if you are producing multiple plots and the text
+ changes for each plot:
+\end_layout
+
+\begin_layout Chunk
+<<plotmath-eval, tidy=FALSE, fig.width=3, fig.height=3, tidy=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+
+\emph on
+bquote()
+\emph default
+ treats its argument as an R language object but substitutes in for terms
+ wrapped in 
+\begin_inset Quotes eld
+\end_inset
+
+
+\emph on
+.()
+\emph default
+
+\begin_inset Quotes erd
+\end_inset
+
+, behaving somewhat like 
+\emph on
+substitute()
+\emph default
+.
+ An alternative approach uses 
+\emph on
+substitute()
+\emph default
+:
+\end_layout
+
+\begin_layout Standard
+For a full set of mathematical syntax and examples of such substitutions,
+ see 
+\family typewriter
+?plotmath
+\family default
+ as well as 
+\family typewriter
+example(plotmath)
+\family default
+ and 
+\family typewriter
+demo(plotmath)
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+For plotting text, it's helpful to keep in mind that we can choose a display
+ of text based on the encoding of the characters and a font in which to
+ display the characters.
+ So if you need characters not in the standard Latin character scheme, it
+ should be doable by choosing a different encoding.
+ 
+\end_layout
+
+\begin_layout Subsection
+Laying out panels (subplots)
+\end_layout
+
+\begin_layout Standard
+We can create more complicated arrangements of panels than the rectangular
+ layout of 
+\emph on
+mfrow
+\emph default
+ and 
+\emph on
+mfcol
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+One approach is use 
+\emph on
+layout()
+\emph default
+.
+ Here we give it a matrix with as many rows and columns as we want in the
+ plot and assign values, 1, 2, ...
+ to the appropriate rows and columns of the matrix, with the values serving
+ to identify each panel.
+\end_layout
+
+\begin_layout Chunk
+<<layout, eval=FALSE, tidy=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+Let's see the example from 
+\family typewriter
+?layout
+\family default
+, which slickly plots a scatterplot with marginal histograms.
+\end_layout
+
+\begin_layout Standard
+We can use 
+\emph on
+split.screen()
+\emph default
+ as an alternative to 
+\emph on
+layout()
+\emph default
+.
+ Here's a basic example (plot not shown) that allows us to choose which
+ panel to plot in:
+\end_layout
+
+\begin_layout Chunk
+<<split.screen, eval=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+
+\emph on
+split.screen()
+\emph default
+ can be used with a 4-column matrix where each row indicates the xrange
+ and yrange 
+\emph on
+(xl, xu, yl, yu)
+\emph default
+ of the given subplot where 
+\emph on
+xl
+\emph default
+ and 
+\emph on
+xu
+\emph default
+ are the lower and upper x-axis values and 
+\emph on
+yl
+\emph default
+ and 
+\emph on
+yu
+\emph default
+ for the y-axis values.
+ The values should all be in between 0 and 1.
+ Note that overplotting is possible.
+\end_layout
+
+\begin_layout Chunk
+<<split.screen2, fig.width=7, fig.height=7, tidy=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+In the 
+\emph on
+grid
+\emph default
+ package, positioning subpanels is done via 
+\emph on
+viewports
+\emph default
+.
+\end_layout
+
+\begin_layout Subsection
+Plotting in three dimensions and mapping
+\end_layout
+
+\begin_layout Standard
+In general for plotting 
+\emph on
+z ~ x + y
+\emph default
+, either in an actual spatial setting or as a function of two variables,
+ I prefer the 
+\emph on
+image()
+\emph default
+ function (
+\emph on
+levelplot()
+\emph default
+ in lattice), which uses color to represent different levels.
+ 
+\emph on
+image.plot()
+\emph default
+ from the fields package nicely adds a color bar legend.
+ 
+\emph on
+contour()
+\emph default
+ and 
+\emph on
+persp()
+\emph default
+ are other options but I personally find them less informative most of the
+ time: 
+\emph on
+contour()
+\emph default
+ because it requires the viewer to read the contour line values and 
+\emph on
+persp()
+\emph default
+ because some of the features often hide other features.
+\end_layout
+
+\begin_layout Chunk
+<<image.plot, eval=FALSE, tidy=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+n = 20; xs = ys = 1:n; gr = expand.grid(xs, ys); 
+\end_layout
+
+\begin_layout Chunk
+U = chol(exp(-rdist(gr)/6)) 
+\end_layout
+
+\begin_layout Chunk
+image.plot(1:n, 1:n, matrix(crossprod(U, rnorm(n^2)), n, n), 
+\end_layout
+
+\begin_layout Chunk
+   col = tim.colors(32)) 
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+If you do want to make a 3-d plot of a surface, 
+\emph on
+persp()
+\emph default
+ will do it, with x, y, z arguments similar to 
+\emph on
+image()
+\emph default
+ and also having arguments for the angle of view (the rotation around the
+ z-axis --
+\emph on
+ theta
+\emph default
+) and the viewing angle (up or down -- 
+\emph on
+phi
+\emph default
+).
+ You may be able to choose a set of angles that show the surface with the
+ least amount of hidden material.
+ See the demo code for using 
+\emph on
+image()
+\emph default
+, 
+\emph on
+contour()
+\emph default
+, and 
+\emph on
+persp()
+\emph default
+ to show topography in a mapping context.
+\end_layout
+
+\begin_layout Standard
+R has a lot of tools for mapping in a variety of packages -- for more examples
+ see the demo code.
+ In particular you can import standard GIS shape files and overlay boundaries
+ on a map using the 
+\emph on
+spdep
+\emph default
+ package.
+ R also has state and national boundaries as part of the 
+\emph on
+maps
+\emph default
+ package (see the demo code for more examples).
+ If you like 
+\emph on
+ggplot2
+\emph default
+ (see the next section), check out Hadley Wickham's 
+\emph on
+ggmap
+\emph default
+ package.
+\end_layout
+
+\begin_layout Chunk
+<<basic-map, eval=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+If you're using color in maps, 
+\emph on
+RColorBrewer
+\emph default
+ package is good for choosing colors for unordered levels, sequential ordering,
+ and two-way diverging color ordering (see 
+\family typewriter
+?display.brewer.all
+\family default
+) and the 
+\emph on
+ColorBrewer
+\emph default
+ website provides recommendations.
+\end_layout
+
+\begin_layout Section
+Lattice and ggplot2
+\end_layout
+
+\begin_layout Standard
+Here we'll see some of the main kinds of graphs, contrasting the syntax
+ in 
+\emph on
+lattice
+\emph default
+ and 
+\emph on
+ggplot2
+\emph default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+The 
+\emph on
+lattice
+\emph default
+ package provides an alternative set of graphics functions based on the
+ Trellis graphics system.
+ 
+\emph on
+ggplot2
+\emph default
+ is another popular alternative developed by Hadley Wickham.
+ In both packages, the style is prescriptive, which in some cases is good
+ (think 
+\emph on
+LaTeX
+\emph default
+ vs.
+ 
+\emph on
+Microsoft Word
+\emph default
+).
+ Both packages are well set up for dealing with conditioning either through
+ sets of panels or through grouping by color or symbol.
+ In the case of multi-panel plots, the style exploits the inter-relatedness
+ of the information, with 'strips' giving labelling information, and avoidance
+ of repetition of axis information.
+ 
+\end_layout
+
+\begin_layout Standard
+Here are the basic relationships amongst variables that we can represent
+ graphically:
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+y 
+\emph default
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+# distribution of y
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+y ~ x
+\emph default
+ 
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+# relationship between x and y, considering y as a function of x
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+y ~ x | A
+\emph default
+ 
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+# relationship between x and y conditional on the values of A
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+y ~ x | A * B
+\emph default
+ 
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+# relationship between x and y conditional on combinations of A and B
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+z ~ x * y
+\emph default
+ 
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+# 3D relationship between x, y, and z, with z a function of x and y
+\end_layout
+
+\begin_layout Standard
+Let's see the two packages in action.
+ We'll use the 
+\emph on
+Comparative Political Data Set
+\emph default
+, which contains data on some political/economic variables for some of the
+ industrialized countries.
+ In the data file, 
+\emph on
+vturn
+\emph default
+ is voter turnout, 
+\emph on
+realgdpgr
+\emph default
+ is growth in GDP (the size of the country's economy), 
+\emph on
+outlays
+\emph default
+ is government spending as a percentage of GDP, and 
+\emph on
+unemp
+\emph default
+ is the unemployment rate.
+ Metadata are available at 
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset CommandInset href
+LatexCommand href
+name "http://www.ipw.unibe.ch/content/team/klaus_armingeon/comparative_political_data_sets/index_eng.html"
+target "http://www.ipw.unibe.ch/content/team/klaus_armingeon/comparative_political_data_sets/index_eng.html"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Both
+\emph on
+ lattice
+\emph default
+ and 
+\emph on
+ggplot2
+\emph default
+ work by adding layers to a base plot.
+ In both cases, you produce an object with multiple layers and then a 
+\emph on
+print()
+\emph default
+ method applied to the object produces the plot.
+\end_layout
+
+\begin_layout Subsection
+Comparing 
+\emph on
+lattice
+\emph default
+ and 
+\emph on
+ggplot2
+\emph default
+ by example
+\end_layout
+
+\begin_layout Subsubsection
+Basic intro to 
+\emph on
+ggplot2
+\end_layout
+
+\begin_layout Standard
+Here's a schematic of the 
+\emph on
+ggplot
+\emph default
+ syntax::
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+ggplot(data= , aes(x= ,y= , [options]))+geom_xxxx()+...+...+...
+\end_layout
+
+\begin_layout Standard
+The variables are part of the 
+\begin_inset Quotes eld
+\end_inset
+
+aesthetic
+\begin_inset Quotes erd
+\end_inset
+
+ argument.
+ You can see the layering effect by comparing the same graph with different
+ colors for each layer
+\end_layout
+
+\begin_layout Chunk
+<<layersExample, tidy=FALSE, fig.height=4, fig.width=4>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+Here's another example where we layer on a bunch of features and create
+ two versions of the plot as different objects.
+ This also shows how to create a multipanel plot in
+\emph on
+ ggplot2
+\emph default
+.
+\end_layout
+
+\begin_layout Chunk
+<<errorbars, fig.height=4, fig.width=6>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+Here's a bit more syntax for modifying labels and axis limits and what-not.
+\end_layout
+
+\begin_layout Chunk
+<<cleaning, eval=FALSE, tidy=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Subsubsection
+Density plots
+\end_layout
+
+\begin_layout Chunk
+<<density, fig.height=3, fig.width=4>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Subsubsection
+Scatterplots
+\end_layout
+
+\begin_layout Standard
+In addition to seeing how to do scatterplots, we also see how to do built-in
+ subsetting here.
+\end_layout
+
+\begin_layout Chunk
+<<scatter, fig.height=3, fig.width=4, tidy=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+
+\emph on
+ggpairs()
+\emph default
+ in 
+\emph on
+ggplot2
+\emph default
+ produces a scatterplot matrix showing the relationships of all pairs of
+ a set of variables that deals with both continuous and discrete variables.
+\end_layout
+
+\begin_layout Subsubsection
+Conditioning
+\end_layout
+
+\begin_layout Standard
+Here's how we create so-called trellis graphics, which create a series of
+ plots, stratified by some conditioning variable, in this case by country.
+ In ggplot terminology, this is called 
+\begin_inset Quotes eld
+\end_inset
+
+faceting
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+This is a powerful approach to dealing with multivariate data and is often
+ useful for revealing patterns in data.
+\end_layout
+
+\begin_layout Chunk
+<<conditioning, fig.height=7, fig.width=7, tidy=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+In ggplot2, here's how we condition by using different colors or symbols
+ within a single panel.
+ Note the third plot in which we annotate the symbols based on a fourth
+ variable - unemployment in this case.
+\end_layout
+
+\begin_layout Chunk
+<<conditioning2, fig.height=5, fig.width=7, tidy=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Subsubsection
+Contour plots 
+\end_layout
+
+\begin_layout Standard
+In general, I advise people to stay away from plots that attempt to show
+ three dimensions, because it is very hard to see the whole plot without
+ some of the features hiding other parts of the plot.
+ Rather, contour and image plots are generally a better choice.
+ 
+\end_layout
+
+\begin_layout Standard
+Here are contour plots:
+\end_layout
+
+\begin_layout Chunk
+<<contour, fig.height=3, fig.width=4, tidy=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+and here are image plots, which show surfaces based on variations in color:
+\end_layout
+
+\begin_layout Chunk
+<<image, fig.height=3, fig.width=4, tidy=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+I'm not a fan of that color scheme for the ggplot2 graphic, but didn't have
+ time to figure out something better.
+\end_layout
+
+\begin_layout Subsection
+Some other details on 
+\emph on
+lattice
+\end_layout
+
+\begin_layout Standard
+The analog of 
+\emph on
+par()
+\emph default
+ for lattice is 
+\emph on
+trellis.par.set()
+\emph default
+ and 
+\emph on
+trellis.par.get()
+\emph default
+.
+ Often you can get a nice lattice graphic without much work, but modifying
+ aspects of a lattice graphic may take some work.
+ Chapter 7 of the Chambers book discusses this to some degree.
+ Note that 
+\emph on
+lattice
+\emph default
+ graphics are based on the 
+\emph on
+grid
+\emph default
+ package, so serious monkeying may require learning something about 
+\emph on
+grid
+\emph default
+.
+\end_layout
+
+\begin_layout Paragraph
+Modularity and the 
+\emph on
+panel()
+\emph default
+ function
+\end_layout
+
+\begin_layout Standard
+
+\emph on
+Lattice
+\emph default
+ functions are highly modular and have consistent argument names (see p.
+ 308 of Adler), unlike in 
+\emph on
+graphics
+\emph default
+.
+ The high-level functions take care of the overall logistics while low-level
+ panel functions do the actual plotting within each panel.
+ To add features to the panels, you need to do it through the 
+\emph on
+panel()
+\emph default
+ function argument:
+\end_layout
+
+\begin_layout Chunk
+<<panel, eval=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+We can manipulate subpanels in a lattice graphic:
+\end_layout
+
+\begin_layout Chunk
+<<lattice-panels, eval=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Section
+Animations and interactive graphics on the web
+\end_layout
+
+\begin_layout Standard
+To create animations, check out the 
+\emph on
+animation
+\emph default
+ package for animations that can run in R or in HTML.
+ 
+\end_layout
+
+\begin_layout Standard
+To create interactive graphics that users can interact with on the web,
+ check out 
+\begin_inset CommandInset href
+LatexCommand href
+name "Shiny"
+target "http://shiny.rstudio.com/"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Section
+Graphics devices
+\end_layout
+
+\begin_layout Standard
+Graphics are plotted on a 
+\emph on
+device
+\emph default
+.
+ In the old days when computer monitors were not high resolution or in color,
+ this referred to a physical device, but nowadays this is a general term
+ that denotes the context in which the plot is being made: typically on
+ screen or as a file in a particular file format.
+ The standard device in a UNIX environment is X11, basically a graphics
+ window set up in the X11 windowing system.
+ On-screen plotting is generally done with R interacting with a window manager
+ for the operating system, so R is not interacting directly with the physical
+ display.
+ Often one needs to iterate to get a plot to look good when printed to a
+ file; in particular the aspect (width to height ratio) (e.g., you can specify
+ width and height in 
+\emph on
+pdf()
+\emph default
+), the margin sizes relative to the size of the core plot, and size of plotting
+ symbols and text relative to the size of the plot.
+ That is the relative sizes when seen in a graphics window on the screen
+ may be very different when printed to a file.
+\end_layout
+
+\begin_layout Standard
+You can have multiple graphics windows open at once; you'll need to explicitly
+ call the function for opening a device to set up any additional ones.
+ 
+\emph on
+dev.cur()
+\emph default
+ tells the number of the active one and 
+\emph on
+dev.set()
+\emph default
+ allows to change it.
+\end_layout
+
+\begin_layout Section
+Graphics file formats
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Graphics-file-formats"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The 
+\emph on
+pdf()
+\emph default
+ function is a workhorse for creating an output file containing your R graphics.
+ Analogues of 
+\emph on
+pdf()
+\emph default
+ include 
+\emph on
+postscript()
+\emph default
+, 
+\emph on
+png()
+\emph default
+, 
+\emph on
+tiff()
+\emph default
+, 
+\emph on
+bmp()
+\emph default
+, and 
+\emph on
+jpeg()
+\emph default
+.
+ If you have already made the plot in the graphics window and want to export
+ it, you can use 
+\emph on
+dev.copy2pdf()
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Note: Lattice graphics are optimized for the current plotting device, so
+ using 
+\emph on
+dev.copy2pdf()
+\emph default
+ and the like is a bad idea since the graphic will have been optimized for
+ the computer screen window.
+ Instead use 
+\emph on
+pdf()
+\emph default
+ and the like to make the plot within the device.
+\end_layout
+
+\begin_layout Subsection
+Vectorized vs.
+ rasterized file formats
+\end_layout
+
+\begin_layout Standard
+pdf and postscript images are vectorized - in general elements of the image
+ are symbolic objects (such as points, text, symbols, line segments, etc.)
+ and when an image is resized, the items rescale appropriately for the new
+ size without losing resolution.
+ In contrast, with a rasterized format such as JPEG, individual pixels are
+ plotted, and when an image is rescaled, in particular enlarged, one is
+ stuck with the resolution that one used in plotting the figure (i.e., one
+ has the original pixels but if you zoom, you only show some of them, losing
+ resolution).
+ One downside to vectorized images is that with a lot of points or line
+ segments, they can be very large.
+ For 2-d images such as created by
+\emph on
+ image()
+\emph default
+, rasterized formats do make some sense inherently, though the other features
+ in the file (such as any text) is also rasterized.
+\end_layout
+
+\begin_layout Subsection
+File formats for journal articles
+\end_layout
+
+\begin_layout Standard
+For inserting into Latex files for journal articles, I typically use 
+\emph on
+pdf()
+\emph default
+ in combination with 
+\emph on
+pdflatex
+\emph default
+ to compile the Latex file.
+ In some cases for large images I will use 
+\emph on
+jpeg
+\emph default
+ or 
+\emph on
+png
+\emph default
+ files for figures in a paper.
+\end_layout
+
+\begin_layout Standard
+Journals sometimes request either 
+\emph on
+postscript
+\emph default
+ or 
+\emph on
+encapsulated postscript
+\emph default
+ (EPS) format images.
+ If you create a single R plot (as opposed to multiple pages), using 
+\emph on
+postscript()
+\emph default
+, the result should be EPS compatible.
+ You can do this with the arguments 
+\family typewriter
+
+\begin_inset Newline newline
+\end_inset
+
+horizontal = FALSE, onefile = FALSE, paper = "special"
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+or by calling 
+\emph on
+setEPS()
+\emph default
+.
+ If you have a postscript file that is not EPS, 
+\emph on
+ps2epsi
+\emph default
+ is a Ghostscript tool that can do the conversion from 
+\emph on
+ps
+\emph default
+ to 
+\emph on
+eps
+\emph default
+ (i.e., 
+\emph on
+epsi
+\emph default
+).
+ EPS is a standardized form of postscript and contains a bounding box describing
+ the bounds of the image.
+ EPSI files contain a bitmapped preview image in the 
+\begin_inset Quotes eld
+\end_inset
+
+Interchange
+\begin_inset Quotes erd
+\end_inset
+
+ format that systems can use to show an approximation of the image even
+ if they can't render (i.e., display) postscript.
+\end_layout
+
+\begin_layout Standard
+Discussing much about postscript is beyond our scope, but note that postscript
+ files are just text in a particular language that the printer uses for
+ generating a printout.
+ So you can use 
+\emph on
+less
+\emph default
+ or 
+\emph on
+emacs
+\emph default
+ to view the file in UNIX.
+ You'll see that it says that it's EPS and has a bounding box.
+ It's occasionally handy to search for and replace text in a postscript
+ file manually rather than regenerating the file.
+ For example I could search for '
+\emph on
+noise
+\emph default
+' in 
+\emph on
+example.eps
+\emph default
+ (created in the demo code) and replace with something else.
+ I could also monkey with the positioning, which should involve the numbers
+ just before the text string.
+ You can also do this sort of thing in pdf files as well.
+\end_layout
+
+\begin_layout Subsection
+Conversion utilities
+\end_layout
+
+\begin_layout Standard
+UNIX has a lot of utilities for converting between image formats.
+ Windows and Mac also have GUI-style programs for doing this.
+\end_layout
+
+\begin_layout Standard
+In UNIX,
+\emph on
+ pdftops
+\emph default
+ will convert pdf to postscript and with the optional argument 
+\emph on
+-eps
+\emph default
+ to encapsulated postscript, while 
+\emph on
+ps2epsi
+\emph default
+ will create encapsulated postscript.
+ 
+\emph on
+gs
+\emph default
+ (Ghostscript) will do a lot of different manipulations of ps and pdf files,
+ including converting to jpeg and other formats and merging and splitting
+ pages of pdf files.
+ Here are some examples of command-line calls from within a UNIX shell:
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+# convert from ps to jpeg
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+gs -dNOPAUSE -r[xres]x[yres] -sDEVICE=jpeg -sOutputFile=file.jpg file.ps 
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+# extract pages from a pdf
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+gs -sDEVICE=pdfwrite -dNOPAUSE -dQUIET -dBATCH -dFirstPage=m 
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+-dLastPage=n -sOutputFile=out.pdf in.pdf 
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+# merge pdf files into one pdf
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+gs -dNOPAUSE -sDEVICE=pdfwrite -sOUTPUTFILE=out.pdf -dBATCH in1.pdf 
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+in2.pdf in3.pdf 
+\end_layout
+
+\begin_layout Section
+Colors
+\end_layout
+
+\begin_layout Standard
+The default colors can be seen with 
+\emph on
+palette()
+\emph default
+.
+ Using 
+\emph on
+col=i
+\emph default
+ in a plot uses the ith element of the output of 
+\emph on
+palette()
+\emph default
+.
+ You can change the palette:
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+palette(c(
+\begin_inset Quotes eld
+\end_inset
+
+black
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+yellowgreen
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+purple
+\begin_inset Quotes erd
+\end_inset
+
+)
+\end_layout
+
+\begin_layout Standard
+See 
+\family typewriter
+\emph on
+colors()
+\family default
+\emph default
+ for the colors available by name.
+ You can also use RGB levels, discussed next.
+ 
+\end_layout
+
+\begin_layout Subsection
+Colorspaces
+\end_layout
+
+\begin_layout Standard
+Colors live in a 3-dimensional space that can be parameterized in several
+ ways.
+ One standard parameterization is RGB, which is a set of three numbers indicatin
+g the intensity of red, green and blue.
+ We can use RGB levels to specify colors in R.
+\end_layout
+
+\begin_layout Chunk
+<<colorspaces, eval=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Standard
+Notice 
+\emph on
+rgb()
+\emph default
+ gives us back the color as a hexadecimal number (
+\emph on
+#RRGGBB
+\emph default
+), where each of 
+\emph on
+RR
+\emph default
+, 
+\emph on
+GG
+\emph default
+, and 
+\emph on
+BB
+\emph default
+ is 2-digit hexadecimal number (base 16) in the range 0 (00) to 255 (FF),
+ so red is #FF0000.
+ A string in this format can be used to specify colors and you'll run across
+ this in R if you work with colors.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+One possibility is {yellow-blue}, {red-green}, {brightness}.
+ The angle of rotation in the {yellow-blue}, {red-green} 2-d space is the
+ hue.
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Another parameterization is HSV: 
+\emph on
+hue
+\emph default
+, 
+\emph on
+saturation
+\emph default
+ (colorfulness metric), and 
+\emph on
+value
+\emph default
+ (brightness).
+ Let's see the demo code to see how colors vary as we change HSV values
+ using 
+\emph on
+rainbow()
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+A parameterization that uses a more absolute measure of colorfulness than
+ saturation is HCL (hue, chroma, luminance).
+ In the example in the demo code, none of the colors stands out more than
+ the others.
+\end_layout
+
+\begin_layout Standard
+The 
+\emph on
+colorspace
+\emph default
+ package provides tools for manipulating colors.
+\end_layout
+
+\begin_layout Subsection
+Color sequences
+\end_layout
+
+\begin_layout Standard
+If we're using color to illustrate a continuous range of values, we need
+ a meaningful color sequence.
+ To construct a continuous color set giving a sequence of colors you can
+ use a variety of color schemes: 
+\emph on
+rainbow()
+\emph default
+, 
+\emph on
+heat.colors()
+\emph default
+, 
+\emph on
+terrain.colors()
+\emph default
+, 
+\emph on
+topo.colors()
+\emph default
+, 
+\emph on
+temp.colors()
+\emph default
+, and (in the 
+\emph on
+fields
+\emph default
+ package), 
+\emph on
+tim.colors()
+\emph default
+.
+ I know Tim! He likes to fish.
+\end_layout
+
+\begin_layout Standard
+The main thing to avoid is a sequence in which the colors do not appear
+ to vary smoothly or in some cases may not even appear monotonic.
+ Let's examine a variety of the sequences (see the demo code).
+\end_layout
+
+\begin_layout Standard
+
+\emph on
+temp.colors()
+\emph default
+ is a good blue to red 
+\begin_inset Quotes eld
+\end_inset
+
+diverging
+\begin_inset Quotes erd
+\end_inset
+
+ color scheme that emphasizes magnitudes around a central point, with two
+ hues - one for each direction.
+\end_layout
+
+\begin_layout Standard
+The 
+\emph on
+RColorBrewer
+\emph default
+ package is good for choosing colors for unordered levels, sequential ordering,
+ and two-way diverging color ordering and the 
+\emph on
+ColorBrewer
+\emph default
+ website provides recommendations.
+ We'll see an example in the section on mapping.
+\end_layout
+
+\begin_layout Subsection
+Overplotting of points
+\end_layout
+
+\begin_layout Standard
+As a sidenote, if you have a scatterplot with many points that will overplot
+ each other (as well as creating a huge file), consider the 
+\emph on
+scatterSmooth()
+\emph default
+ function as well as the 
+\emph on
+hexbin
+\emph default
+ package.
+ The former creates a two-d density plots with outlying individual points
+ included, while the latter creates an empirical two-d density by binning
+ into hexagonal areas.
+ A third approach is to have your color be partly transparent, so that overplott
+ing results in darker colors.
+ Note that this may not work on all devices.
+ We can specify transparency level as either the 4th number in 
+\emph on
+rgb()
+\emph default
+ on a scale of 0 (transparent) to 1 (opaque - the default), or as a fourth
+ hexadecimal number on the scale of 00 to FF (0 to 255); e.g., 
+\emph on
+#FF000080
+\emph default
+ would be half-transparent red, since 80 is one-half of FF in base 16.
+\end_layout
+
+\begin_layout Chunk
+<<overplotting, fig.height=3.5, fig.width=6, tidy=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\begin_layout Chunk
+
+\end_layout
+
+\begin_layout Subsection
+Colorblindness
+\end_layout
+
+\begin_layout Standard
+One thing to be aware of is that 7-8% of men are color blind.
+ As we see in the demo code, the standard result of this is to make it difficult
+ to distinguish red and green, so one may want to avoid color schemes that
+ have both of these in them.
+ We can use 
+\emph on
+dichromat()
+\emph default
+ from the 
+\emph on
+dichromat
+\emph default
+ package to assess the effect of colorblindness on viewing of one's images;
+ see more in the demo code file.
+\end_layout
+
+\begin_layout Chunk
+<<colorblind, eval=FALSE>>=
+\end_layout
+
+\begin_layout Chunk
+@
+\end_layout
+
+\end_body
+\end_document
