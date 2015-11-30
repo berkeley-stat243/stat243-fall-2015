@@ -23,7 +23,7 @@ select Origin, Dest, Month, DayOfWeek, Hour,
 ```sql
 select Origin, Dest, Month, DayOfWeek, Hour,
   count(DepDelay > 30) as Count30,
-  from myView
+  from flights
   where DepDelay != 'NA'
   group by someGrouping
 ```
